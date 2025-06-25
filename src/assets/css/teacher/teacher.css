@@ -1,0 +1,68 @@
+.teacher {
+    width: 100%;
+    height: 100%;
+}
+.teacher-page-content {
+    background: url('../../../assets/image/index/index_back.png');
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+.teacher-page-title {
+    width: 70%;
+    margin-top: 40px;
+    font-size: 25px;
+    font-family: '黑体';
+    letter-spacing: 3px;
+}
+.teacher-page-search {
+    background-color: #F3F5F6;
+    margin-top: 40px;
+    width: 70%;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    align-content:flex-start ;
+}
+.teacher-page-btns {
+    display: flex;
+    align-self: center;
+}
+.teacher-page-list {
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+.teacher-page-item {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border: 2px solid #EFF1F2;
+    margin-top: 15px;
+    margin-left: 20px;
+    width: 22%;
+    height: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.teacher-page-name {
+    margin-top: -5px;
+    display: flex;
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: space-between;
+    font-family: '黑体';
+    font-size: 14px;
+}
+.teacher-page-fenye {
+    margin-top: 20px;
+    width: 70%;
+}
+.teacher-bottom-image {
+    margin-top: 20px;
+    width: 70%;
+}
+
