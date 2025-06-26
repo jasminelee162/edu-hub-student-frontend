@@ -48,7 +48,7 @@
             </div>
         </div>
         <div class="test-bottom-image">
-            <img style="width:100%" src="../../assets/image/16.png">
+
         </div>
     </div>
     <bottomPage></bottomPage>

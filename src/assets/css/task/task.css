@@ -9,6 +9,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+
 }
 .task-page-search {
     margin-top: 30px;
@@ -17,7 +18,12 @@
     justify-content: space-between;
     align-content: flex-start;
     flex-wrap: wrap;
-    background-color: #F3F5F6;
+
+    background-color: rgba(194, 228, 245, 0.3); /* 半透明蓝 */
+    border: 1px solid #86C5E0; /* 浅蓝边框 */
+    border-radius: 10px;        /* 圆角边框 */
+    padding: 16px;              /* 内边距，元素不贴边 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 可选阴影美化 */
 }
 .task-page-list {
     width: 70%;
@@ -48,7 +54,7 @@
     cursor: pointer;
 }
 .task-search-type:hover {
-    color: #58C7A4;
+    color: #C2E4F5;
 }
 .task-page-btns {
     width: 70%;
@@ -113,4 +119,48 @@
     display: flex;
     justify-content: center;
     background: url('../../../assets/image/index/index_back.png');
+}
+
+/* 搜索框输入框样式 */
+.task-page-search .el-input__inner {
+    background-color: #FFFFFF !important;
+    border: 1px solid #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px !important;
+}
+
+/* 搜索 / 重置 按钮 */
+.task-page-search .el-button--primary,
+.task-page-search .el-button--warning {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px !important;
+}
+
+/* Hover 效果 */
+.task-page-search .el-button--primary:hover,
+.task-page-search .el-button--warning:hover {
+    background-color: #B3D9EE !important;
+    border-color: #5FB0D4 !important;
+    color: #123B5C !important;
+}
+
+/* 分类标签 */
+.task-search-type {
+    background-color: #C2E4F5;
+    color: #1F4E79;
+    border-radius: 12px;
+    padding: 4px 10px;
+    margin: 4px 6px;
+    border: 1px solid #86C5E0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* 分类标签 Hover 效果 */
+.task-search-type:hover {
+    background-color: #B0DAF0;
+    color: #123B5C;
+    border-color: #5FB0D4;
 }

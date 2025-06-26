@@ -67,7 +67,7 @@
       </div>
     </div>
     <div class="task-page-bottom">
-      <img style="width:70%" src="../../assets/image/15.png">
+
     </div>
     <bottomPage></bottomPage>
   </div>

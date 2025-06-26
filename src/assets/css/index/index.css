@@ -26,12 +26,12 @@
 }
 .content1 {
     font-size: 20px;
-    color: #20B486;
+    color: #6427FF;
     letter-spacing: 1px;
 }
 .content2 {
     font-size: 13px;
-    color: #20B486;
+    color: #6427FF;
     letter-spacing: 1px;
 }
 .content3,.content4 {
@@ -311,4 +311,28 @@
     align-items: center;
     font-family: '黑体';
     font-size: 20px;
+}
+.el-button--success.is-plain {
+    background-color: #EAE8FE !important;  /* 背景色 */
+    border-color: #B5AFFF !important;      /* 边框色 */
+    color: #B5AFFF !important;             /* 文字颜色 */
+}
+.el-input__inner {
+    background-color: #FFFFFF !important;
+    border-color: #B5AFFF !important;
+    color: #B5AFFF !important;
+    border-radius: 8px !important;
+}
+.el-input__inner:focus {
+    border-color: #EAE8FE !important;
+    box-shadow: 0 0 4px rgba(95, 176, 212, 0.5);
+}
+
+.el-button--success.el-button--mini {
+    background-color: #EAE8FE !important;
+    border-color: #B5AFFF !important;
+    color: #B5AFFF !important;
+    border-radius: 8px !important;
+    padding: 4px 12px !important;
+    font-size: 14px;
 }

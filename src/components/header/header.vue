@@ -1,7 +1,7 @@
 <template>
     <div class="header">
         <div class="system-title">
-            <span style="color:#20B486">在线学习教育平台</span>
+            <span style="color:#6427FF">在线学习教育平台</span>
         </div>
         <div class="menu-list">
             <div @click="toPage('index')" :class="$route.path == '/'?'menu_item':''">主页</div>

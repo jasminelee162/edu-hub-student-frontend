@@ -40,7 +40,7 @@
             </el-pagination>
         </div>
         <div class="teacher-bottom-image">
-            <img style="width:100%" src="../../assets/image/17.png">
+
         </div>
     </div>
     <bottomPage></bottomPage>

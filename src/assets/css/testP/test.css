@@ -8,6 +8,7 @@
     flex-direction: column;
     align-items: center;
     background: url('../../../assets/image/index/index_back.png');
+    color: #1F4E79; /* 深蓝，清晰可读 */
 }
 .test-page-title {
     width: 70%;
@@ -22,41 +23,42 @@
     justify-content: space-between;
     flex-wrap: wrap;
     margin-top: 30px;
+    color: #1F4E79; /* 深蓝，清晰可读 */
 }
 .test-page-list div:nth-child(1) {
-    background: url('../../image/testP/40.png'); 
+    color: #1F4E79; /* 深蓝，清晰可读 */
     background-size: 100% 
 }
 .test-page-list div:nth-child(2) {
-    background: url('../../image/testP/41.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(3) {
-    background: url('../../image/testP/42.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(4) {
-    background: url('../../image/testP/43.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(5) {
-    background: url('../../image/testP/44.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(6) {
-    background: url('../../image/testP/45.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(7) {
-    background: url('../../image/testP/49.png'); 
+
     background-size: 100% 
 }
 .test-page-list div:nth-child(8) {
-    background: url('../../image/testP/50.png'); 
-    background-size: 100% 
+
+    background-size: 100%
 }
 .test-page-list div:nth-child(9) {
-    background: url('../../image/testP/53.png'); 
+
     background-size: 100% 
 }
 .test-page-item {
@@ -67,6 +69,7 @@
     border-radius: 10px;
     display: flex;
     flex-direction: column;
+    color: #1F4E79; /* 深蓝，清晰可读 */
 }
 .test-page-item span:nth-child(1) {
     margin-top: 20px;
@@ -132,4 +135,18 @@
 .test-bottom-image {
     width: 70%;
     margin-top: 10px;
+}
+.test-page-item {
+    background-color: #B3AECF;
+    border: 1px solid #86C5E0;      /* 主色调浅蓝边框 */
+    border-radius: 10px;            /* 圆角美观 */
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: '黑体', sans-serif;
+    color: #1F4E79;                 /* 深蓝字体，清晰可读 */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); /* 可选微阴影 */
+
+}
+.test-page-item {
+    color: #1F4E79 !important;
 }

@@ -29,7 +29,7 @@
             </el-pagination>
         </div>
         <div class="notice-page-bottom">
-            <img style="width:100%" src="../../assets/image/20.png">
+
         </div>
     </div>
     <bottomPage></bottomPage>

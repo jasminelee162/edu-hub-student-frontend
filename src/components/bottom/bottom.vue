@@ -3,13 +3,13 @@
           <div class="bottom-one">
               <div style="width:50%">
                 <div style="color:#FFC27A;font-size:25px;font-weight:bold">
-                  <span style="color:#20B486">在线学习教育平台</span>
+                  <span style="color:#6427FF">在线学习教育平台</span>
                 </div>
                 <div style="margin-top:10px;font-weight:bold">关于我们</div>
                 <div style="font-weight:bold">Contact Us</div>
                 <div style="color:#6D737A;margin-top:10px">Praesent nulla massa, hendrerit vestibulum gravida in, feugiat auctor felis.</div>
                 <div style="color:#6D737A;margin-top:10px">Email: example@mail.com</div>
-                <img style="margin-top:20px" src="../../assets/image/index/组件 2.png">
+
               </div>
           </div>
           <div class="bottom-two">

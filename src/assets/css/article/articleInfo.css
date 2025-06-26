@@ -97,7 +97,7 @@
     font-family: '黑体';
     letter-spacing: 1px;
     width: 100%;
-    background-color: #4E5BE2;
+    background-color: #6427FF;
     color: #ffffff;
     line-height: 20px;
     border-radius: 10px;
@@ -109,4 +109,28 @@
     width: 95%;
     display: flex;
     justify-content: flex-end;
+}
+.el-button--success.is-circle {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* ✅ 图标垂直居中关键 */
+    padding: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 图标颜色控制 */
+.el-button--success.is-circle .el-icon-star-on {
+    color: #1F4E79 !important;
+    font-size: 18px;
+}
+.el-button--success.is-circle:hover {
+    background-color: #B3D9EE !important;
+    border-color: #5FB0D4 !important;
+    color: #123B5C !important;
 }

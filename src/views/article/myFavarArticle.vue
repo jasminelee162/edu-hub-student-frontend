@@ -30,7 +30,7 @@
             </el-pagination>
         </div>
         <div class="article-page-bottom">
-            <img style="width:100%" src="../../assets/image/38.png">
+
         </div>
     </div>
     <bottomPage></bottomPage>

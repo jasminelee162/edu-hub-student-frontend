@@ -87,7 +87,7 @@
         </span>
     </el-dialog>
     <div class="task-page-bottom">
-      <img style="width:70%" src="../../assets/image/48.png">
+
     </div>
     <bottomPage></bottomPage>
   </div>

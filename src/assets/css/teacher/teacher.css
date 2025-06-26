@@ -17,13 +17,18 @@
     letter-spacing: 3px;
 }
 .teacher-page-search {
-    background-color: #F3F5F6;
+    background-color: rgba(234, 232, 254, 0.3);  /* 淡紫色半透明 */
     margin-top: 40px;
     width: 70%;
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    align-content:flex-start ;
+    align-content: flex-start;
+
+    border: 1px solid #B5AFFF;        /* 紫色边框 */
+    border-radius: 10px;              /* 圆角 */
+    padding: 16px;                    /* 内边距 */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 可选立体感 */
 }
 .teacher-page-btns {
     display: flex;
@@ -66,3 +71,144 @@
     width: 70%;
 }
 
+/* 搜索按钮（primary） */
+.el-button--primary.is-plain {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* 重置按钮（warning） */
+.el-button--warning.is-plain {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* 图标统一样式（可选） */
+.el-button--primary.is-plain .el-icon-search,
+.el-button--warning.is-plain .el-icon-refresh {
+    color: #1F4E79 !important;
+    font-size: 16px;
+}
+.el-button--primary.is-plain:hover,
+.el-button--warning.is-plain:hover {
+    background-color: #B3D9EE !important;
+    border-color: #5FB0D4 !important;
+    color: #123B5C !important;
+}
+.number.active {
+    background-color: #C2E4F5 !important;
+    color: #fff; /* 文字颜色建议配合背景调整 */
+}
+.teacher-page-search {
+    background-color: rgba(194, 228, 245, 0.3); /* 半透明蓝 */
+    border: 1px solid #86C5E0;
+    border-radius: 10px;
+    padding: 16px 20px;
+    width: 70%;
+    margin: 40px auto 0;  /* 居中，顶部40px */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    font-family: '黑体', sans-serif;
+}
+
+/* 教师名称输入框容器 */
+.teacher-page-search > div[style*="width: 40%"] {
+    display: flex;
+    align-items: center;
+    margin: 15px 10px 10px 10px;
+    width: 40%;
+    font-weight: 600;
+    color: #1F4E79;
+}
+
+/* 输入框样式覆盖 */
+.el-input__inner {
+    background-color: #FFFFFF !important;
+    border: 1px solid #86C5E0 !important;
+    border-radius: 6px !important;
+    color: #1F4E79 !important;
+    padding: 6px 12px !important;
+    font-size: 14px;
+}
+
+/* 按钮容器 */
+.teacher-page-btns {
+    display: flex;
+    gap: 12px;
+    margin: 15px 10px 10px 10px;
+}
+
+/* 搜索按钮 */
+.el-button--primary.is-plain {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px !important;
+    padding: 6px 18px !important;
+    font-weight: 600;
+}
+
+/* 重置按钮 */
+.el-button--warning.is-plain {
+    background-color: #C2E4F5 !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px !important;
+    padding: 6px 18px !important;
+    font-weight: 600;
+}
+
+/* 按钮 Hover */
+.el-button--primary.is-plain:hover,
+.el-button--warning.is-plain:hover {
+    background-color: #B3D9EE !important;
+    border-color: #5FB0D4 !important;
+    color: #123B5C !important;
+    cursor: pointer;
+}
+
+/* 学校分类标签容器 */
+.teacher-page-search > div[style*="flex-wrap: wrap"] {
+    margin-left: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    color: #1F4E79;
+    font-weight: 500;
+}
+
+/* “学校:” 文字 */
+.teacher-page-search > div[style*="flex-wrap: wrap"] > span:first-child {
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+/* 分类标签 */
+.task-search-type {
+    background-color: #C2E4F5;
+    color: #1F4E79;
+    border-radius: 12px;
+    padding: 6px 14px;
+    margin: 6px 8px 6px 0;
+    border: 1px solid #86C5E0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+/* 分类标签 Hover */
+.task-search-type:hover {
+    background-color: #B0DAF0;
+    border-color: #5FB0D4;
+    color: #123B5C;
+}

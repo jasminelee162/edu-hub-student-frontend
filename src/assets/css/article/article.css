@@ -74,14 +74,68 @@
     width: 70%; 
 }
 .article-page-search {
-    background-color: #F3F5F6;
+    background-color: #EAE8FE;
     margin-top: 30px;
     width: 70%;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
+
 }
 .article-page-btns {
     margin-left: 10px;
     align-self: center;
+}
+.article-page-search {
+    background-color: rgba(194, 228, 245, 0.3); /* 浅蓝透明 */
+    border: 1px solid #86C5E0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    font-family: '黑体', sans-serif;
+    color: #1F4E79;
+}
+
+.article-page-search > div[style*="width: 30%"] {
+    display: flex;
+    align-items: center;
+    margin: 15px 10px 10px 10px;
+    font-weight: 600;
+    color: #1F4E79;
+}
+
+.article-page-search .el-input__inner {
+    background-color: #F4FAFF;
+    border: 1px solid #86C5E0;
+    border-radius: 6px;
+    color: #1F4E79;
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+.article-page-btns {
+    display: flex;
+    gap: 12px;
+    margin: 15px 10px 10px 10px;
+}
+
+.article-page-search .el-button--primary.is-plain,
+.article-page-search .el-button--warning.is-plain {
+    background-color: #C2E4F5;
+    border-color: #86C5E0;
+    color: #1F4E79;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 6px 16px;
+}
+
+/* Hover 效果 */
+.article-page-search .el-button--primary.is-plain:hover,
+.article-page-search .el-button--warning.is-plain:hover {
+    background-color: #B3D9EE;
+    border-color: #5FB0D4;
+    color: #123B5C;
 }

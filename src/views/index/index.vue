@@ -4,12 +4,13 @@
       <div class="index-search">
           <div class="index-search-content">
               <div class="search-content">
-                <div class="content1">开始走向成功</div>
-                <div class="content2">START TO SUCCESS</div>
-                <div class="content3">超过<span style="color:#20B486">5000</span>多门课程来自<span style="color:#20B486">300</span>名讲师&机构</div>
-                <div class="content4">Access To <span style="color:#20B486">5000+</span> Courses from <span style="color:#20B486">300</span> Instructors & Institutions</div>
-                <div class="content5">多年来，各种版本不断演变，有时是偶然的</div>
-                <div class="content6">Various versions have evolved over the years, sometimes by accident,</div>
+                <div class="content1">开启智慧学习新时代</div>
+                <div class="content2">START YOUR SMART LEARNING JOURNEY</div>
+                <div class="content3">超过<span style="color:#6427FF">5000</span>虚拟仿真实验与课程资源，
+                  <span style="color:#6427FF">AI驱动</span>个性化学习体验</div>
+                <div class="content4">Explore 5000+ <span style="color:#6427FF">5000+</span> Virtual Labs & Courses, Powered by  <span style="color:#6427FF">AI</span> </div>
+                <div class="content5">实时追踪学习进度，智能推荐提升效率</div>
+                <div class="content6">Track Progress in Real-Time with AI-Powered Recommendations</div>
                 <el-input class="searchKey" v-model="searchKey" suffix-icon="el-icon-search" placeholder="请输入想要搜索的课程名称并按回车键搜索" @change="searchTask()"></el-input>
               </div>
             </div>
@@ -21,7 +22,7 @@
           <div class="most-content"> 
               <div class="page-title">
                 <div style="letter-spacing: 2px;">最受欢迎的专业</div>
-                <div style="margin-top:10px;color:#92969B">Most <span style="color:#20B486">Popular Major</span></div>
+                <div style="margin-top:10px;color:#92969B">Most <span style="color:#6427FF">Popular Major</span></div>
               </div>
               <div class="major-list">
                 <div class="major-item" v-for="(item,index) in major" :key="index">
@@ -53,7 +54,7 @@
           <div class="most-content">
               <div class="page-title">
                 <div style="letter-spacing: 2px;">平台数据</div>
-                <div style="margin-top:10px;color:#92969B">Our <span style="color:#20B486"> Achievement</span></div>
+                <div style="margin-top:10px;color:#92969B">Our <span style="color:#6427FF"> Achievement</span></div>
               </div>
               <div class="shuju-total">
                   <div class="shuju-content">
@@ -87,7 +88,7 @@
                     </div>
                   </div>
                   <div class="shuju-image">
-                      <img style="width:50%;height:120%" src="../../assets/image/index/Group 10.png">
+
                   </div>
               </div>
           </div>
@@ -96,7 +97,7 @@
           <div class="most-content">
               <div class="page-title">
                 <div style="letter-spacing: 2px;">推荐笔记</div>
-                <div style="margin-top:10px;color:#92969B">Recommended <span style="color:#20B486"> Notes</span></div>
+                <div style="margin-top:10px;color:#92969B">Recommended <span style="color:#6427FF"> Notes</span></div>
               </div>
               <div class="note-list">
                   <div v-for="(item,index) in article" :key="index" class="note-item">

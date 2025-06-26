@@ -40,7 +40,7 @@
             </el-pagination>
         </div>
         <div class="message-page-bottom">
-            <img style="width:100%" src="../../assets/image/02.png">
+
         </div>
     </div>
     <bottomPage></bottomPage>
