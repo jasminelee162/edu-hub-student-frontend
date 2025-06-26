@@ -1,0 +1,179 @@
+.taskInfo {
+    width: 100%;
+    height: 100%;
+}
+.taskInfo-content {
+    width: 100%;
+    height: 88%;
+    display: flex;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: url('../../../assets/image/index/index_back.png');
+}
+.taskInfo-name {
+    width: 75%;
+    height: 100%;
+}
+.taskInfo-desc {
+    padding-top: 2%;
+    height: 10%;
+    overflow: hidden;
+}
+.taskInfo-title {
+    font-size: 20px;
+}
+.taskInfo-title1 {
+    margin-top: 7px;
+    font-family: '黑体';
+    width: 70%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    color: #B8B8B9;
+    font-size: 14px;
+}
+.taskInfo-list {
+    width: 100%;
+    height: 88%;
+    display: flex;
+}
+.taskInfo-image {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+.taskInfo-fengmian {
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 2%;
+    width: 95%;
+    height: 83%;
+}
+.taskInfo-btns {
+    width: 95%;
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+.taskInfo-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid #EFF1F2;
+    background-color: #FAFAFA;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+}
+.taskInfo-video {
+    width: 30%;
+    height: 90%;
+    margin-top: 1%;
+    border: 2px solid #EFF1F2;
+    border-radius: 7px;
+    overflow-y: scroll;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.taskInfo-video::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+.taskInfo-video-item {
+    margin-top: 7px;
+    width: 97%;
+    height: 8%;
+    background-color: #FAFAFA;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+    flex-grow: 0;
+    flex-basis: auto;
+}
+.taskInfo-video-item1 {
+    width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    margin-left: 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    font-family: '黑体';
+}
+.taskInfo-video-item2 {
+    margin-right: 15px;
+}
+.taskInfo-bottom {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+.taskInfo-comment {
+    width: 75%;
+}
+.taskInfo-comment-font {
+    margin-bottom: 20px;
+    margin-top: 20px;
+    font-size: 18px;
+    font-weight: bold;
+}
+.taskInfo-comment-btn {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+.taskInfo-comment-list {
+    border: 2px solid #EFF1F2;
+    border-radius: 7px;
+}
+.taskInfo-comment-item {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    margin-left: 5%;
+    width: 95%;
+    display: flex;
+}
+.taskInfo-comment-item1 {
+    margin-left: 10px;
+    font-size: 14px;
+    font-family: '黑体';
+    letter-spacing: 1px;
+}
+.taskInfo-comment-item2 {
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 13px;
+    font-family: '黑体';
+    letter-spacing: 1px;
+    width: 75%;
+    line-height: 20px;
+    background-color: #F7F7FE;
+    border-radius: 10px;
+}
+.taskInfo-comment-item3 {
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 13px;
+    font-family: '黑体';
+    letter-spacing: 1px;
+    width: 100%;
+    background-color: #4E5BE2;
+    color: #ffffff;
+    line-height: 20px;
+    border-radius: 10px;
+}
+.taskInfo-comment-item-right {
+    margin-top: 30px;
+    margin-bottom: 10px;
+    margin-right: 5%;
+    width: 95%;
+    display: flex;
+    justify-content: flex-end;
+}
