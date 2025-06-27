@@ -88,7 +88,7 @@
                     </div>
                   </div>
                   <div class="shuju-image">
-
+                    <img src="../../assets/image/index/Group 10.png">
                   </div>
               </div>
           </div>
