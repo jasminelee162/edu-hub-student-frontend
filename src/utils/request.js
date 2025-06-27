@@ -37,7 +37,7 @@ instance.interceptors.response.use(
     function (response) {
         const res = response
         if (res.data.code === 1011 || res.data.code == 1008 || res.data.code == 1006) {
-            MessageBox.alert('系统登陆已过期，请重新登录', '错误', {
+            MessageBox.alert('系统登录已过期，请重新登录', '错误', {
                 confirmButtonText: '确定',
                 type: 'error'
             }).then(() => {

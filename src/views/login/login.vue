@@ -2,7 +2,7 @@
   <div class="login">
 	<div class="login-top">
 		<div class="logo">
-			<img style="width:100px;padding-left:100px" src="../../assets/image/logo.png">
+			<img style="width:200px;padding-left:100px" src="../../assets/image/logo.png">
 		</div>
 		<div class="btns">
 			<div style="padding-right:100px;display:flex">
@@ -19,33 +19,40 @@
 		<div class="login-content">
 			<div style="padding-left: 100px;">
 				<div class="title">
-					<div>STUDY FROM</div>
-					<div>HOME WITH EXPERT</div>
+					<div>STUDY ANYWHERE </div>
+					<div>WITH AI-POWERED LEARNING</div>
 				</div>
-				<div style="color:#181818;font-family:'黑体'">在线学习教育平台，一个在家就能学习的平台</div>
-				<div style="margin-top:20px;color:#181818;font-family:'黑体'">
-					<div>| 我们都得经历一段努力闭嘴不抱怨的时光，</div>
-					<div>| 才能熠熠生辉，才能去更酷的地方，成为更酷的人。</div>
+				<div style=" color: #1F4E79;font-family:'黑体'">智能化在线教学平台，沉浸式学习体验</div>
+				<div style="margin-top:20px; color: #1F4E79;font-family:'黑体'">
+					<div>| 在虚拟实验室探索知识的边界，</div>
+					<div>| 让AI为你规划高效的学习路径。</div>
 				</div>
-				<div style="margin-top:20px;color:#181818;font-family:'黑体'">
-					<div>| 最好的生活状态：一个人时，安静而丰盛</div>
-					<div>| ；两个人是，温暖而踏实。</div>
+				<div style="margin-top:20px; color: #1F4E79;font-family:'黑体'">
+					<div>| 最好的成长状态：独自学习时，专注而充实；</div>
+					<div>| 协作实验时，默契而高效。</div>
+
 				</div>
+
+        <div style="margin-top:20px;color:#6427FF;font-family:'黑体'">
+        <div>—— 让科技赋能每一份求知欲 ——</div>
+        <div>Where Innovation Meets Education</div>
+        </div>
+
 				<div style="margin-top:30px;display:flex;justify-content: space-between">
-					<img style="width:20%" src="../../assets/image/login_image.png">
-					<img style="width:25%;padding-right:30px" src="../../assets/image/login-jiantou.png">
+
+
 				</div>
 			</div>
 		</div>
 		<div class="login-form">
 			<div class="jiantou1">
-				<img src="../../assets/image/jiantou1.png">
+
 			</div>
 			<div class="jiantou2">
-				<img src="../../assets/image/jiantou2.png">
+
 			</div>
 			<div class="yuan">
-				<img src="../../assets/image/yuan.png">
+
 			</div>
 			<div class="form">
 				<div class="login-title">在线学习教育平台</div>
@@ -60,7 +67,7 @@
 					</el-form>
 				</div>
 				<div class="login-btn" @click="toLogin()">
-					<div>登 陆</div>
+					<div>登 录</div>
 				</div>
 			</div>
 		</div>
@@ -108,7 +115,7 @@
 					login(params).then(res => {
 						if(res.code == 1000) {
 							this.$message({
-								message: '登陆成功',
+								message: '登录成功',
 								type: 'success'
 							});
 							var that = this
@@ -177,26 +184,28 @@
   .toReg {
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #474747;
+	  border:1px solid #1F4E79;
 	  font-family: '黑体';
 	  cursor: pointer;
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
+    color:#1F4E79;
   }
   .toRegTeacher {
 	  margin-left: 20px;
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #474747;
+	  border:1px solid #1F4E79;
 	  font-family: '黑体';
 	  cursor: pointer;
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
+    color:#1F4E79;
   }
   .login-center {
-	  background-image: url('../../assets/image/index/index_back.png');
+    background-image: url('../../assets/image/index/index_back.png');
 	  width: 100%;
 	  height: 75%;
 	  display: flex;
@@ -216,18 +225,19 @@
 	  flex-direction: column;
   }
   .login-form {
-	  background-image: url('../../assets/image/index/index_back.png');
+
 	  position: relative;
 	  display: flex;
 	  justify-content: center;
 	  width: 45%;
 	  height: 100%;
-	  background-color: #ffffff;
+
   }
   .title {
 	  //font-weight: '黑体';
 	  font-size: 55px;
 	  font-weight: bold;
+    color: #1F4E79;
   }
   .jiantou1 {
 	  position: absolute;
@@ -258,12 +268,13 @@
 	  height: 40%;
 	  display: flex;
 	  align-items: center;
+    color:#6427FF;
   }
   .login-btn {
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #FF5202;
-	  background-color: #FF5202;
+	  border:1px solid #6427FF;
+	  background-color: #6427FF;
 	  color: #ffffff;
 	  font-size: 18px;
 	  font-family: '黑体';

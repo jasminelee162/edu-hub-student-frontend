@@ -19,11 +19,15 @@
     align-content: flex-start;
     flex-wrap: wrap;
 
-    background-color: rgba(194, 228, 245, 0.3); /* 半透明蓝 */
-    border: 1px solid #86C5E0; /* 浅蓝边框 */
-    border-radius: 10px;        /* 圆角边框 */
-    padding: 16px;              /* 内边距，元素不贴边 */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 可选阴影美化 */
+
+
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+    color: #1F4E79;                                 /* 深色字体更清晰 */
 }
 .task-page-list {
     width: 70%;
@@ -132,7 +136,7 @@
 /* 搜索 / 重置 按钮 */
 .task-page-search .el-button--primary,
 .task-page-search .el-button--warning {
-    background-color: #C2E4F5 !important;
+    background-color: #D6EFFB !important;
     border-color: #86C5E0 !important;
     color: #1F4E79 !important;
     border-radius: 6px !important;
@@ -148,7 +152,7 @@
 
 /* 分类标签 */
 .task-search-type {
-    background-color: #C2E4F5;
+    background-color: #F2FBFE;
     color: #1F4E79;
     border-radius: 12px;
     padding: 4px 10px;

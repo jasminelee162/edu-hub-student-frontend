@@ -39,3 +39,20 @@
     flex-direction: column;
     margin-bottom: 10px;
 }
+.el-button--primary.el-button--mini {
+    background: linear-gradient(135deg, #C2E4F5, #A9D6ED); /* 渐变蓝 */
+    border-color: #86C5E0;
+    color: #1F4E79;
+    border-radius: 8px;
+    padding: 6px 18px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+.el-button--primary.el-button--mini:hover {
+    background: linear-gradient(135deg, #B3D9EE, #90C9E0);
+    border-color: #5FB0D4;
+    color: #123B5C;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}

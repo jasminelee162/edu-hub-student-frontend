@@ -6,7 +6,7 @@
         <div class="content">
             <div class="master">
               <el-form style="margin-right:20px" :model="user" :rules="rules" ref="ruleForm" label-width="140px">
-                <el-form-item label="登陆账号" prop="loginAccount">
+                <el-form-item label="登录账号" prop="loginAccount">
                   <el-input size="mini" disabled v-model="user.loginAccount"></el-input>
                 </el-form-item>
                 <el-form-item label="用户名" prop="userName">

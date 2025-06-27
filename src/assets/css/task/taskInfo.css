@@ -130,8 +130,14 @@
     justify-content: flex-end;
 }
 .taskInfo-comment-list {
-    border: 2px solid #EFF1F2;
-    border-radius: 7px;
+
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+
 }
 .taskInfo-comment-item {
     margin-top: 30px;

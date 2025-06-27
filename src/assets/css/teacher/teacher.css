@@ -108,16 +108,20 @@
     color: #fff; /* 文字颜色建议配合背景调整 */
 }
 .teacher-page-search {
-    background-color: rgba(194, 228, 245, 0.3); /* 半透明蓝 */
-    border: 1px solid #86C5E0;
-    border-radius: 10px;
-    padding: 16px 20px;
+
     width: 70%;
     margin: 40px auto 0;  /* 居中，顶部40px */
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     font-family: '黑体', sans-serif;
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+    color: #1F4E79;                                 /* 深色字体更清晰 */
 }
 
 /* 教师名称输入框容器 */

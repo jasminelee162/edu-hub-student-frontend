@@ -37,7 +37,7 @@
                         </el-upload>
                     </div>
                 </div>
-                <div style="margin-bottom:20px">
+                <div style="margin-bottom:20px;color:#C2E4F5">
                     <el-button @click="submit" size="mini" type="primary">提交</el-button>
                 </div>
             </div>

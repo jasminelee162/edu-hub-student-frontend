@@ -8,15 +8,22 @@ import request, { post, get } from "@/utils/request";
 //       params  //接口参数
 //     });
 // }
-
-//-------------------------------登陆---------------------------------------
-// 登陆
+// ✅ 提交任务 ID，后端返回学习进度
+export function updateLearningProgress(data) {
+    return request({
+        url: '/student/updateLearningProgress',
+        method: 'post',
+        data
+    })
+}
+//-------------------------------登录---------------------------------------
+// 登录
 export const login = (params) => post("/login",params)
 //登出
 export const logout = () => get("/login/logout")
 //用户注册
 export const register = (params) => post("/login/register",params)
-//获取登陆用户信息
+//获取登录用户信息
 export const getUser = () => get("/user/getUserInfo")
 //获取学校列表
 export const getApeSchoolList = () => get("/school/getApeSchoolList")

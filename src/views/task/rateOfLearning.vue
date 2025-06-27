@@ -10,11 +10,15 @@
                 <div>得分：{{getScore()}}</div>
                 <div>成绩：{{getAgree()}}</div>
             </div>
+          <div style="margin-top: 20px;">
+            <div style="font-weight: bold; color: #1F4E79;">学习进度：</div>
+            <el-progress :percentage="progress" color="#C2E4F5" :stroke-width="18" />
+          </div>
             <div class="learning-list">
                  <div v-for="(item,index) in chapter" :key="index" class="learning-item">
-                     <div style="margin-left:20px">{{item.name}}</div>
-                     <div>视频：{{item.videoFlag}}</div>
-                     <div style="margin-right:20px">作业：{{item.home}}</div>
+                   <div class="learning-cell name">{{item.name}}</div>
+                   <div class="learning-cell center">视频：{{item.videoFlag}}</div>
+                   <div class="learning-cell right">作业：{{item.home}}</div>
                  </div>
             </div>
         </div>
@@ -24,7 +28,8 @@
 </template>
 
 <script>
-  import {getApeTaskById,getTaskChapterStudy} from "../../api/api"
+  import {getApeTaskById,getTaskChapterStudy,updateLearningProgress} from "../../api/api"
+
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -36,7 +41,8 @@
         video: 0,
         wancheng: 0,
         home: 0,
-        wancheng1: 0
+        wancheng1: 0,
+        progress: 0,  // 默认初始进度为 0
       }
     },
     components: {
@@ -94,7 +100,21 @@
                     }
                 }
             })
+        },
+      getLearningProgress() {
+        const payload = {
+          taskId: this.taskId
         }
+        updateLearningProgress(payload).then(res => {
+          if (res.code === 1000) {
+            this.progress = res.data.progress || 0
+          } else {
+            this.$message.error("获取学习进度失败：" + res.message)
+          }
+        }).catch(err => {
+          console.error("进度接口异常", err)
+        })
+      }
     },
     created() {
      
@@ -106,6 +126,7 @@
       }
       this.getApeTaskById()
       this.getTaskChapterStudy()
+      this.getLearningProgress()
     }
  }
 </script>
@@ -160,5 +181,24 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+  }
+  .learning-cell {
+    flex: 1;
+    padding: 0 10px;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* 左中右对齐 */
+  .learning-cell.name {
+    text-align: left;
+  }
+  .learning-cell.center {
+    text-align: center;
+  }
+  .learning-cell.right {
+    text-align: right;
   }
 </style>

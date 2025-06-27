@@ -7,7 +7,7 @@
                   <div class="articleInfo-title1">{{article.title}}</div>
                   <div class="articleInfo-title2">{{article.createBy}} - {{article.createTime}}</div>
               </div>
-              <div>
+              <div  class="favor-btn-group">
                 <el-button v-if="article.favor == 1" type="warning" @click="removeFavor" icon="el-icon-star-off" circle></el-button>
                 <el-button v-if="article.favor == 0" type="success" @click="addFavor" icon="el-icon-star-on" circle></el-button>
                 <el-button v-if="article.createBy == user.userName" @click="editArticle(article.id)" type="success" icon="el-icon-edit" circle></el-button>

@@ -87,16 +87,20 @@
     align-self: center;
 }
 .article-page-search {
-    background-color: rgba(194, 228, 245, 0.3); /* 浅蓝透明 */
-    border: 1px solid #86C5E0;
-    border-radius: 10px;
-    padding: 20px;
+
     margin-top: 30px;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     font-family: '黑体', sans-serif;
     color: #1F4E79;
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+    color: #1F4E79;                                 /* 深色字体更清晰 */
 }
 
 .article-page-search > div[style*="width: 30%"] {
@@ -108,12 +112,15 @@
 }
 
 .article-page-search .el-input__inner {
-    background-color: #F4FAFF;
-    border: 1px solid #86C5E0;
-    border-radius: 6px;
-    color: #1F4E79;
-    padding: 6px 12px;
+
     font-size: 14px;
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+    color: #1F4E79;                                 /* 深色字体更清晰 */
 }
 
 .article-page-btns {
@@ -130,6 +137,7 @@
     border-radius: 6px;
     font-weight: 600;
     padding: 6px 16px;
+
 }
 
 /* Hover 效果 */

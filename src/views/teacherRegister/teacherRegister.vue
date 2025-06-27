@@ -1,11 +1,11 @@
 <template>
   <div class="login">
 	<div class="Rectangle">
-		<img style="width:300px" src="../../assets/image/Rectangle.png">
+
 	</div>
 	<div class="login-top">
 		<div class="logo">
-			<img style="width:100px;padding-left:100px" src="../../assets/image/logo.png">
+			<img style="width:200px;padding-left:100px" src="../../assets/image/logo.png">
 		</div>
 		<div class="btns">
 			<div style="padding-right:100px;display:flex">
@@ -13,19 +13,23 @@
 					<div>注册</div>
 				</div>
 				<div class="toRegTeacher" @click="toLogin">
-					<div>登陆</div>
+					<div>登录</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div class="login-center">
 		<div class="about">
+      <div class="about-box">
 			<div style="text-align:center">
-				<div class="huanying">欢迎你的加入！</div>
-				<div class="huanying1">书本上有这样一段话：“教育的意义在于让人明白作为人类社会中的一员所应承担的责任与义务。</div>
-				<div class="huanying1">只有当一个人明白了自己的责任与义务，才能成为对社会有用的人，只有完成了自己的责任与义务，</div>
-				<div class="huanying1">才能最终成为真正有用的人。</div>
+        <div>&nbsp</div>
+				<div class="huanying">欢迎加入智能化教育创新平台！</div>
+				<div class="huanying1">教育者的使命，在于点燃智慧的火种，而科技的力量，让这火焰照亮更远的未来</div>
+				<div class="huanying1">我们相信，真正的教育不仅是知识的传递，更是能力的塑造。借助技术的力量，您可以让教学更精准、更个性化，让每个学生都能在适合自己的节奏中进步</div>
+				<div class="huanying1">—— 与您携手，重塑教育的未来 ——</div>
+        <div>&nbsp</div>
 			</div>
+      </div>
 		</div>
 		<div class="teacherFrom">
 			<div class="ruzhu-content">
@@ -44,7 +48,7 @@
 						<el-input type="password" v-model="form.passwordNew"></el-input>
 					</el-form-item>
 					<el-form-item prop="loginAccount">
-						<div class="item-title">登陆账号：</div>
+						<div class="item-title">登录账号：</div>
 						<el-input v-model="form.loginAccount"></el-input>
 					</el-form-item>
 					<el-form-item prop="email">
@@ -205,7 +209,7 @@
             { required: true, message: '请输入确认密码', trigger: 'blur' }
 		  ],
 		  loginAccount: [
-            { required: true, message: '请输入登陆账号', trigger: 'blur' }
+            { required: true, message: '请输入登录账号', trigger: 'blur' }
 		  ],
 		  email: [
             { required: true, message: '请输入邮箱', trigger: 'blur' }
@@ -388,23 +392,25 @@
   .toReg {
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #474747;
+	  border:1px solid #1F4E79;
 	  font-family: '黑体';
 	  cursor: pointer;
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
+    color:#1F4E79;
   }
   .toRegTeacher {
 	  margin-left: 20px;
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #474747;
+	  border:1px solid #1F4E79;
 	  font-family: '黑体';
 	  cursor: pointer;
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
+    color:#1F4E79;
   }
   .login-bottom {
 	  width: 100%;
@@ -460,12 +466,13 @@
 	  height: 40%;
 	  display: flex;
 	  align-items: center;
+
   }
   .login-btn {
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #FF5202;
-	  background-color: #FF5202;
+	  border:1px solid #6427FF;
+	  background-color: #6427FF;
 	  color: #ffffff;
 	  font-size: 18px;
 	  font-family: '黑体';
@@ -532,20 +539,29 @@
   .about {
 	  width: 100%;
 	  height: 400px;
-	  background-color: #FF9E00;
+    background-image: url('../../assets/image/index/index_back.png');
 	  display: flex;
 	  align-items: center;
 	  justify-content: center;
   }
+  .about-box {
+    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    border-radius: 12px;
+    padding: 30px 40px;
+    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
+    color: #1F4E79;                         /* 深色字体更清晰 */
+  }
   .huanying {
 	  font-size: 50px;
-	  color: #ffffff;
+	  color: #1F4E79;
 	  font-weight: bold;
 	  margin-bottom: 40px;
   }
   .huanying1 {
 	  font-size: 20px;
-	  color: #ffffff;
+	  color: #1F4E79;
 	  font-family: '黑体';
   }
   .Rectangle {
@@ -569,10 +585,12 @@
 	  margin-bottom: 50px;
 	  font-size: 50px;
 	  font-weight: bold;
+    color:#6427FF;
   }
   .item-title {
 	  font-family: '黑体';
 	  font-size: 20px;
+    color: #1F4E79;
   }
   .ruzhu {
 	  display: flex;
@@ -583,8 +601,8 @@
 	  margin-bottom: 80px;
 	  width: 130px;
 	  height: 40px;
-	  border:1px solid #FF5202;
-	  background-color: #FF5202;
+	  border:1px solid #6427FF;
+	  background-color: #6427FF;
 	  color: #ffffff;
 	  font-size: 18px;
 	  font-family: '黑体';

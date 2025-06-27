@@ -2,10 +2,18 @@
   <div class="notice">
     <headerPage></headerPage>
     <div class="notice-page-content">
-        <div class="notice-page-font">
-            <div class="notice-page-desc" v-html="notice.content">
-            </div>
-        </div>
+
+          <el-dialog
+              class="notice-dialog"
+              title="公告详情"
+              :visible.sync="dialogVisible"
+              width="600px"
+              :before-close="handleClose"
+              center
+          >
+            <div v-html="notice.content" class="notice-dialog-content"></div>
+          </el-dialog>
+
         <div class="notice-page-title">
             公告列表
         </div>
@@ -47,7 +55,8 @@
         pageNumber: 1,
         tableData: [],
         total: 0,
-        notice: {}
+        notice: {},
+        dialogVisible: false  // 控制弹窗是否显示
       }
     },
     components: {
@@ -56,8 +65,13 @@
     },
     methods: {
         getNoticeInfo(index) {
-          this.notice = this.tableData[index] 
+          this.notice = this.tableData[index]
+          this.dialogVisible = true
         },
+      handleClose() {
+        this.dialogVisible = false
+        this.notice = {}
+      },
         query() {
           var param = {
             pageSize: this.pageSize,
@@ -91,4 +105,38 @@
 
 <style scoped>
   @import url("../../assets/css/notice/notice.css");
+
+    /* 弹窗整体 */
+  ::v-deep .notice-dialog .el-dialog {
+    border-radius: 12px;
+    background-color: #F4FAFF; /* 淡蓝卡片背景 */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+
+  /* 标题样式 */
+  ::v-deep .notice-dialog .el-dialog__title {
+    color: #1F4E79;
+    font-weight: bold;
+    font-size: 36px;
+  }
+
+  /* 关闭按钮样式 */
+  ::v-deep .notice-dialog .el-dialog__headerbtn .el-dialog__close {
+    color: #1F4E79;
+    font-size: 25px;
+  }
+
+  /* 正文内容区域 */
+  .notice-dialog-content {
+    font-size: 16px;
+    color: #1F4E79;
+    line-height: 1.8;
+    word-break: break-word;
+    padding: 10px 4px;
+  }
+  ::v-deep .notice-dialog .el-dialog {
+    transition: all 0.3s ease;
+    transform: scale(1);
+  }
 </style>
