@@ -31,6 +31,7 @@ import myFavor from '@/views/task/myFavor'
 import rateOfLearning from '@/views/task/rateOfLearning'
 
 import error404 from '@/views/error/404'
+import strength from "@/views/strength/strength.vue";
 
 Vue.use(VueRouter)
 
@@ -182,6 +183,11 @@ const routes = [
     component: editArticle
   },
   {
+    path: '/strength',
+    name: 'strength',
+    component: strength
+  },
+  {
     path: '/404',
     name: '404',
     component: error404,
@@ -190,6 +196,7 @@ const routes = [
     path: '/:pathMatch(.*)',
     redirect: '/404'
  },
+
   
 ]
 

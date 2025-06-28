@@ -23,6 +23,7 @@
                 </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="a"><div class="drop-item"><i class="el-icon-user"></i>个人中心</div></el-dropdown-item>
+          <el-dropdown-item command="j"><div class="drop-item"><i class="el-icon-user"></i>学科分析</div></el-dropdown-item>
           <el-dropdown-item command="b"><div class="drop-item"><i class="el-icon-s-management"></i>我的课程</div></el-dropdown-item>
           <el-dropdown-item command="i"><div class="drop-item"><i class="el-icon-s-management"></i>收藏课程</div></el-dropdown-item>
           <el-dropdown-item command="c"><div class="drop-item"><i class="el-icon-edit"></i>记笔记</div></el-dropdown-item>
@@ -47,6 +48,7 @@ export default {
   },
   methods: {
     handleCommand(command) {
+      console.log("下拉点击了：", command)
       if (command == 'a') {
         this.$router.push("/center")
       } else if(command == 'b') {
@@ -75,7 +77,11 @@ export default {
             window.location.reload()
           },1000)
         })
+      }else if(command == 'j'){
+        console.log("跳转到 /strength 页面")
+        this.$router.push("/strength")
       }
+
     },
     toPage(name) {
       if(name == 'about') {

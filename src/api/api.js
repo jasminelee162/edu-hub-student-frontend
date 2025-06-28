@@ -16,6 +16,31 @@ export function updateLearningProgress(data) {
         data
     })
 }
+// 获取学生薄弱科目列表
+export function getStudentWeakList() {
+    return request({
+        url: '/student/getStudentStrengthsAndWeaknesses',
+        method: 'get'
+    })
+}
+
+// 获取 AI 智能学习建议
+export function getAISuggestion(id) {
+    return request({
+        url: '/ai/suggestion',
+        method: 'get',
+        params: { id }
+    })
+}
+
+// 发送聊天信息给 AI
+export function getAIChat(params) {
+    return request({
+        url: '/ai/chat',
+        method: 'get',
+        params
+    })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)
