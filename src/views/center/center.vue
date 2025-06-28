@@ -220,21 +220,23 @@ export default {
       });
     },
     getUserInfo() {
-      getUserInfo().then(res => {
-        if(res.code == 1000) {
+      return getUserInfo().then(res => {
+        if (res.code == 1000) {
           this.user = res.data
           this.user.sex = res.data.sex + ""
           this.avatar[0] = this.$store.state.HOST + this.user.avatar
+
+          this.user.avatarUrl = this.user.avatar
+              ? this.$store.state.HOST + this.user.avatar + '?t=' + Date.now()
+              : require('@/assets/image/default-avatar.png')
+
+          console.log("头像路径", this.user.avatarUrl)
         } else {
           this.$notify.error({
             title: '错误',
             message: res.message
-          });
+          })
         }
-        this.user.avatarUrl = this.user.avatar
-            ? this.$store.state.HOST + this.user.avatar + '?t=' + Date.now()  //  防止缓存
-            : require('@/assets/image/default-avatar.png')  //  没有就默认头像
-        console.log("头像路径", this.user.avatarUrl)
       })
     },
     changePassword() {
@@ -245,7 +247,12 @@ export default {
       if (res.code == 1000) {
         this.$message.success('上传成功！')
         // 重新拉取用户信息 → 头像 URL 自动更新
-        this.getUserInfo()
+        this.getUserInfo().then(() => {
+          // ✅ 同步更新 localStorage 中的 user_info
+          localStorage.setItem("user_info", JSON.stringify(this.user))
+          // ✅ 触发顶部组件更新
+          this.$bus.$emit("avatarUpdated")
+        })
       } else {
         this.$notify.error({
           title: '错误',

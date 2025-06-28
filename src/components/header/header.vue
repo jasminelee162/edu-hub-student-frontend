@@ -17,7 +17,9 @@
     <div class="center">
       <el-dropdown @command="handleCommand">
                 <span class="el-dropdown-link">
-                    <img style="border-radius:50%;width:45px;height:45px" :src="$store.state.HOST + userInfo.avatar">
+                    <img
+                        style="border-radius:50%;width:45px;height:45px"
+                        :src="userInfo.avatar ? $store.state.HOST + userInfo.avatar + '?t=' + Date.now() : require('@/assets/image/default-avatar.png')"/>
                 </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="a"><div class="drop-item"><i class="el-icon-user"></i>个人中心</div></el-dropdown-item>
@@ -102,6 +104,10 @@ export default {
   },
   mounted() {
     this.userInfo = JSON.parse(window.localStorage.getItem("user_info"))
+    //  监听头像变更事件
+    this.$bus.$on("avatarUpdated", () => {
+      this.userInfo = JSON.parse(localStorage.getItem("user_info") || "{}")
+    })
   }
 }
 </script>

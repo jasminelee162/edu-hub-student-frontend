@@ -7,10 +7,14 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     HOST: 'http://localhost:8080',
+    avatar: ''
   },
   getters: {
   },
   mutations: {
+    setAvatar(state, avatar) {
+      state.avatar = avatar
+    }
   },
   actions: {
     logout({ commit }) {
