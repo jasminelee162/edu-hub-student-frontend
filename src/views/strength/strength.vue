@@ -35,18 +35,32 @@
 
       <!-- 🤖 AI 聊天 -->
       <transition name="fade">
-        <div class="glass-card">
+        <div class="glass-card chat-card">
           <div class="section-title">
             <i class="el-icon-chat-dot-round icon"></i> 与 AI 对话
           </div>
-          <el-input
-              type="textarea"
-              v-model="chatKey"
-              placeholder="请输入你的学习问题（如：如何高效学习数学？）"
-              rows="3"
-          />
-          <el-button type="primary" size="mini" @click="chatAI" style="margin-top: 10px">发送</el-button>
-          <div v-if="chatResp" class="chat-response fade-in">{{ chatResp }}</div>
+          <div class="chat-history" ref="chatContainer">
+            <div
+                v-for="(msg, index) in chatHistory"
+                :key="index"
+                :class="['chat-bubble', msg.role]"
+            >
+              <div class="bubble-content">
+                <span class="chat-text">{{ msg.content }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-input-area">
+            <el-input
+                type="textarea"
+                v-model="chatKey"
+                placeholder="请输入你的学习问题（如：如何高效学习数学？）"
+                rows="2"
+                class="chat-input"
+            />
+            <el-button type="primary" size="mini" @click="chatAI">发送</el-button>
+          </div>
         </div>
       </transition>
     </div>
@@ -67,10 +81,17 @@ export default {
       weakList: [],
       suggestion: '',
       chatKey: '',
-      chatResp: ''
+      chatResp: '',
+      chatHistory: []
     }
   },
   methods: {
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const el = this.$refs.chatContainer
+        if (el) el.scrollTop = el.scrollHeight
+      })
+    },
     loadWeakList() {
       getStudentWeakList().then(res => {
         console.log("薄弱科目返回：", res)
@@ -110,11 +131,21 @@ export default {
         this.$message.warning('请输入提问内容')
         return
       }
-      getAIChat({ key: this.chatKey }).then(res => {
-        console.log("AI 对话返回：", res)
+      const userMsg = this.chatKey.trim()
+      this.chatHistory.push({ role: 'user', content: userMsg })
+      this.chatKey = ''
+      this.scrollToBottom()
+
+      getAIChat({ key: userMsg }).then(res => {
         if (res.code === 1000) {
-          this.chatResp = res.message
+          this.chatHistory.push({ role: 'ai', content: res.message })
+        } else {
+          this.chatHistory.push({ role: 'ai', content: 'AI 暂时无法回答，请稍后再试。' })
         }
+        this.scrollToBottom()
+      }).catch(() => {
+        this.chatHistory.push({ role: 'ai', content: 'AI 服务出错，请稍后再试。' })
+        this.scrollToBottom()
       })
     }
   },
@@ -238,6 +269,81 @@ export default {
 }
 .fade-in {
   animation: fadeIn 0.8s ease forwards;
+}
+
+.chat-card {
+  display: flex;
+  flex-direction: column;
+  max-height: 500px;
+}
+
+.chat-history {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 300px;
+  padding: 10px;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+}
+
+.chat-bubble {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.chat-bubble.ai {
+  justify-content: flex-start;
+}
+
+.chat-bubble.user {
+  justify-content: flex-end;
+}
+
+.bubble-content {
+  max-width: 70%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+  animation: fadeIn 0.5s ease;
+}
+
+.chat-bubble.ai .bubble-content {
+  background: linear-gradient(145deg, #FCDDDD, #eae8fe);
+  color: #1f4e79;
+  border-top-left-radius: 0;
+}
+
+.chat-bubble.user .bubble-content {
+  background: linear-gradient(145deg, #c2e4f5, #eae8fe);
+  color: #1f4e79;
+  border-top-right-radius: 0;
+}
+
+.chat-input-area {
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-input {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 @keyframes fadeIn {
   from {
