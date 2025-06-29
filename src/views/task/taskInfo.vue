@@ -126,7 +126,7 @@
           ]
         },
         favor: {},
-        flag: false
+        flag: false,
       }
     },
     components: {
