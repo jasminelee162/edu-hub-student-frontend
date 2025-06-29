@@ -41,6 +41,13 @@ export function getAIChat(params) {
         params
     })
 }
+// 获取错题数据
+export function getWrongAnswers() {
+    return request({
+        url: '/student/getWrongAnswers',
+        method: 'get'
+    })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)
