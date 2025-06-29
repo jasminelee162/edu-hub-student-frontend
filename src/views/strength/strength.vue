@@ -78,6 +78,7 @@ export default {
   components: { headerPage, bottomPage },
   data() {
     return {
+      //userId: this.$store?.state?.userId || JSON.parse(localStorage.getItem("user_info") || "{}").id,
       weakList: [],
       suggestion: '',
       chatKey: '',
@@ -103,8 +104,15 @@ export default {
 
     loadSuggestion() {
 
+      const id =
+          this.$store?.state?.userId || JSON.parse(localStorage.getItem("user_info") || "{}").id;
 
-      getAISuggestion(this.userId).then(res => {
+      if (!id) {
+        this.suggestion = "未获取到用户ID，无法生成建议"
+        return;
+      }
+      console.log("当前用户 ID：", id)
+      getAISuggestion(id).then(res => {
         console.log("原始响应:", res.message);
 
         if (res.code === 1000) {
@@ -152,6 +160,7 @@ export default {
   mounted() {
     this.loadWeakList()
     this.loadSuggestion()
+
   }
 }
 </script>
@@ -247,7 +256,7 @@ export default {
   padding: 20px;
 }
 .ai-text-html {
-  color: #ffffff;
+  color: #1F4E79;
   line-height: 1.8;
 }
 .ai-text-html h3 {

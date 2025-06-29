@@ -5,7 +5,7 @@ import { Message, MessageBox } from 'element-ui'  //导入element-ui组件库
 // 创建axios的对象
 const instance = axios.create({
     baseURL: "http://localhost:8080",  //配置固定域名
-    timeout: 5000
+    timeout: 50000
 })
  
 // 请求拦截
@@ -36,6 +36,8 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     function (response) {
         const res = response
+        console.log("响应状态码：", res.status)
+        console.log("响应数据结构：", res)
         if (res.data.code === 1011 || res.data.code == 1008 || res.data.code == 1006) {
             MessageBox.alert('系统登录已过期，请重新登录', '错误', {
                 confirmButtonText: '确定',

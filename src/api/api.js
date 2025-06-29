@@ -25,14 +25,14 @@ export function getStudentWeakList() {
 }
 
 // 获取 AI 智能学习建议
+
 export function getAISuggestion(id) {
     return request({
         url: '/ai/suggestion',
         method: 'get',
-        params: { id }
+        params: { id }  // 正确拼接为 ?id=123
     })
 }
-
 // 发送聊天信息给 AI
 export function getAIChat(params) {
     return request({
