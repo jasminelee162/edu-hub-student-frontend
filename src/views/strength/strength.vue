@@ -97,7 +97,7 @@ export default {
       getStudentWeakList().then(res => {
         console.log("薄弱科目返回：", res)
         if (res.code === 1000) {
-          this.weakList = res.message
+          this.weakList = res.data
         }
       })
     },
@@ -228,7 +228,7 @@ export default {
   margin-top: 10px;
 }
 .danger {
-  color: #ff4d4f;
+  color: #6427FF;
   font-weight: bold;
 }
 
