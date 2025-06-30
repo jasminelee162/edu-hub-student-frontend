@@ -1,9 +1,18 @@
 <template>
   <div id="app">
     <router-view/>
+    <ai-chat-dialog />
   </div>
 </template>
 
+<script>
+import AiChatDialog from '@/components/AiChatDialog.vue'
+export default {
+  components: {
+    AiChatDialog
+  }
+}
+</script>
 <style>
   html,body,#app,.common-layout{
     margin: 0;
