@@ -48,6 +48,40 @@ export function getWrongAnswers() {
         method: 'get'
     })
 }
+// 获取所有题目（返回 id、标题、难度系数等）
+export function getAllQuestions() {
+    return request({
+        url: '/sandbox/questions',
+        method: 'get'
+    })
+}
+
+// 获取题目标题
+export function getTitle(questionId) {
+    return request({
+        url: '/sandbox/title',
+        method: 'get',
+        params: { questionId }
+    })
+}
+
+// 获取题目详细描述
+export function getDescription(questionId) {
+    return request({
+        url: '/sandbox/description',
+        method: 'get',
+        params: { questionId }
+    })
+}
+
+// 执行 SQL 查询接口
+export function executeQuery(data) {
+    return request({
+        url: '/sandbox/execute',
+        method: 'post',
+        data // 包含 questionId、request、userStamp
+    })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)

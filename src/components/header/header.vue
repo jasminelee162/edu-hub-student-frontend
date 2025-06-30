@@ -6,6 +6,7 @@
     <div class="menu-list">
       <div @click="toPage('index')" :class="$route.path == '/'?'menu_item':''">主页</div>
       <div @click="toPage('task')" :class="$route.path == '/task'?'menu_item':''">课程</div>
+      <div @click="toPage('simulation')" :class="$route.path == '/simulation'?'menu_item':''">实验</div>
       <div @click="toPage('teacher')" :class="$route.path == '/teacher'?'menu_item':''">教师</div>
       <div @click="toPage('test')" :class="$route.path == '/test'?'menu_item':''">考试</div>
       <div @click="toPage('article')" :class="$route.path == '/article'?'menu_item':''">笔记</div>
@@ -90,7 +91,9 @@ export default {
         this.$router.push("/")
       } else if (name == "task") {
         this.$router.push("/task")
-      } else if (name == "teacher") {
+      } else if (name == "simulation") {
+        this.$router.push("/simulation")
+      }else if (name == "teacher") {
         this.$router.push("/teacher")
       } else if (name == "message") {
         this.$router.push("/message")

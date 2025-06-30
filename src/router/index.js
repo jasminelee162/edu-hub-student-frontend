@@ -32,6 +32,8 @@ import rateOfLearning from '@/views/task/rateOfLearning'
 
 import error404 from '@/views/error/404'
 import strength from "@/views/strength/strength.vue";
+import dbSimulation from "@/views/simulation/dbSimulation.vue";
+import simulation from "@/views/simulation/simulation.vue";
 
 Vue.use(VueRouter)
 
@@ -186,6 +188,21 @@ const routes = [
     path: '/strength',
     name: 'strength',
     component: strength
+  },
+  {
+    path: '/simulation',
+    name: 'Simulation',
+    component: simulation
+  },
+  {
+    path: '/dbSimulation',
+    name: 'DbSimulation',
+    component: dbSimulation,
+    props: route => ({ questionId: route.query.questionId }) // 传递题目ID作为props
+  },
+  {
+    path: '*',
+    redirect: '/simulation'
   },
   {
     path: '/404',
