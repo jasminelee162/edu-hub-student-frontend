@@ -100,6 +100,8 @@
   </div>
 </template>
 
+
+
 <script>
   import {saveApeTaskFavor,removeApeTaskFavor,getApeTaskFavorById,saveApeChapterVideo,getApeHomeworkByChapterId,getApeTaskById,saveApeTaskStudent,getTaskStudent,getApeChapterByTaskId,saveApeTaskComment,getApeTaskCommentListByTaskId} from "../../api/api"
   import videojs from 'video.js'
@@ -126,7 +128,7 @@
           ]
         },
         favor: {},
-        flag: false
+        flag: false,
       }
     },
     components: {
