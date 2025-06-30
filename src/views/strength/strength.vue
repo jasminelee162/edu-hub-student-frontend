@@ -12,8 +12,21 @@
             <el-col :span="8" v-for="(item, index) in weakList" :key="index">
               <div class="weak-card fade-in">
                 <div class="subject">{{ item.subject }}</div>
-                <div class="score">我的得分：<span>{{ item.studentScore }}</span></div>
-                <div class="score">平均得分：<span>{{ item.avgScore }}</span></div>
+
+                  <div class="score">我的得分：
+                    <span v-if="typeof item.studentScore === 'string'">
+    <span v-for="(score, i) in item.studentScore.split('，')" :key="i">
+      {{ parseFloat(score).toFixed(1) }}<span v-if="i < item.studentScore.split('，').length - 1">，</span>
+    </span>
+  </span>
+                    <span v-else>
+    {{ Number.isFinite(item.studentScore) ? item.studentScore.toFixed(1) : '暂无数据' }}
+  </span>
+                  </div>
+
+                <div class="score">平均得分：
+                  <span>{{ Number.isFinite(item.avgScore) ? item.avgScore.toFixed(1) : '暂无数据' }}</span>
+                </div>
                 <div class="status">状态：<span class="danger">{{ item.status }}</span></div>
               </div>
             </el-col>
@@ -33,7 +46,7 @@
         </div>
       </transition>
 
-      <!-- 🤖 AI 聊天 -->
+      <!--  AI 聊天 -->
       <transition name="fade">
         <div class="glass-card chat-card">
           <div class="section-title">
@@ -96,9 +109,16 @@ export default {
     loadWeakList() {
       getStudentWeakList().then(res => {
         console.log("薄弱科目返回：", res)
+
         if (res.code === 1000) {
           this.weakList = res.data
         }
+        console.log('字段校验：', this.weakList.map(item => ({
+          subject: item.subject,
+          studentScore: item.studentScore,
+          avgScore: item.avgScore,
+          status: item.status
+        })))
       })
     },
 
