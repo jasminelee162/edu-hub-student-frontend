@@ -2,9 +2,11 @@
   <div class="sandbox-entry">
     <headerPage />
     <div class="main-container">
+
+      <!-- 数据库实验题目列表 -->
       <div class="glass-card">
         <div class="section-title">
-          <i class="el-icon-s-help icon"></i> 数据库实验题目列表
+          <i class="el-icon-s-help icon"></i> 数据库 实验
         </div>
         <el-row :gutter="20">
           <el-col
@@ -17,11 +19,11 @@
               <div class="title">{{ item.title }}</div>
               <div class="difficulty">难度：
                 <span :class="['tag',
-  item.difficulty === 'HARD' ? 'hard' :
-  item.difficulty === 'MODERATE' ? 'medium' :
-  'easy']">
-  {{ item.difficulty }}
-</span>
+                  item.difficulty === 'HARD' ? 'hard' :
+                  item.difficulty === 'MODERATE' ? 'medium' :
+                  'easy']">
+                  {{ item.difficulty }}
+                </span>
               </div>
               <el-button type="primary" size="mini" @click="goToSimulation(item.id)">
                 进入数据库沙箱实验
@@ -30,44 +32,112 @@
           </el-col>
         </el-row>
       </div>
+
+      <!-- 外部实验（按学科分组） -->
+      <div class="glass-card" v-for="(group, subject) in groupedExperiments" :key="subject">
+        <div class="section-title">
+          <i class="el-icon-monitor icon"></i> {{ subject }} 实验
+        </div>
+        <el-row :gutter="20">
+          <el-col :span="8" v-for="exp in group" :key="exp.id" class="fade-in">
+            <div class="question-card">
+              <div class="title">{{ exp.label }}</div>
+              <el-button type="primary" size="mini" @click="openExperiment(exp.url)">
+                进入实验
+              </el-button>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
     </div>
+
+    <!-- 全屏 iframe 模拟器 -->
+    <div v-if="fullscreenUrl" class="fullscreen-iframe">
+      <div class="iframe-header">
+        <el-button type="danger" size="mini" icon="el-icon-close" @click="fullscreenUrl = ''">关闭实验</el-button>
+      </div>
+      <iframe :src="fullscreenUrl" frameborder="0"></iframe>
+    </div>
+
     <bottomPage />
   </div>
 </template>
-
 <script>
 import headerPage from '@/components/header/header.vue'
 import bottomPage from '@/components/bottom/bottom.vue'
-import { getAllQuestions } from '@/api/api'
+import { getAllQuestions, getAllExperiments } from '@/api/api'
 
 export default {
   components: { headerPage, bottomPage },
   data() {
     return {
-      questions: []
+      questions: [],
+      externalExperiments: [],
+      fullscreenUrl: ''
+    }
+  },
+  computed: {
+    groupedExperiments() {
+      const groups = {}
+      this.externalExperiments.forEach(exp => {
+        const subject = exp.subject || '其他'
+        if (!groups[subject]) groups[subject] = []
+        groups[subject].push(exp)
+      })
+      return groups
     }
   },
   methods: {
+    async loadExperiments() {
+      const res = await getAllExperiments()
+      this.externalExperiments = res.data || []
+    },
     async loadQuestions() {
       try {
-        const res = await getAllQuestions();
-        // 这里res是数组，直接赋值
-        this.questions = res;
-
+        const res = await getAllQuestions()
+        this.questions = res
       } catch (e) {
-        this.$message.error('题目加载失败，请稍后重试');
+        this.$message.error('题目加载失败，请稍后重试')
       }
     },
     goToSimulation(id) {
       this.$router.push({ path: '/dbSimulation', query: { questionId: id } })
+    },
+    openExperiment(url) {
+      this.fullscreenUrl = url
     }
   },
   mounted() {
     this.loadQuestions()
+    this.loadExperiments()
   }
 }
 </script>
 <style scoped>
+.fullscreen-iframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullscreen-iframe iframe {
+  flex: 1;
+  border: none;
+}
+
+.iframe-header {
+  background: #222;
+  padding: 8px 16px;
+  text-align: right;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  z-index: 10000;
+}
 .sandbox-entry {
   width: 100%;
   min-height: 100vh;

@@ -82,6 +82,13 @@ export function executeQuery(data) {
         data // 包含 questionId、request、userStamp
     })
 }
+//实验
+export function getAllExperiments() {
+    return request({
+        url: '/experiments/getAllExperiment',
+        method: 'get'
+    })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)
