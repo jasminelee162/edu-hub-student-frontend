@@ -183,3 +183,16 @@
     display: flex;
     justify-content: flex-end;
 }
+
+/* 鼠标悬停时显示手型指针 */
+.taskInfo-icon:hover,
+.taskInfo-video-item:hover,
+.taskInfo-comment-item:hover,
+.taskInfo-comment-item-right:hover {
+    cursor: pointer;
+}
+
+/* 按钮默认就有手型指针，但可以明确指定 */
+.el-button:hover {
+    cursor: pointer;
+}
