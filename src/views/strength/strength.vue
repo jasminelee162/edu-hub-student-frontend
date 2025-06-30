@@ -28,7 +28,7 @@
           <div class="section-title">
             <i class="el-icon-magic-stick icon"></i> AI 智能学习建议
           </div>
-          <div v-if="suggestion" v-html="suggestion" class="ai-text-html"></div>
+          <div v-if="suggestion" class="ai-text-html" v-html="formattedSuggestion"></div>
           <div v-else class="no-data">
             <div class="loading-spinner">
               <div class="spinner-dot"></div>
@@ -102,6 +102,7 @@
 import headerPage from '@/components/header/header.vue'
 import bottomPage from '@/components/bottom/bottom.vue'
 import { getAIChat, getAISuggestion, getStudentWeakList } from '@/api/api'
+import { marked } from 'marked'
 
 export default {
   components: { headerPage, bottomPage },
@@ -109,9 +110,11 @@ export default {
     return {
       weakList: [],
       suggestion: '',
+      formattedSuggestion: '',
       chatKey: '',
       chatHistory: [],
-      isAIThinking: false
+      isAIThinking: false,
+      isSuggestionLoading: true
     }
   },
   methods: {
@@ -128,20 +131,29 @@ export default {
         }
       })
     },
-    loadSuggestion() {
+    async loadSuggestion() {
+      this.isSuggestionLoading = true
       const id = this.$store?.state?.userId || JSON.parse(localStorage.getItem("user_info") || "{}").id;
       if (!id) {
         this.suggestion = "未获取到用户ID，无法生成建议"
+        this.formattedSuggestion = this.suggestion
+        this.isSuggestionLoading = false
         return;
       }
 
-      getAISuggestion(id).then(res => {
+      try {
+        const res = await getAISuggestion(id)
         if (res.code === 1000) {
-          this.suggestion = res.message || "暂无建议内容";
+          this.suggestion = res.message || "暂无建议内容"
+          // 使用marked解析Markdown格式
+          this.formattedSuggestion = marked.parse(this.suggestion)
         }
-      }).catch(() => {
-        this.suggestion = "服务繁忙，请稍后刷新页面";
-      });
+      } catch (error) {
+        this.suggestion = "服务繁忙，请稍后刷新页面"
+        this.formattedSuggestion = this.suggestion
+      } finally {
+        this.isSuggestionLoading = false
+      }
     },
     async chatAI() {
       if (!this.chatKey.trim()) return;
@@ -241,20 +253,61 @@ export default {
   font-weight: bold;
 }
 
-/* AI 建议文字 */
+/* AI 建议文字样式 */
 .ai-text-html {
   color: #1F4E79;
   line-height: 1.8;
 }
-.ai-text-html h3 {
+.ai-text-html >>> h1,
+.ai-text-html >>> h2,
+.ai-text-html >>> h3 {
+  color: #1F4E79;
+  margin: 15px 0 10px;
+}
+.ai-text-html >>> h1 {
+  font-size: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+.ai-text-html >>> h2 {
   font-size: 18px;
-  color: #00ffff;
 }
-.ai-text-html strong {
-  color: #ffd700;
+.ai-text-html >>> h3 {
+  font-size: 16px;
 }
-.ai-text-html ul {
+.ai-text-html >>> strong {
+  color: #6427FF;
+  font-weight: bold;
+}
+.ai-text-html >>> ul,
+.ai-text-html >>> ol {
   padding-left: 20px;
+  margin: 10px 0;
+}
+.ai-text-html >>> li {
+  margin-bottom: 5px;
+}
+.ai-text-html >>> blockquote {
+  border-left: 3px solid #6427FF;
+  padding-left: 15px;
+  margin: 10px 0;
+  color: #666;
+}
+.ai-text-html >>> code {
+  background: rgba(100, 39, 255, 0.1);
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+.ai-text-html >>> pre {
+  background: rgba(100, 39, 255, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+  overflow-x: auto;
+}
+.ai-text-html >>> pre code {
+  background: none;
+  padding: 0;
 }
 
 /* 暂无数据 */
