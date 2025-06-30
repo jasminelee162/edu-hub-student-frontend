@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import {getApeMessagePage,saveApeMessage} from '../../api/api' 
+  import {getMessagePage,saveMessage} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -70,7 +70,7 @@
           var param = {
             content: this.content
           }
-          saveApeMessage(param).then(res => {
+          saveMessage(param).then(res => {
             if(res.code == 1000) {
               this.$message({
 								message: '留言成功，请等待回复',
@@ -99,7 +99,7 @@
             pageSize: this.pageSize,
             pageNumber: this.pageNumber,
           }
-          getApeMessagePage(param).then(res => {
+          getMessagePage(param).then(res => {
             if(res.code == 1000) {
               this.tableData = res.data.records
               this.total = res.data.total

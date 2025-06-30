@@ -24,7 +24,7 @@
 </template>
 
 <script>
-  import {getMyApeHomework} from "../../api/api"
+  import {getMyHomework} from "../../api/api"
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -39,7 +39,7 @@
     },
     methods: {
         query() {
-          getMyApeHomework().then(res => {
+          getMyHomework().then(res => {
             if(res.code == 1000) {
               this.data = res.data
             }

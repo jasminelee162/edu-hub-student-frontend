@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import {getUserPage,getApeSchoolList} from '../../api/api'
+import {getUserPage,getSchoolList} from '../../api/api'
 import headerPage from "../../components/header/header"
 import bottomPage from "../../components/bottom/bottom"
 export default {
@@ -115,8 +115,8 @@ export default {
     toTeacherInfo(id) {
       this.$router.push("/teacherInfo?id=" + id)
     },
-    getApeSchoolList() {
-      getApeSchoolList().then(res => {
+    getSchoolList() {
+      getSchoolList().then(res => {
         if(res.code == 1000) {
           this.school = res.data
         } else {
@@ -132,7 +132,7 @@ export default {
 
   },
   mounted() {
-    this.getApeSchoolList()
+    this.getSchoolList()
     this.query()
   }
 }

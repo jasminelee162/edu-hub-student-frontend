@@ -94,7 +94,7 @@
 </template>
 
 <script>
-import {getApeTaskPage,getApeClassificationList} from '../../api/api'
+import {getTaskPage,getClassificationList} from '../../api/api'
 import headerPage from "../../components/header/header"
 import bottomPage from "../../components/bottom/bottom"
 export default {
@@ -131,7 +131,7 @@ export default {
       this.query()
     },
     query() {
-      getApeTaskPage(this.search).then(res => {
+      getTaskPage(this.search).then(res => {
         if(res.code == 1000) {
           this.tableData = res.data.records
           this.total = res.data.total
@@ -164,8 +164,8 @@ export default {
     toTaskInfo(id) {
       this.$router.push("taskInfo?id=" + id)
     },
-    getApeClassificationList() {
-      getApeClassificationList().then(res => {
+    getClassificationList() {
+      getClassificationList().then(res => {
         if(res.code == 1000) {
           this.classification = res.data
         } else {
@@ -181,7 +181,7 @@ export default {
 
   },
   mounted() {
-    this.getApeClassificationList()
+    this.getClassificationList()
     window.scrollTo({
       top: 0,
       behavior: 'smooth'

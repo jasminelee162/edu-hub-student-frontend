@@ -60,7 +60,7 @@
             <div class="taskInfo-comment-content">
                 <el-input type="textarea" resize="none" rows="7" v-model="content" placeholder="请输入评论内容"></el-input>
                 <div class="taskInfo-comment-btn">
-                    <el-button @click="saveApeTaskComment" style="margin-top:10px" size="mini" type="success" plain>提交评论</el-button>
+                    <el-button @click="saveTaskComment" style="margin-top:10px" size="mini" type="success" plain>提交评论</el-button>
                 </div>
             </div>
         </div>
@@ -103,7 +103,7 @@
 
 
 <script>
-  import {saveApeTaskFavor,removeApeTaskFavor,getApeTaskFavorById,saveApeChapterVideo,getApeHomeworkByChapterId,getApeTaskById,saveApeTaskStudent,getTaskStudent,getApeChapterByTaskId,saveApeTaskComment,getApeTaskCommentListByTaskId} from "../../api/api"
+  import {saveTaskFavor,removeTaskFavor,getTaskFavorById,saveChapterVideo,getHomeworkByChapterId,getTaskById,saveTaskStudent,getTaskStudent,getChapterByTaskId,saveTaskComment,getTaskCommentListByTaskId} from "../../api/api"
   import videojs from 'video.js'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
@@ -137,7 +137,7 @@
     },
     methods: {
         removeFavor() {
-            removeApeTaskFavor({ids:this.favor.id}).then(res => {
+            removeTaskFavor({ids:this.favor.id}).then(res => {
                 if (res.code == 1000) {
                     this.$message({
                         type: 'success',

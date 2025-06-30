@@ -140,7 +140,7 @@
 </template>
 
 <script>
-  import {getApeMajorList,getIndexAchievement,getIndexArticleList} from '../../api/api' 
+  import {getMajorList,getIndexAchievement,getIndexArticleList} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom" 
   export default {
@@ -176,8 +176,8 @@
         toMessage() {
             this.$router.push("/message")
         },
-        getApeMajorList() {
-			getApeMajorList().then(res => {
+        getMajorList() {
+			getMajorList().then(res => {
                 if(res.code == 1000) {
                     var major = res.data
                     this.major = major.splice(0,16)
@@ -218,7 +218,7 @@
      
     },
     mounted() {
-      this.getApeMajorList()
+      this.getMajorList()
       this.getIndexAchievement()
       this.getIndexArticleList()
     }

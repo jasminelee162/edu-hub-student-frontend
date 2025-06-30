@@ -48,7 +48,7 @@
 </template>
 
 <script> 
-  import {getApeMyTaskList,saveApeArticle} from '../../api/api' 
+  import {getMyTaskList,saveArticle} from '../../api/api'
   import { mixin } from '../../minix/index';
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
@@ -107,11 +107,11 @@
       bottomPage
     },
     methods: {
-        getApeMyTaskList() {
+        getMyTaskList() {
             var param = {
                 state: 0
             }
-            getApeMyTaskList(param).then(res => {
+            getMyTaskList(param).then(res => {
                 if (res.code == 1000) {
                     this.task = res.data
                 }
@@ -146,7 +146,7 @@
                 })
                 return
             }
-            saveApeArticle(this.form).then(res => {
+            saveArticle(this.form).then(res => {
                 if(res.code == 1000) {
                     this.$message({
                         message: '发布成功，请等待管理员审核',
@@ -186,7 +186,7 @@
      
     },
     mounted() {
-      this.getApeMyTaskList()
+      this.getMyTaskList()
     }
  }
 </script>

@@ -100,7 +100,7 @@
 import {mixin} from "../../minix";
 import headerPage from "../../components/header/header"
 import bottomPage from "../../components/bottom/bottom"
-import {getUserInfo,setUserInfo,setUserAvatar,changePassword,getApeSchoolList,getApeMajorList} from '../../api/api'
+import {getUserInfo,setUserInfo,setUserAvatar,changePassword,getSchoolList,getMajorList} from '../../api/api'
 export default {
   mixins: [mixin],
   data() {
@@ -149,8 +149,8 @@ export default {
     bottomPage
   },
   methods: {
-    getApeSchoolList() {
-      getApeSchoolList().then(res=> {
+    getSchoolList() {
+      getSchoolList().then(res=> {
         if(res.code == 1000) {
           this.school = res.data
         } else {
@@ -161,8 +161,8 @@ export default {
         }
       })
     },
-    getApeMajorList() {
-      getApeMajorList().then(res => {
+    getMajorList() {
+      getMajorList().then(res => {
         if(res.code == 1000) {
           this.major = res.data
         } else {
@@ -270,8 +270,8 @@ export default {
       this.passwordDialogVisible = res
     })
     this.getUserInfo()
-    this.getApeSchoolList()
-    this.getApeMajorList()
+    this.getSchoolList()
+    this.getMajorList()
   }
 }
 </script>

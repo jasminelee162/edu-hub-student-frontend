@@ -28,7 +28,7 @@
 </template>
 
 <script>
-  import {getApeTaskById,getTaskChapterStudy,updateLearningProgress} from "../../api/api"
+  import {getTaskById,getTaskChapterStudy,updateLearningProgress} from "../../api/api"
 
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
@@ -74,8 +74,8 @@
             var wan = this.wancheng1 + this.wancheng
             return (wan/total * this.task.proportion).toFixed(2)
         },
-        getApeTaskById() {
-            getApeTaskById({id: this.taskId}).then(res => {
+        getTaskById() {
+            getTaskById({id: this.taskId}).then(res => {
                 if(res.code == 1000) {
                     this.task = res.data
                 }
@@ -124,7 +124,7 @@
       if (taskId) {
           this.taskId = taskId
       }
-      this.getApeTaskById()
+      this.getTaskById()
       this.getTaskChapterStudy()
       this.getLearningProgress()
     }

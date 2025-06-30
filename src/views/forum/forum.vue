@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import {getApeForumPage} from '../../api/api' 
+  import {getForumPage} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -59,7 +59,7 @@
             pageSize: this.pageSize,
             pageNumber: this.pageNumber,
           }
-          getApeForumPage(param).then(res => {
+          getForumPage(param).then(res => {
             if(res.code == 1000) {
               this.tableData = res.data.records
               this.total = res.data.total

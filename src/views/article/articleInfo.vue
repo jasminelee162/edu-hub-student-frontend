@@ -30,7 +30,7 @@
             <div class="articleInfo-comment-content">
                 <el-input type="textarea" resize="none" rows="7" v-model="content" placeholder="请输入评论内容"></el-input>
                 <div class="articleInfo-comment-btn">
-                    <el-button @click="saveApeArticleComment" style="margin-top:10px" size="mini" type="success" plain>提交评论</el-button>
+                    <el-button @click="saveArticleComment" style="margin-top:10px" size="mini" type="success" plain>提交评论</el-button>
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
 </template>
 
 <script>
-  import {saveApeArticleFavor,removeApeArticleFavor,getApeArticleById,saveApeArticleComment,getApeArticleCommentByArticleId} from '../../api/api' 
+  import {saveArticleFavor,removeArticleFavor,getArticleById,saveArticleComment,getArticleCommentByArticleId} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -93,13 +93,13 @@
           articleId: this.articleId,
           userId: this.user.id
         }
-        removeApeArticleFavor(param).then(res => {
+        removeArticleFavor(param).then(res => {
           if(res.code == 1000) {
             this.$message({
               type: 'success',
               message: '取消收藏成功!'
             });
-            this.getApeArticleById()
+            this.getArticleById()
           }
         })
       },
@@ -108,44 +108,44 @@
           articleId: this.articleId,
           userId: this.user.id
         }
-        saveApeArticleFavor(param).then(res => {
+        saveArticleFavor(param).then(res => {
           if(res.code == 1000) {
             this.$message({
               type: 'success',
               message: '收藏成功!'
             });
-            this.getApeArticleById()
+            this.getArticleById()
           }
         })
       },
       editArticle() {
         this.$router.push("/editArticle")
       },
-      saveApeArticleComment() {
+      saveArticleComment() {
         var param = {
           taskId: this.articleId,
           content: this.content
         }
-        saveApeArticleComment(param).then(res => {
+        saveArticleComment(param).then(res => {
           if (res.code == 1000) {
             this.$message({
               type: 'success',
               message: '评论成功!'
             });
             this.content = ""
-            this.getApeArticleCommentByArticleId()
+            this.getArticleCommentByArticleId()
           }
         })
       },
-      getApeArticleCommentByArticleId() {
-        getApeArticleCommentByArticleId({id:this.articleId}).then(res => {
+      getArticleCommentByArticleId() {
+        getArticleCommentByArticleId({id:this.articleId}).then(res => {
           if (res.code == 1000) {
             this.commentList = res.data
           }
         })
       },
-      getApeArticleById() {
-        getApeArticleById({id: this.articleId}).then(res => {
+      getArticleById() {
+        getArticleById({id: this.articleId}).then(res => {
           if(res.code == 1000) {
             this.article = res.data
           }
@@ -164,8 +164,8 @@
       if (articleId) {
         this.articleId = articleId
       }
-      this.getApeArticleById()
-      this.getApeArticleCommentByArticleId()
+      this.getArticleById()
+      this.getArticleCommentByArticleId()
       this.user = JSON.parse(window.localStorage.getItem("user_info"))
     }
  }

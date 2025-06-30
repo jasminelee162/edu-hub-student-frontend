@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import {getApeQuestionPage,saveApeQuestion} from '../../api/api' 
+  import {getQuestionPage,saveQuestion} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -73,7 +73,7 @@
             taskId: this.taskId,
             content: this.content
           }
-          saveApeQuestion(param).then(res => {
+          saveQuestion(param).then(res => {
             if(res.code == 1000) {
               this.$message({
 								message: '提问成功，请等待教师回复',
@@ -103,7 +103,7 @@
             pageSize: this.pageSize,
             pageNumber: this.pageNumber,
           }
-          getApeQuestionPage(param).then(res => {
+          getQuestionPage(param).then(res => {
             if(res.code == 1000) {
               this.tableData = res.data.records
               this.total = res.data.total

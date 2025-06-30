@@ -56,7 +56,7 @@
 </template>
  
 <script>
-  import {getApeArticlePage} from '../../api/api' 
+  import {getArticlePage} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -88,7 +88,7 @@
             pageNumber: this.pageNumber,
             type: 0,
           }
-          getApeArticlePage(param).then(res => {
+          getArticlePage(param).then(res => {
             if(res.code == 1000) {
               this.tableData = res.data.records
               this.total = res.data.total

@@ -68,7 +68,7 @@
 </template>
 
 <script>
-  import {getApeTestItemByTestId,saveApeTestStudent,getTestUserState} from '../../api/api'
+  import {getTestItemByTestId,saveTestStudent,getTestUserState} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -100,7 +100,7 @@
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.saveApeTestStudent()
+                    this.saveTestStudent()
                 }).catch(() => {
 
             });
@@ -111,9 +111,9 @@
                 message: '考试已结束，系统自动提交...',
                 type: 'success'
             });
-            this.saveApeTestStudent()
+            this.saveTestStudent()
         },
-        saveApeTestStudent() {
+        saveTestStudent() {
             for(let i = 0;i<this.assign.length;i++) {
                 var item = this.assign[i]
                 if(item.type == 1) {
@@ -123,7 +123,7 @@
             var param = {
                 list: this.assign
             }
-            saveApeTestStudent(param).then(res => {
+            saveTestStudent(param).then(res => {
                 if (res.code == 1000) {
                     this.$message({
                         type: 'success',
@@ -175,8 +175,8 @@
                 }, 1000)
             }
         },
-        getApeTestItemByTestId(){
-            getApeTestItemByTestId({id:this.id}).then(res => {
+        getTestItemByTestId(){
+            getTestItemByTestId({id:this.id}).then(res => {
                 if (res.code == 1000) {
                     this.assign = res.data.testItem
                     this.test = res.data.test
@@ -225,7 +225,7 @@
             this.id = id
         }
         this.getTestUserState()
-        this.getApeTestItemByTestId()
+        this.getTestItemByTestId()
     },
     destroyed() {
         clearTimeout(this.timeOut)

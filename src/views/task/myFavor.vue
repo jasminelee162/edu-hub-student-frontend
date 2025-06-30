@@ -32,7 +32,7 @@
 </template>
 
 <script> 
-  import {getApeTaskFavorPage} from '../../api/api' 
+  import {getTaskFavorPage} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -52,7 +52,7 @@
     },
     methods: {
       query() {
-        getApeTaskFavorPage(this.search).then(res => {
+        getTaskFavorPage(this.search).then(res => {
           if (res.code == 1000) {
             this.tableData = res.data.records
             this.total = res.data.total

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-  import {getUserById,getApeTaskByTeacher} from '../../api/api' 
+  import {getUserById,getTaskByTeacher} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -67,7 +67,7 @@
           this.teacher = res.data
         }
       })
-      getApeTaskByTeacher({id:this.teacherId}).then(res => {
+      getTaskByTeacher({id:this.teacherId}).then(res => {
         if (res.code == 1000) {
           this.task = res.data
         }

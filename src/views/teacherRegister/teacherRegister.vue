@@ -161,7 +161,7 @@
 </template>
 
 <script>
-  import {getApeSchoolList,getApeMajorList,register} from '../../api/api' 
+  import {getSchoolList,getMajorList,register} from '../../api/api'
   import bottomPage from "../../components/bottom/login-bottom"
   import { mixin } from '../../minix/index';
   export default {
@@ -281,8 +281,8 @@
 			this.dialogImageUrl = file.url;
 			this.dialogVisible = true;
 		},
-		getApeSchoolList() {
-			getApeSchoolList().then(res=> {
+		getSchoolList() {
+			getSchoolList().then(res=> {
 			if(res.code == 1000) {
 				this.school = res.data
 			} else {
@@ -293,8 +293,8 @@
 			}
 			})
 		},
-		getApeMajorList() {
-			getApeMajorList().then(res => {
+		getMajorList() {
+			getMajorList().then(res => {
 			if(res.code == 1000) {
 				this.major = res.data
 			} else {
@@ -352,8 +352,8 @@
 	 
 	},
 	mounted() {
-	  this.getApeSchoolList()
-	  this.getApeMajorList()
+	  this.getSchoolList()
+	  this.getMajorList()
 	}
  }
 </script>

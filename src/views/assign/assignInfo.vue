@@ -40,7 +40,7 @@
 </template>
 
 <script>
-  import {getApeChapterById,getApeHomeworkStudentList,saveApeHomeworkStudent,getApeHomeworkStudentFlag} from "../../api/api"
+  import {getChapterById,getHomeworkStudentList,saveHomeworkStudent,getHomeworkStudentFlag} from "../../api/api"
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -59,18 +59,18 @@
       bottomPage
     },
     methods: {
-      getApeChapterById() {
-          getApeChapterById({id:this.chapterId}).then(res => {
+      getChapterById() {
+          getChapterById({id:this.chapterId}).then(res => {
               if(res.code == 1000) {
                   this.chapter = res.data
               }
           })
       },
-      getApeHomeworkStudentList() {
+      getHomeworkStudentList() {
           var param = {
               chapterId: this.chapterId
           }
-          getApeHomeworkStudentList(param).then(res => {
+          getHomeworkStudentList(param).then(res => {
               if (res.code == 1000) {
                   this.homework = res.data
                   for(let i = 0;i<this.homework.length;i++) {
@@ -108,7 +108,7 @@
                 var param = {
                     homework: this.homework
                 }
-                saveApeHomeworkStudent(param).then(res => {
+                saveHomeworkStudent(param).then(res => {
                     if (res.code == 1000) {
                         this.$message({
                             type: 'success',
@@ -121,8 +121,8 @@
                     
         });
       },
-      getApeHomeworkStudentFlag() {
-          getApeHomeworkStudentFlag({id:this.chapterId}).then(res => {
+      getHomeworkStudentFlag() {
+          getHomeworkStudentFlag({id:this.chapterId}).then(res => {
               if(res.code == 1000) {
                   this.flag = true
               } else {
@@ -143,9 +143,9 @@
       if (chapterId) {
           this.chapterId = chapterId
       }
-      this.getApeChapterById()
-      this.getApeHomeworkStudentList()
-      this.getApeHomeworkStudentFlag()
+      this.getChapterById()
+      this.getHomeworkStudentList()
+      this.getHomeworkStudentFlag()
     }
  }
 </script>

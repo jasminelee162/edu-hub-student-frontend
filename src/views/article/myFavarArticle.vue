@@ -38,7 +38,7 @@
 </template>
  
 <script>
-  import {getApeArticleFavorPage} from '../../api/api' 
+  import {getArticleFavorPage} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -63,7 +63,7 @@
             pageSize: this.pageSize,
             pageNumber: this.pageNumber
           }
-          getApeArticleFavorPage(param).then(res => {
+          getArticleFavorPage(param).then(res => {
             if(res.code == 1000) {
               this.tableData = res.data.records
               this.total = res.data.total

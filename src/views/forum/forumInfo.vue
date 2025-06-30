@@ -16,7 +16,7 @@
             <div class="articleInfo-comment-content">
                 <el-input type="textarea" resize="none" rows="7" v-model="content" placeholder="请输入讨论内容"></el-input>
                 <div class="articleInfo-comment-btn">
-                    <el-button @click="saveApeForumItem" style="margin-top:10px" size="mini" type="success" plain>提交</el-button>
+                    <el-button @click="saveForumItem" style="margin-top:10px" size="mini" type="success" plain>提交</el-button>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-  import {getApeForumById,getApeForumItemList,saveApeForumItem} from '../../api/api' 
+  import {getForumById,getForumItemList,saveForumItem} from '../../api/api'
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
   export default {
@@ -74,7 +74,7 @@
       bottomPage
     },
     methods: {
-      saveApeForumItem() {
+      saveForumItem() {
           if (!this.content) {
             this.$message({
               type: 'warning',
@@ -86,29 +86,29 @@
               forumId:this.id,
               content: this.content
           }
-          saveApeForumItem(param).then(res => {
+          saveForumItem(param).then(res => {
               if (res.code == 1000) {
                   this.$message({
                     type: 'success',
                     message: '发布讨论内容成功!'
                   });
                   this.content = ""
-                  this.getApeForumItemList()
+                  this.getForumItemList()
               }
           })
       },
-      getApeForumById() {
-          getApeForumById({id:this.id}).then(res => {
+      getForumById() {
+          getForumById({id:this.id}).then(res => {
               if (res.code == 1000) {
                   this.forum = res.data
               }
           })
       },
-      getApeForumItemList() {
+      getForumItemList() {
           var param = {
               forumId: this.id
           }
-          getApeForumItemList().then(res => {
+          getForumItemList().then(res => {
               if (res.code == 1000) {
                   this.forumList = res.data
               }
@@ -124,8 +124,8 @@
         behavior: 'smooth'
       });
       this.id = this.$route.query.id
-      this.getApeForumById()
-      this.getApeForumItemList()
+      this.getForumById()
+      this.getForumItemList()
     }
  }
 </script>
