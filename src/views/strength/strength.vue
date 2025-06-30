@@ -137,38 +137,32 @@ export default {
         if (el) el.scrollTop = el.scrollHeight
       })
     },
-    loadWeakList() {
-      getStudentWeakList().then(res => {
-        console.log("薄弱科目返回：", res)
-        if (res.code === 1000) {
-          this.weakList = res.data
-        }
+    async loadWeakList() {
+      const res = await getStudentWeakList()
+      if (res.code === 1000) {
+        this.weakList = res.data
         console.log('字段校验：', this.weakList.map(item => ({
           subject: item.subject,
           studentScore: item.studentScore,
           avgScore: item.avgScore,
           status: item.status
         })))
-      })
+      }
     },
     async loadSuggestion() {
       this.isSuggestionLoading = true
-      const id = this.$store?.state?.userId || JSON.parse(localStorage.getItem("user_info") || "{}").id;
+      const id = this.$store?.state?.userId || JSON.parse(localStorage.getItem("user_info") || "{}").id
       if (!id) {
         this.suggestion = "未获取到用户ID，无法生成建议"
         this.formattedSuggestion = this.suggestion
         this.isSuggestionLoading = false
-        return;
+        return
       }
-      console.log("当前用户 ID：", id)
-      getAISuggestion(id).then(res => {
-        console.log("原始响应:", res.message);
 
       try {
         const res = await getAISuggestion(id)
         if (res.code === 1000) {
           this.suggestion = res.message || "暂无建议内容"
-          // 使用marked解析Markdown格式
           this.formattedSuggestion = marked.parse(this.suggestion)
         }
       } catch (error) {
@@ -179,32 +173,32 @@ export default {
       }
     },
     async chatAI() {
-      if (!this.chatKey.trim()) return;
+      if (!this.chatKey.trim()) return
 
-      const userMsg = this.chatKey.trim();
-      this.chatHistory.push({ role: 'user', content: userMsg });
-      this.chatKey = '';
-      this.isAIThinking = true;
-      this.scrollToBottom();
+      const userMsg = this.chatKey.trim()
+      this.chatHistory.push({ role: 'user', content: userMsg })
+      this.chatKey = ''
+      this.isAIThinking = true
+      this.scrollToBottom()
 
       try {
-        const res = await getAIChat({ key: userMsg });
+        const res = await getAIChat({ key: userMsg })
         if (res.code === 1000) {
-          this.chatHistory.push({ role: 'ai', content: res.message });
+          this.chatHistory.push({ role: 'ai', content: res.message })
         } else {
-          this.chatHistory.push({ role: 'ai', content: 'AI 暂时无法回答，请稍后再试。' });
+          this.chatHistory.push({ role: 'ai', content: 'AI 暂时无法回答，请稍后再试。' })
         }
       } catch (error) {
-        this.chatHistory.push({ role: 'ai', content: 'AI 服务出错，请稍后再试。' });
+        this.chatHistory.push({ role: 'ai', content: 'AI 服务出错，请稍后再试。' })
       } finally {
-        this.isAIThinking = false;
-        this.scrollToBottom();
+        this.isAIThinking = false
+        this.scrollToBottom()
       }
     }
   },
   mounted() {
-    this.loadWeakList();
-    this.loadSuggestion();
+    this.loadWeakList()
+    this.loadSuggestion()
   }
 }
 </script>
