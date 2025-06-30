@@ -6,25 +6,45 @@
         <div class="task-search-item">
           <div>课程名称：</div>
           <div>
-            <el-input size="mini" v-model="search.name" placeholder="请输入课程名称"></el-input>
+            <el-input
+                size="mini"
+                v-model="search.name"
+                placeholder="请输入课程名称"
+                @keyup.enter.native="searchPage"
+            ></el-input>
           </div>
         </div>
         <div class="task-search-item">
           <div>教师名称：</div>
           <div>
-            <el-input size="mini" v-model="search.teacherName" placeholder="请输入教师名称"></el-input>
+            <el-input
+                size="mini"
+                v-model="search.teacherName"
+                placeholder="请输入教师名称"
+                @keyup.enter.native="searchPage"
+            ></el-input>
           </div>
         </div>
         <div class="task-search-item">
           <div>专业名称：</div>
           <div>
-            <el-input size="mini" v-model="search.major" placeholder="请输入专业名称"></el-input>
+            <el-input
+                size="mini"
+                v-model="search.major"
+                placeholder="请输入专业名称"
+                @keyup.enter.native="searchPage"
+            ></el-input>
           </div>
         </div>
         <div class="task-search-item">
           <div>简介内容：</div>
           <div>
-            <el-input size="mini" v-model="search.taskDescribe" placeholder="请输入课程简介内容"></el-input>
+            <el-input
+                size="mini"
+                v-model="search.taskDescribe"
+                placeholder="请输入课程简介内容"
+                @keyup.enter.native="searchPage"
+            ></el-input>
           </div>
         </div>
         <div class="task-search-item">
@@ -58,11 +78,11 @@
       </div>
       <div class="task-page-fenye">
         <el-pagination
-          background
-          :page-size="search.pageSize"
-          layout="prev, pager, next"
-          @current-change="handleCurrentChange"
-          :total="total">
+            background
+            :page-size="search.pageSize"
+            layout="prev, pager, next"
+            @current-change="handleCurrentChange"
+            :total="total">
         </el-pagination>
       </div>
     </div>
@@ -74,111 +94,111 @@
 </template>
 
 <script>
-  import {getApeTaskPage,getApeClassificationList} from '../../api/api' 
-  import headerPage from "../../components/header/header"
-  import bottomPage from "../../components/bottom/bottom"
-  export default {
-    data() {
-      return{
-        search: {
-          name: "",
-          state: 0,
-          teacherName: "",
-          major: "",
-          taskDescribe: "",
-          classification: "",
-          pageSize: 12,
-          pageNumber: 1,
-          type: 0,
-        },
-        tableData: [],
-        classification: [],
-        total: 0
-      }
-    },
-    components: {
-      headerPage,
-      bottomPage
-    },
-    methods: {
-      searchPage() {
-        this.search.pageNumber = 1
-        this.query()
+import {getApeTaskPage,getApeClassificationList} from '../../api/api'
+import headerPage from "../../components/header/header"
+import bottomPage from "../../components/bottom/bottom"
+export default {
+  data() {
+    return{
+      search: {
+        name: "",
+        state: 0,
+        teacherName: "",
+        major: "",
+        taskDescribe: "",
+        classification: "",
+        pageSize: 12,
+        pageNumber: 1,
+        type: 0,
       },
-      searchClass(name) {
-        this.search.pageNumber = 1
-        this.search.classification = name
-        this.query()
-      },
-      query() {
-        getApeTaskPage(this.search).then(res => {
-          if(res.code == 1000) {
-            this.tableData = res.data.records
-            this.total = res.data.total
-          } else {
-            this.$notify.error({
-              title: '错误',
-              message: res.message
-            });
-          }
-        })
-      },
-      refresh() {
-        this.search = {
-          name: "",
-          teacherName: "",
-          major: "",
-          state: 0,
-          taskDescribe: "",
-          classification: "",
-          pageSize: 12,
-          pageNumber: 1,
-          type: 0,
-        },
-        this.query()
-      },
-      handleCurrentChange(val) {
-        this.search.pageNumber = val
-        this.query()
-      }, 
-      toTaskInfo(id) {
-        this.$router.push("taskInfo?id=" + id)
-      },
-      getApeClassificationList() {
-        getApeClassificationList().then(res => {
-            if(res.code == 1000) {
-                this.classification = res.data
-            } else {
-                this.$notify.error({
-                title: '错误',
-                message: res.message
-                });
-            }
-        })
-      }
-    },
-    created() {
-     
-    },
-    mounted() {
-      this.getApeClassificationList()
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-      var name = this.$route.query.name
-      if (name) {
-        this.search.name = name
-      }
-      var major = this.$route.query.major
-      if (major) {
-        this.search.major = major
-      }
-      this.query()
+      tableData: [],
+      classification: [],
+      total: 0
     }
- }
+  },
+  components: {
+    headerPage,
+    bottomPage
+  },
+  methods: {
+    searchPage() {
+      this.search.pageNumber = 1
+      this.query()
+    },
+    searchClass(name) {
+      this.search.pageNumber = 1
+      this.search.classification = name
+      this.query()
+    },
+    query() {
+      getApeTaskPage(this.search).then(res => {
+        if(res.code == 1000) {
+          this.tableData = res.data.records
+          this.total = res.data.total
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
+      })
+    },
+    refresh() {
+      this.search = {
+        name: "",
+        teacherName: "",
+        major: "",
+        state: 0,
+        taskDescribe: "",
+        classification: "",
+        pageSize: 12,
+        pageNumber: 1,
+        type: 0,
+      },
+          this.query()
+    },
+    handleCurrentChange(val) {
+      this.search.pageNumber = val
+      this.query()
+    },
+    toTaskInfo(id) {
+      this.$router.push("taskInfo?id=" + id)
+    },
+    getApeClassificationList() {
+      getApeClassificationList().then(res => {
+        if(res.code == 1000) {
+          this.classification = res.data
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
+      })
+    }
+  },
+  created() {
+
+  },
+  mounted() {
+    this.getApeClassificationList()
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    var name = this.$route.query.name
+    if (name) {
+      this.search.name = name
+    }
+    var major = this.$route.query.major
+    if (major) {
+      this.search.major = major
+    }
+    this.query()
+  }
+}
 </script>
 
 <style scoped>
-  @import url("../../assets/css/task/task.css");
+@import url("../../assets/css/task/task.css");
 </style>
