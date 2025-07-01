@@ -89,6 +89,85 @@ export function getAllExperiments() {
         method: 'get'
     })
 }
+
+/**
+ * 创建共享文档（基于模板）
+ * @param {String} templateId 模板ID
+ * @param {String} userId 用户ID
+ */
+export function createDocument(templateId, userId) {
+    return request({
+        url: '/document/create',
+        method: 'post',
+        params: {
+            templateId,
+            userId
+        }
+    })
+}
+
+/**
+ * 初始化文档内容（拉取内容）
+ * @param {String} documentId 文档ID
+ * @param {String} userId 用户ID
+ */
+export function initDocument(documentId, userId) {
+    return request({
+        url: `/document/${documentId}/init`,
+        method: 'post',
+        params: {
+            userId
+        }
+    })
+}
+
+/**
+ * 获取文档所有历史版本
+ * @param {String} documentId 文档ID
+ */
+export function getAllVersions(documentId) {
+    return request({
+        url: '/documentVersion/all',
+        method: 'get',
+        params: {
+            documentId
+        }
+    })
+}
+
+/**
+ * 回滚到某个版本
+ * @param {String} versionId 版本ID
+ */
+export function rollbackVersion(versionId) {
+    return request({
+        url: '/documentVersion/rollback',
+        method: 'get',
+        params: {
+            id: versionId
+        }
+    })
+}
+
+/**
+ * 保存文档新版本
+ * @param {Object} data
+ *  - documentId: 文档ID
+ *  - content: Uint8Array 或字符串
+ *  - changeNote: 变更说明
+ */
+export function recordVersion(data) {
+    const formData = new FormData()
+    formData.append('documentId', data.documentId)
+    formData.append('content', new Blob([data.content])) // Byte[] 序列化
+    formData.append('changeNote', data.changeNote)
+
+    return request({
+        url: '/documentVersion/record',
+        method: 'post',
+        data: formData
+    })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)
