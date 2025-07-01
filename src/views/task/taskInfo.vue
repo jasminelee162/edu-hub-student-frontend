@@ -143,7 +143,7 @@
                         type: 'success',
                         message: '取消收藏成功'
                     });
-                    this.getApeTaskFavorById()
+                    this.getTaskFavorById()
                 }
             })
         },
@@ -152,18 +152,18 @@
                 taskId: this.taskId,
                 userId: this.user.id
             }
-            saveApeTaskFavor(param).then(res => {
+            saveTaskFavor(param).then(res => {
                 if (res.code == 1000) {
                     this.$message({
                         type: 'success',
                         message: '收藏成功'
                     });
-                    this.getApeTaskFavorById()
+                    this.getTaskFavorById()
                 }
             })
         },
-        getApeTaskFavorById() {
-            getApeTaskFavorById({taskId: this.taskId,userId:this.user.id}).then(res => {
+        getTaskFavorById() {
+            getTaskFavorById({taskId: this.taskId,userId:this.user.id}).then(res => {
                 if (res.code == 1000) {
                     this.favor = res.data
                     this.flag = true
@@ -173,8 +173,8 @@
                 }
             })
         },
-        getApeTaskCommentListByTaskId() {
-            getApeTaskCommentListByTaskId({id:this.taskId}).then(res => {
+        getTaskCommentListByTaskId() {
+            getTaskCommentListByTaskId({id:this.taskId}).then(res => {
                 if (res.code == 1000) {
                     this.commentList = res.data
                 }
@@ -190,7 +190,7 @@
             }
             this.$router.push("/question?id=" + id)
         },
-        saveApeTaskComment() {
+        saveTaskComment() {
             if (this.state != 0) {
                 this.$message({
                     type: 'warning',
@@ -202,14 +202,14 @@
                 content: this.content,
                 taskId: this.taskId
             }
-            saveApeTaskComment(param).then(res => {
+            saveTaskComment(param).then(res => {
                 if (res.code == 1000) {
                     this.$message({
                         type: 'success',
                         message: '评论成功'
                     });
                     this.content = ""
-                    this.getApeTaskCommentListByTaskId()
+                    this.getTaskCommentListByTaskId()
                 }
             })
         },
@@ -277,7 +277,7 @@
                         var param = {
                             chapterId: that.selectChapter.id,
                         }
-                        saveApeChapterVideo(param)
+                        saveChapterVideo(param)
                     });
                 },2000)
             }
@@ -298,7 +298,7 @@
                 var param = {
                     taskId: this.taskId
                 }
-                saveApeTaskStudent(param).then(res => {
+                saveTaskStudent(param).then(res => {
                     if (res.code == 1000) {
                         this.$message({
                             type: 'success',
@@ -328,7 +328,7 @@
                 });
                 return
             }
-            getApeHomeworkByChapterId({id:this.selectChapter.id}).then(res => {
+            getHomeworkByChapterId({id:this.selectChapter.id}).then(res => {
                 if (res.code == 1000) {
                     this.$router.push("/assignInfo?id="+ this.selectChapter.id)
                 } else {
@@ -351,7 +351,7 @@
       this.user = JSON.parse(window.localStorage.getItem("user_info"))
       var that = this
       this.taskId = this.$route.query.id
-      getApeTaskById({id:this.taskId}).then(res => {
+      getTaskById({id:this.taskId}).then(res => {
           if (res.code == 1000) {
             this.task = res.data
           }
@@ -361,13 +361,13 @@
             this.state = res.data
           }
       })
-      getApeChapterByTaskId({id: this.taskId}).then(res => {
+      getChapterByTaskId({id: this.taskId}).then(res => {
           if (res.code == 1000) {
             this.chapter = res.data
           }
       })
-      this.getApeTaskCommentListByTaskId()
-      this.getApeTaskFavorById()
+      this.getTaskCommentListByTaskId()
+      this.getTaskFavorById()
     },
     beforeDestroy() {
       if (this.player) {

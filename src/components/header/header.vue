@@ -10,6 +10,7 @@
       <div @click="toPage('teacher')" :class="$route.path == '/teacher'?'menu_item':''">教师</div>
       <div @click="toPage('test')" :class="$route.path == '/test'?'menu_item':''">考试</div>
       <div @click="toPage('article')" :class="$route.path == '/article'?'menu_item':''">笔记</div>
+      <div @click="toPage('document')" :class="$route.path == '/document'?'menu_item':''">协作</div>
       <div @click="toPage('forum')" :class="$route.path == '/forum'?'menu_item':''">讨论</div>
       <div @click="toPage('notice')" :class="$route.path == '/notice'?'menu_item':''">公告</div>
       <div @click="toPage('message')" :class="$route.path == '/message'?'menu_item':''">留言</div>
@@ -105,6 +106,8 @@ export default {
         this.$router.push("/notice")
       } else if (name == "forum") {
         this.$router.push("/forum")
+      }else if (name == "document") {
+        this.$router.push("/document")
       }
     },
   },
