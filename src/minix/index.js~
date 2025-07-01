@@ -14,7 +14,7 @@ export const mixin = {
             return this.$store.state.HOST + "/common/uploadVideo"
         },
         // 文件超出个数限制时的钩子
-        handleExceed(files, fileList) {
+        hand    leExceed(files, fileList) {
             this.$message.warning("当前文件数量超出上传限制");
         },
         //上传图片之前的校验
