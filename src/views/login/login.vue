@@ -120,7 +120,6 @@
 							});
 							var that = this
 							var token = res.data.token
-							window.localStorage.setItem("user_token",token)
 							this.getUserInfo()
 							setTimeout(function() {
 								that.$router.push("/")

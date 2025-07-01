@@ -31,8 +31,20 @@
             </div>
           </el-col>
         </el-row>
-      </div>
 
+
+      </div>
+      <!-- 下载实验报告按钮 -->
+
+      <div class="floating-download">
+        <a
+            href="http://localhost:8080/file/test.docx"
+            target="_blank"
+            class="download-link"
+        >
+          下载实验报告
+        </a>
+      </div>
       <!-- 外部实验（按学科分组） -->
       <div class="glass-card" v-for="(group, subject) in groupedExperiments" :key="subject">
         <div class="section-title">
@@ -54,7 +66,9 @@
     <!-- 全屏 iframe 模拟器 -->
     <div v-if="fullscreenUrl" class="fullscreen-iframe">
       <div class="iframe-header">
-        <el-button type="danger" size="mini" icon="el-icon-close" @click="fullscreenUrl = ''">关闭实验</el-button>
+        <el-button type="danger" size="mini" icon="el-icon-close" @click="fullscreenUrl = ''">
+          关闭实验
+        </el-button>
       </div>
       <iframe :src="fullscreenUrl" frameborder="0"></iframe>
     </div>
@@ -62,6 +76,7 @@
     <bottomPage />
   </div>
 </template>
+
 <script>
 import headerPage from '@/components/header/header.vue'
 import bottomPage from '@/components/bottom/bottom.vue'
@@ -105,7 +120,8 @@ export default {
     },
     openExperiment(url) {
       this.fullscreenUrl = url
-    }
+    },
+
   },
   mounted() {
     this.loadQuestions()
@@ -113,31 +129,8 @@ export default {
   }
 }
 </script>
+
 <style scoped>
-.fullscreen-iframe {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #000;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-}
-
-.fullscreen-iframe iframe {
-  flex: 1;
-  border: none;
-}
-
-.iframe-header {
-  background: #222;
-  padding: 8px 16px;
-  text-align: right;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
-  z-index: 10000;
-}
 .sandbox-entry {
   width: 100%;
   min-height: 100vh;
@@ -216,5 +209,55 @@ export default {
 }
 .hard {
   background: #FF6B6B;
+}
+
+/* 全屏 iframe 样式 */
+.fullscreen-iframe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullscreen-iframe iframe {
+  flex: 1;
+  border: none;
+}
+
+.iframe-header {
+  background: #222;
+  padding: 8px 16px;
+  text-align: right;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  z-index: 10000;
+}
+.floating-download {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 999;
+}
+
+.download-link {
+  display: inline-block;
+  background-color: #6427FF;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.download-link:hover {
+  background-color: #4b1ec2;
+  transform: translateY(-2px);
 }
 </style>
