@@ -34,7 +34,7 @@ import error404 from '@/views/error/404'
 import strength from "@/views/strength/strength.vue";
 import dbSimulation from "@/views/simulation/dbSimulation.vue";
 import simulation from "@/views/simulation/simulation.vue";
-import document from "@/views/simulation/simulation.vue";
+import document from "@/views/document/document.vue";
 
 Vue.use(VueRouter)
 
