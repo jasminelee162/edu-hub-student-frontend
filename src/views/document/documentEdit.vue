@@ -24,7 +24,11 @@
     </div>
     <div class="editor-main">
       <div class="editor-content">
-    <component :is="currentComponent" :content="renderedContent" />
+        <component
+            :is="currentComponent"
+            :content="renderedContent"
+            @text-change="onEditorContentChange"
+        />
       </div>
       <div class="collaborator-sidebar">
         <h3>协作成员</h3>
@@ -78,40 +82,38 @@
 </template>
 
 <script>
-import { quillEditor } from 'vue-quill-editor'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
 import headerPage from '@/components/header/header.vue'
+import DocxViewer from '@/views/document/DocxViewer.vue'
+import PdfViewer from '@/views/document/PdfViewer.vue'
+import TextViewer from '@/views/document/TextViewer.vue'
 import mammoth from 'mammoth'
+import SockJS from 'sockjs-client'
+import axios from "@/utils/request";
+import { Client } from '@stomp/stompjs'
 import {
-  initDocument,
   getAllVersions,
   rollbackVersion,
   recordVersion,
-  getTemplateContent, getTemplateList
+  getTemplateContent
 } from '@/api/api'
-
-import DocxViewer from "@/views/document/DocxViewer.vue";
-import PdfViewer from "@/views/document/PdfViewer.vue";
-import TextViewer from "@/views/document/TextViewer.vue";
 
 function decodeDocxBase64(base64) {
   const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
   return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
 }
+
 export default {
   components: {
     headerPage,
-    quillEditor,
     DocxViewer,
     PdfViewer,
     TextViewer
   },
   data() {
     return {
+      stompClient: null,
+      username: '用户' + Math.floor(Math.random() * 1000),
       fileType: '',
-      decodedContent: '',
       renderedContent: '',
       currentComponent: 'DocxViewer',
       documentId: this.$route.params.id,
@@ -121,75 +123,127 @@ export default {
       versions: [],
       showHistory: false,
       showShareDialog: false,
-      shareLink: `${window.location.origin}/documentEdit/${this.$route.params.id}`,
-      editorOptions: {
-        theme: 'snow',
-        modules: {
-          toolbar: [
-            ['bold', 'italic', 'underline', 'strike'],
-            ['blockquote', 'code-block'],
-            [{ header: 1 }, { header: 2 }],
-            [{ list: 'ordered' }, { list: 'bullet' }],
-            [{ indent: '-1' }, { indent: '+1' }],
-            [{ size: ['small', false, 'large', 'huge'] }],
-            [{ color: [] }, { background: [] }],
-            [{ font: [] }],
-            [{ align: [] }],
-            ['clean'],
-            ['link', 'image']
-          ]
-        }
-      }
+      shareLink: `${window.location.origin}/documentEdit/${this.$route.params.id}?templateId=${this.$route.query.templateId}`,
+      lastEditTime: 0
     }
   },
   created() {
     this.initDocument()
     this.loadVersions()
-    const templateId = this.$route.query.templateId
-    console.log('模板ID是：', templateId)
+    this.initWebSocket()
+  },
+  beforeDestroy() {
+    if (this.stompClient) {
+      this.stompClient.deactivate()
+    }
   },
   methods: {
+    initWebSocket() {
+      const socket = new SockJS('http://localhost:8080/ws-doc')
+      this.stompClient = new Client({
+        webSocketFactory: () => socket,
+        debug: str => console.log('[STOMP]', str),
+        reconnectDelay: 5000
+      })
+
+      this.stompClient.onConnect = () => {
+        this.stompClient.subscribe(`/topic/document/${this.documentId}`, message => {
+          const msg = JSON.parse(message.body)
+          if (msg.username !== this.username) {
+            this.renderedContent = msg.content
+            this.content = msg.content
+            this.loadVersions() // 新增：同步刷新版本列表
+          }
+        })
+      }
+
+      this.stompClient.activate()
+    },
+
+    onEditorContentChange(content) {
+      const now = Date.now()
+      if (now - this.lastEditTime > 300) {
+        this.renderedContent = content
+        this.content = content
+        this.sendEditMessage()
+        this.lastEditTime = now
+      }
+    },
+
+    sendEditMessage() {
+      if (this.stompClient && this.stompClient.connected) {
+        this.stompClient.publish({
+          destination: `/app/${this.documentId}/edit`,
+          body: JSON.stringify({
+            documentId: this.documentId,
+            content: this.content,
+            username: this.username
+          })
+        })
+      }
+    },
 
     async initDocument() {
-      const templateId = this.$route.query.templateId
+      this.documentTitle = '未命名文档'
+      this.fileType = 'docx'
+      this.currentComponent = 'DocxViewer'
 
-      if (!templateId) {
-        this.$message.error('缺少模板 ID，无法加载文档')
-        return
-      }
-      const res = await getTemplateContent(templateId)
-      console.log("文档内容：", res)
-      this.documentTitle = res.data.name || '未命名模板'
+      try {
+        // 优先读取版本记录
+        const versionRes = await getAllVersions(this.documentId)
+        const versions = versionRes.data || []
+        const latest = versions.length > 0 ? versions[versions.length - 1] : null
 
-      this.fileType = res.data.fileType || 'docx'
+        if (latest && latest.content) {
+          // 使用最近一次保存的内容
+          this.content = latest.content
+          this.renderedContent = latest.content
+        } else {
+          // 如果没有版本记录，才从模板加载
+          const templateId = this.$route.query.templateId
+          if (!templateId) {
+            this.$message.error('缺少模板 ID')
+            return
+          }
 
-      switch (this.fileType) {
-        case 'docx':
-          this.currentComponent = 'DocxViewer'
-          this.renderedContent = await decodeDocxBase64(res.data.fileContent)
-          break
-        case 'pdf':
-          this.currentComponent = 'PdfViewer'
-          this.renderedContent = res.data.fileContent // base64 PDF 字符串
-          break
-        case 'txt':
-          this.currentComponent = 'TextViewer'
-          this.renderedContent = atob(res.data.fileContent) // base64 解码为纯文本
-          break
-        default:
-          this.$message.error('不支持的文档类型')
+          const res = await getTemplateContent(templateId)
+          this.documentTitle = res.data.name || '未命名模板'
+          this.fileType = res.data.fileType || 'docx'
+
+          switch (this.fileType) {
+            case 'docx':
+              this.currentComponent = 'DocxViewer'
+              this.renderedContent = await decodeDocxBase64(res.data.fileContent)
+              this.content = this.renderedContent
+              break
+            case 'pdf':
+              this.currentComponent = 'PdfViewer'
+              this.renderedContent = res.data.fileContent
+              this.content = res.data.fileContent
+              break
+            case 'txt':
+              this.currentComponent = 'TextViewer'
+              this.renderedContent = atob(res.data.fileContent)
+              this.content = this.renderedContent
+              break
+            default:
+              this.$message.error('不支持的文档类型')
+          }
+        }
+      } catch (e) {
+        console.error('文档初始化失败', e)
+        this.$message.error('文档加载失败')
       }
     },
+
     async loadVersions() {
-      const res = await getAllVersions(this.documentId) //要协作id
+      const res = await getAllVersions(this.documentId)
       this.versions = res.data.map(v => ({
         ...v,
-        preview: this.truncateContent(v.content)
+        preview: (v.content || '').substring(0, 100) + '...'
       }))
     },
-    truncateContent(content) {
-      return content.length > 100 ? content.substring(0, 100) + '...' : content
-    },
+
     async saveDocument() {
       const { value } = await this.$prompt('请输入变更说明', '保存文档', {
         confirmButtonText: '保存',
@@ -197,10 +251,12 @@ export default {
         inputPattern: /.+/,
         inputErrorMessage: '说明不能为空'
       })
-      await recordVersion(this.documentId, this.content, value) //要协作id
+      await recordVersion(this.documentId, this.content, value)
       this.$message.success('保存成功')
       this.loadVersions()
+      this.sendEditMessage() // 新增：广播最新保存内容
     },
+
     async rollbackVersion(versionId) {
       await this.$confirm('确定要恢复到此版本吗?', '提示', {
         confirmButtonText: '确定',
@@ -209,96 +265,243 @@ export default {
       })
       const res = await rollbackVersion(versionId)
       this.content = res.data
+      this.renderedContent = res.data
+      this.sendEditMessage() // 新增：恢复版本后广播内容
       this.$message.success('恢复成功')
     },
+
     shareDocument() {
       this.showShareDialog = true
     },
+
     copyLink() {
       this.$refs.shareInput.select()
       document.execCommand('copy')
       this.$message.success('链接已复制')
-    },
-    onEditorChange() {
-      // WebSocket 实时协作逻辑
     }
   }
 }
 </script>
 
-<style scoped>
+<style>
 .editor-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #f5f7fa;
+  background: url('@/assets/image/index/index_back.png') no-repeat center center;
+  background-size: cover;
+  font-family: '黑体', sans-serif;
+  color: #1F4E79;
 }
+
 .editor-toolbar {
-  background: #fff;
-  padding: 10px 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: url('@/assets/image/index/index_back.png') no-repeat center center;
+  padding: 12px 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.document-title {
+  border-bottom: 1px solid #e8e8e8;
+  font-weight: 600;
   font-size: 18px;
-  font-weight: bold;
-  margin-right: 10px;
 }
+
+.document-title {
+  font-weight: 700;
+  font-size: 20px;
+  color: #1F4E79;
+  margin-right: 12px;
+}
+
 .editor-main {
   display: flex;
   flex: 1;
   overflow: hidden;
+  padding: 12px 24px;
+  gap: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
 }
+
 .editor-content {
   flex: 1;
+  background: url('@/assets/image/index/index_back.png') no-repeat center center;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow-y: auto;
+  font-size: 16px;
+  color: #333;
+  min-height: 0; /* 防止过高撑破布局 */
+}
+
+.collaborator-sidebar {
+  width: 250px;
+  background: url('@/assets/image/index/index_back.png') no-repeat center center;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  background: #fff;
-  margin: 10px;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.collaborator-sidebar h3 {
+  font-weight: 700;
+  color: #1F4E79;
+  margin-bottom: 16px;
+  font-size: 18px;
+  border-bottom: 2px solid #C8BFFF;
+  padding-bottom: 6px;
+}
+
+.user-list {
+  flex: 1;
   overflow-y: auto;
 }
-.collaborator-sidebar {
-  width: 220px;
-  padding: 15px;
-  background: #fff;
-  margin: 10px 10px 10px 0;
-  border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-.user-list {
-  margin-top: 10px;
-}
+
 .user-item {
   display: flex;
   align-items: center;
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
+
 .user-name {
-  margin-left: 10px;
+  margin-left: 14px;
+  font-weight: 600;
+  color: #2c3e50;
 }
+
 .version-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 }
+
 .change-note {
-  font-weight: bold;
-  color: #409EFF;
-  margin-bottom: 10px;
+  font-weight: 700;
+  color: #7A49FF;
+  margin-bottom: 12px;
+  font-size: 14px;
 }
+
 .version-preview {
-  max-height: 100px;
-  overflow: hidden;
-  border: 1px solid #eee;
-  padding: 5px;
-  border-radius: 3px;
-  background: #f9f9f9;
-}
-.share-link {
+  max-height: 110px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
   padding: 10px;
+  border-radius: 8px;
+  background: #fafafa;
+  font-size: 14px;
+  color: #555;
+  white-space: pre-wrap;
 }
+
+.share-link {
+  padding: 12px;
+  font-size: 15px;
+  color: #1F4E79;
+}
+
+
+.el-dialog__footer .el-button {
+  min-width: 110px;
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.el-dialog__footer .el-button--primary {
+  background-color: #C8BFFF;
+  border-color: #C8BFFF;
+  color: white;
+}
+
+.el-dialog__footer .el-button--primary:hover {
+  background-color: #B29EFF;
+  border-color: #B29EFF;
+}
+
+.el-button-group .el-button {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1F4E79;
+  border-radius: 8px;
+  padding: 6px 14px;
+}
+
+.el-button-group .el-button:hover {
+  background-color: #B29EFF !important;
+  color: white !important;
+}
+
+/* 图标间距调整 */
+.el-button i {
+  margin-right: 6px;
+}
+/* 保存提示框统一样式 */
+.el-message-box {
+  border-radius: 16px;
+  font-family: '黑体', sans-serif;
+  background-color: #f0f4ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  min-width: 400px;
+}
+
+.el-message-box__header {
+  background-color: #f0f4ff;
+  border-bottom: 1px solid #f0f4ff;
+  color: #1F4E79;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 18px 24px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.el-message-box__content {
+  padding: 24px;
+  font-size: 16px;
+  color: #444;
+}
+
+.el-message-box {
+  border-radius: 16px !important;
+  font-family: '黑体', sans-serif !important;
+  background-color: #f0f4ff !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 按钮容器 */
+.el-message-box__btns {
+  padding: 18px 24px !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+}
+
+/* 确认按钮 */
+.el-message-box__btn--confirm {
+  background-color: #C8BFFF !important;
+  border-color: #C8BFFF !important;
+  color: white !important;
+  min-width: 100px !important;
+  font-weight: bold !important;
+  border-radius: 8px !important;
+}
+
+/* 取消按钮 */
+.el-message-box__btn--cancel {
+  color: #1F4E79 !important;
+  background: transparent !important;
+  border: none !important;
+  min-width: 100px !important;
+  font-weight: bold !important;
+}
+
+/* 悬停状态 */
+.el-message-box__btn--confirm:hover {
+  background-color: #B29EFF !important;
+  border-color: #B29EFF !important;
+}
+
 </style>

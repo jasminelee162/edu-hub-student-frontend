@@ -109,12 +109,13 @@ export const getAllVersions = (documentId) =>
 export const rollbackVersion = (versionId) =>
     request.get(`/documentVersion/rollback?id=${versionId}`)
 
-export const recordVersion = (documentId, content, changeNote) =>
-    request.post('/documentVersion/record', {
-        documentId,
-        content: new TextEncoder().encode(content),
-        changeNote
+export function recordVersion(documentId, content, changeNote) {
+    return request({
+        url: '/documentVersion/record',
+        method: 'post',
+        params: { documentId, content, changeNote }
     })
+}
 
 export const getTemplateList = () =>
     request.get('/template/show')

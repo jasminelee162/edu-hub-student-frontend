@@ -45,7 +45,10 @@ module.exports = {
 			fallback: {
 				"fs": false,
 				"path": false,
-				"os": false
+				"os": false,
+				"net": false,
+				"tls": false,
+
 			}
 		},
 		module: {

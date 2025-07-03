@@ -83,33 +83,81 @@ export default {
 .template-page {
   padding: 40px;
   font-family: '黑体';
-  background: url('@/assets/image/index/index_back.png') no-repeat;
+  background: url('@/assets/image/index/index_back.png') no-repeat center center fixed;
   background-size: cover;
   min-height: 100vh;
+  color: #1F4E79;
 }
+
 .main-container {
   max-width: 1200px;
   margin: 0 auto;
 }
+
 .title {
   text-align: center;
   font-size: 28px;
-  color: #1F4E79;
-  margin-bottom: 30px;
+  font-weight: bold;
+  margin-bottom: 40px;
 }
+
+/* 统一卡片大小和透明风格 */
 .template-card {
-  transition: 0.3s;
   cursor: pointer;
   font-family: '黑体';
   color: #1F4E79;
+  background-color: rgba(255, 255, 255, 0.5) !important; /* 透明度加深 */
+  border-radius: 16px !important;
+  height: 180px;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  transition: all 0.3s ease;
+  box-shadow: none !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  margin-bottom: 30px; /* 增加垂直间距 */
+  margin-right: 20px; /* 增加水平间距 */
 }
+.el-row {
+  margin-left: -10px;
+  margin-right: -10px;
+}
+
+.el-col {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
 .template-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-6px);
 }
+
+.card-click-mask {
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  user-select: none;
+}
+
 .template-name {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  user-select: text;
+}
+
+p {
+  margin: 2px 0;
+  font-size: 14px;
+  opacity: 0.85;
+  user-select: text;
 }
 </style>

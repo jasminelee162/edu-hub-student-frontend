@@ -3,22 +3,38 @@
     <headerPage />
 
     <div class="document-page-actions">
-      <div class="document-page-title">协作功能入口</div>
+      <div class="document-page-title">协作入口</div>
 
       <div class="document-page-buttons">
-        <el-button icon="el-icon-link" size="medium" type="primary" plain @click="showJoinDialog = true">加入协作</el-button>
+        <!-- 加入协作 -->
+        <el-button icon="el-icon-link" size="medium" type="primary" plain @click="showJoinDialog = true">
+          <div class="button-content">
+            <img src="@/assets/icons/join.png" alt="加入协作" />
+            <div>加入协作</div>
+          </div>
+        </el-button>
 
+        <!-- 上传模板 -->
         <el-upload
             action=""
             :http-request="uploadTemplateFile"
             :auto-upload="true"
             :show-file-list="false"
         >
-          <el-button icon="el-icon-upload" size="medium" type="success" plain>上传模板</el-button>
+          <el-button icon="el-icon-upload" size="medium" type="success" plain>
+            <div class="button-content">
+              <img src="@/assets/icons/upload.png" alt="上传模板" />
+              <div>上传模板</div>
+            </div>
+          </el-button>
         </el-upload>
 
+        <!-- 从模板新建 -->
         <el-button icon="el-icon-document" size="medium" type="info" plain @click="goToTemplate">
-          从模板新建协作
+          <div class="button-content">
+            <img src="@/assets/icons/template.png" alt="新建协作" />
+            <div>从模板新建协作</div>
+          </div>
         </el-button>
       </div>
     </div>
@@ -92,7 +108,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+/* 鼠标悬停时按钮背景色加深 */
+
+.el-button--success:hover {
+  background-color: #C0AEFF !important;
+  color: white !important;
+}
+
+
 .document-page {
   width: 100%;
   background: url('../../assets/image/index/index_back.png');
@@ -128,10 +152,125 @@ export default {
 }
 
 .document-page-buttons .el-button {
-  min-width: 400px;
+  min-width: 300px;
   font-size: 16px;
   height: 400px;
   border-radius: 10px;
   font-family: '黑体';
+}
+.button-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 18px;
+  font-family: "黑体";
+  color: #1F4E79;
+}
+
+.button-content img {
+  width: 160px;
+  height: 160px;
+  margin-bottom: 12px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.el-button:hover .button-content img {
+  transform: scale(1.05);
+}
+.el-dialog {
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background-color: #fefeff;
+  font-family: '黑体';
+}
+
+.el-dialog__header {
+  background-color: #f0f4ff;
+  border-bottom: 1px solid #ddd;
+  font-size: 20px;
+  font-weight: bold;
+  color: #1F4E79;
+  padding: 16px 20px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.el-dialog__body {
+  padding: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.el-dialog__footer {
+  padding: 15px 20px;
+  text-align: right;
+}
+
+.el-dialog__footer .el-button {
+  min-width: 100px;
+  font-weight: bold;
+}
+
+.el-dialog__footer .el-button--primary {
+  background-color: #C8BFFF;
+  border-color: #C8BFFF;
+  color: white;
+}
+
+.el-dialog__footer .el-button--primary:hover {
+  background-color: #B29EFF;
+  border-color: #B29EFF;
+}
+.el-input__inner {
+  border-radius: 8px;
+}
+.el-dialog {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2) !important;
+  background-color: #fefeff !important;
+  font-family: '黑体' !important;
+}
+
+.el-dialog__header {
+  background-color: #f0f4ff !important;
+  border-bottom: 1px solid #ddd !important;
+  font-size: 20px !important;
+  font-weight: bold !important;
+  color: #1F4E79 !important;
+  padding: 16px 20px !important;
+  border-top-left-radius: 16px !important;
+  border-top-right-radius: 16px !important;
+}
+
+.el-dialog__body {
+  padding: 20px !important;
+  font-size: 16px !important;
+  color: #333 !important;
+}
+
+.el-dialog__footer {
+  padding: 15px 20px !important;
+  text-align: right !important;
+}
+
+.el-dialog__footer .el-button {
+  min-width: 100px !important;
+  font-weight: bold !important;
+}
+
+.el-dialog__footer .el-button--primary {
+  background-color: #C8BFFF !important;
+  border-color: #C8BFFF !important;
+  color: white !important;
+}
+
+.el-dialog__footer .el-button--primary:hover {
+  background-color: #B29EFF !important;
+  border-color: #B29EFF !important;
+}
+
+.el-input__inner {
+  border-radius: 8px !important;
 }
 </style>
