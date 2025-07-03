@@ -287,3 +287,7 @@ export const removeTaskFavor = (params) => get("/favor/removeTaskFavor",params)
 export const saveTaskFavor = (params) => post("/favor/saveTaskFavor",params)
 
 export const getTaskFavorPage = (params) => post("/favor/getTaskFavorPage",params)
+
+export function canEnterTest(params) {
+  return request.get('/student/canEnterTest', { params })
+}
