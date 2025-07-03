@@ -35,7 +35,9 @@ import strength from "@/views/strength/strength.vue";
 import dbSimulation from "@/views/simulation/dbSimulation.vue";
 import simulation from "@/views/simulation/simulation.vue";
 import document from "@/views/document/document.vue";
-
+import documentEdit from "@/views/document/documentEdit.vue";
+import templateList from "@/views/document/templateList.vue";
+import testdoc from "@/views/testdoc/testdoc.vue";
 Vue.use(VueRouter)
 
 
@@ -189,10 +191,27 @@ const routes = [
     path: '/strength',
     name: 'strength',
     component: strength
-  }, {
+  },
+  {
     path: '/document',
     name: 'document',
     component: document
+  },
+  {
+    path: '/documentEdit/:id',
+    name: 'documentEdit',
+    component: documentEdit
+  },
+
+  {
+    path: '/templateList',
+    name: 'templateList',
+    component: templateList
+  },
+  {
+    path: '/testdoc',
+    name: 'testdoc',
+    component: testdoc
   },
   {
     path: '/simulation',

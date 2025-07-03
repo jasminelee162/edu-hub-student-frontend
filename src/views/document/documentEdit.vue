@@ -1,11 +1,11 @@
 <template>
   <div class="editor-container">
-    <headerPage></headerPage>
+    <headerPage />
     <div class="editor-toolbar">
       <div class="toolbar-left">
         <span class="document-title">{{ documentTitle }}</span>
         <el-tag type="success" v-if="collaborators.length > 0">
-          协作中: {{ collaborators.length }}人在线
+          协作中: {{ collaborators.length }} 人在线
         </el-tag>
       </div>
       <div class="toolbar-right">
@@ -22,15 +22,9 @@
         </el-button-group>
       </div>
     </div>
-
     <div class="editor-main">
       <div class="editor-content">
-        <quill-editor
-            v-model="content"
-            ref="editor"
-            :options="editorOptions"
-            @change="onEditorChange"
-        />
+    <component :is="currentComponent" :content="renderedContent" />
       </div>
       <div class="collaborator-sidebar">
         <h3>协作成员</h3>
@@ -52,7 +46,7 @@
             placement="top"
         >
           <el-card>
-            <div slot="header" class="version-header">
+            <div class="version-header">
               <span>版本 {{ versions.length - index }}</span>
               <el-button size="mini" type="primary" @click="rollbackVersion(version.id)">
                 恢复到此版本
@@ -89,17 +83,37 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import headerPage from '@/components/header/header.vue'
+import mammoth from 'mammoth'
 import {
   initDocument,
   getAllVersions,
   rollbackVersion,
-  recordVersion
+  recordVersion,
+  getTemplateContent, getTemplateList
 } from '@/api/api'
 
+import DocxViewer from "@/views/document/DocxViewer.vue";
+import PdfViewer from "@/views/document/PdfViewer.vue";
+import TextViewer from "@/views/document/TextViewer.vue";
+
+function decodeDocxBase64(base64) {
+  const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
+  return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+}
 export default {
-  components: { headerPage, quillEditor },
+  components: {
+    headerPage,
+    quillEditor,
+    DocxViewer,
+    PdfViewer,
+    TextViewer
+  },
   data() {
     return {
+      fileType: '',
+      decodedContent: '',
+      renderedContent: '',
+      currentComponent: 'DocxViewer',
       documentId: this.$route.params.id,
       documentTitle: '未命名文档',
       content: '',
@@ -107,7 +121,7 @@ export default {
       versions: [],
       showHistory: false,
       showShareDialog: false,
-      shareLink: `${window.location.origin}/editor/${this.$route.params.id}`,
+      shareLink: `${window.location.origin}/documentEdit/${this.$route.params.id}`,
       editorOptions: {
         theme: 'snow',
         modules: {
@@ -131,15 +145,43 @@ export default {
   created() {
     this.initDocument()
     this.loadVersions()
+    const templateId = this.$route.query.templateId
+    console.log('模板ID是：', templateId)
   },
   methods: {
+
     async initDocument() {
-      const res = await initDocument(this.documentId, this.$store.state.user.id)
-      this.content = res.data.content
-      this.documentTitle = res.data.title || '未命名文档'
+      const templateId = this.$route.query.templateId
+
+      if (!templateId) {
+        this.$message.error('缺少模板 ID，无法加载文档')
+        return
+      }
+      const res = await getTemplateContent(templateId)
+      console.log("文档内容：", res)
+      this.documentTitle = res.data.name || '未命名模板'
+
+      this.fileType = res.data.fileType || 'docx'
+
+      switch (this.fileType) {
+        case 'docx':
+          this.currentComponent = 'DocxViewer'
+          this.renderedContent = await decodeDocxBase64(res.data.fileContent)
+          break
+        case 'pdf':
+          this.currentComponent = 'PdfViewer'
+          this.renderedContent = res.data.fileContent // base64 PDF 字符串
+          break
+        case 'txt':
+          this.currentComponent = 'TextViewer'
+          this.renderedContent = atob(res.data.fileContent) // base64 解码为纯文本
+          break
+        default:
+          this.$message.error('不支持的文档类型')
+      }
     },
     async loadVersions() {
-      const res = await getAllVersions(this.documentId)
+      const res = await getAllVersions(this.documentId) //要协作id
       this.versions = res.data.map(v => ({
         ...v,
         preview: this.truncateContent(v.content)
@@ -155,7 +197,7 @@ export default {
         inputPattern: /.+/,
         inputErrorMessage: '说明不能为空'
       })
-      await recordVersion(this.documentId, this.content, value)
+      await recordVersion(this.documentId, this.content, value) //要协作id
       this.$message.success('保存成功')
       this.loadVersions()
     },
@@ -178,7 +220,7 @@ export default {
       this.$message.success('链接已复制')
     },
     onEditorChange() {
-      // 此处用于WebSocket实时同步逻辑
+      // WebSocket 实时协作逻辑
     }
   }
 }
@@ -255,5 +297,8 @@ export default {
   padding: 5px;
   border-radius: 3px;
   background: #f9f9f9;
+}
+.share-link {
+  padding: 10px;
 }
 </style>

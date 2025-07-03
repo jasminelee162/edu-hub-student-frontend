@@ -1,29 +1,25 @@
-<!-- pages/document/select.vue -->
 <template>
-  <div class="document-container">
-    <headerPage></headerPage>
-    <div class="document-header">
-      <h1>共享协作文档系统</h1>
-      <el-button type="primary" @click="showJoinDialog = true">加入协作</el-button>
-    </div>
+  <div class="document-page">
+    <headerPage />
 
-    <div class="template-section">
-      <h2>选择模板开始协作</h2>
-      <div class="template-list">
-        <div
-            v-for="template in templates"
-            :key="template.id"
-            class="template-card"
-            @click="selectTemplate(template)"
+    <div class="document-page-actions">
+      <div class="document-page-title">协作功能入口</div>
+
+      <div class="document-page-buttons">
+        <el-button icon="el-icon-link" size="medium" type="primary" plain @click="showJoinDialog = true">加入协作</el-button>
+
+        <el-upload
+            action=""
+            :http-request="uploadTemplateFile"
+            :auto-upload="true"
+            :show-file-list="false"
         >
-          <div class="template-preview">
-            <i class="el-icon-document" style="font-size: 48px;"></i>
-          </div>
-          <div class="template-info">
-            <h3>{{ template.name }}</h3>
-            <p>{{ template.description }}</p>
-          </div>
-        </div>
+          <el-button icon="el-icon-upload" size="medium" type="success" plain>上传模板</el-button>
+        </el-upload>
+
+        <el-button icon="el-icon-document" size="medium" type="info" plain @click="goToTemplate">
+          从模板新建协作
+        </el-button>
       </div>
     </div>
 
@@ -44,16 +40,16 @@
 <script>
 import headerPage from '@/components/header/header.vue'
 import { createDocument, initDocument } from '@/api/api'
+import axios from 'axios'
+
 
 export default {
-  components: { headerPage },
+  components: {
+    headerPage,
+
+  },
   data() {
     return {
-      templates: [
-        { id: '1', name: '空白文档', description: '从空白开始创建' },
-        { id: '2', name: '实验报告模板', description: '标准实验报告格式' },
-        { id: '3', name: '课程论文模板', description: '学术论文写作模板' }
-      ],
       showJoinDialog: false,
       joinForm: {
         documentId: ''
@@ -61,14 +57,34 @@ export default {
     }
   },
   methods: {
-    selectTemplate(template) {
-      createDocument(template.id, this.$store.state.user.id).then(res => {
-        this.$router.push(`/editor/${res.data}`)
-      })
+    uploadTemplateFile(upload) {
+      const formData = new FormData();
+      formData.append('file', upload.file);
+      const token = window.localStorage.getItem('user_token')
+
+      axios.post('http://localhost:8080/template/update', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'x_access_token': token
+        }
+      }).then(res => {
+        if (res.data?.code === 1000) {
+          this.$message.success('上传成功');
+        } else {
+          this.$message.error('上传失败：' + (res.data?.message || '未知错误'));
+        }
+      }).catch(() => {
+        this.$message.error('上传请求出错');
+      });
+    },
+    goToTemplate() {
+      this.$router.push('/templateList')
     },
     joinDocument() {
-      initDocument(this.joinForm.documentId, this.$store.state.user.id).then(() => {
-        this.$router.push(`/editor/${this.joinForm.documentId}`)
+      const userId = this.$store.state.user?.id
+      if (!userId) return this.$message.error('请先登录')
+      initDocument(this.joinForm.documentId, userId).then(() => {
+        this.$router.push(`/documentEdit/${this.joinForm.documentId}`)
         this.showJoinDialog = false
       })
     }
@@ -77,62 +93,45 @@ export default {
 </script>
 
 <style scoped>
-.document-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.document-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 1px solid #eee;
-}
-.template-section {
-  margin-top: 30px;
-}
-.template-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-.template-card {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  cursor: pointer;
-  transition: all 0.3s;
+.document-page {
+  width: 100%;
+  background: url('../../assets/image/index/index_back.png');
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.document-page-actions {
+  margin-top: 80px;
+  width: 70%;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
-.template-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+.document-page-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #1F4E79;
+  margin-bottom: 30px;
+  font-family: '黑体';
 }
-.template-preview {
-  width: 120px;
-  height: 160px;
-  background: #f5f7fa;
-  border-radius: 4px;
+
+.document-page-buttons {
   display: flex;
-  align-items: center;
   justify-content: center;
-  margin-bottom: 15px;
-  color: #409EFF;
+  gap: 40px;
+  flex-wrap: wrap;
 }
-.template-info h3 {
-  margin: 0 0 8px 0;
-  color: #303133;
-}
-.template-info p {
-  margin: 0;
-  color: #909399;
-  font-size: 14px;
+
+.document-page-buttons .el-button {
+  min-width: 400px;
+  font-size: 16px;
+  height: 400px;
+  border-radius: 10px;
+  font-family: '黑体';
 }
 </style>

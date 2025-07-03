@@ -1,22 +1,72 @@
+const path = require('path');
 module.exports = {
 	transpileDependencies: true,
-	publicPath:'/',
-	outputDir: 'dist', // 输出文件目录：在npm run build时，生成文件的目录名称
-  	assetsDir: 'assets', // 放置生成的静态资源 (js、css、img、fonts) 的 (相对于 outputDir 的) 目录
+	publicPath: '/',
+	outputDir: 'dist',
+	assetsDir: 'assets',
+
 	devServer: {
 		host: '127.0.0.1',
-		port: 3001, // 端口
+		port: 3001,
 		open: true,
 		client: {
 			overlay: false,
 		},
+		// 添加热更新配置
+		hot: true,
+		// 解决 API 代理问题（如果需要）
+		proxy: {
+			'/api': {
+				target: 'http://your-api-server.com',
+				changeOrigin: true,
+				pathRewrite: {
+					'^/api': ''
+				}
+			}
+		}
 	},
-	/* 修改html标题 */
+
+	// 合并 chainWebpack 配置
 	chainWebpack: config => {
-		config.plugin('html')
-			.tap(args => {
-				args[0].title = "在线学习教育平台";
-				return args;
+		config.module
+			.rule('pdf-worker')
+			.test(/pdf\.worker\.min\.js$/)
+			.use('file-loader')
+			.loader('file-loader')
+			.options({
+				name: '[name].[hash:8].[ext]'
 			})
+			.end()
 	},
+
+	// 优化 Webpack 配置
+	configureWebpack: {
+		resolve: {
+			fallback: {
+				"fs": false,
+				"path": false,
+				"os": false
+			}
+		},
+		module: {
+			rules: [
+				{
+					test: /pdf\.worker\.min\.js$/,
+					type: "javascript/auto",
+					use: {
+						loader: 'file-loader',
+						options: {
+							name: '[name].[hash:8].[ext]'
+						}
+					}
+				}
+			]
+		},
+		// 优化性能配置
+		performance: {
+			hints: false,
+			maxEntrypointSize: 512000,
+			maxAssetSize: 512000
+		}
+	}
 }

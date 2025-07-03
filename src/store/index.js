@@ -7,7 +7,9 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     HOST: 'http://localhost:8080',
-    avatar: ''
+    avatar: '',
+    user: JSON.parse(localStorage.getItem("user_info")) || null  // 添加 user 字段
+
   },
   getters: {
   },

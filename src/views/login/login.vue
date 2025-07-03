@@ -120,6 +120,8 @@
 							});
 							var that = this
 							var token = res.data.token
+
+              window.localStorage.setItem("user_token",token)
 							this.getUserInfo()
 							setTimeout(function() {
 								that.$router.push("/")
@@ -136,6 +138,8 @@
 		getUserInfo() {
             getUser().then(res => {
                 if(res.code == 1000) {
+                  const userData = res.data
+                  this.$store.commit('SET_USER', userData) // 更新 Vuex
 					window.localStorage.setItem("user_info",JSON.stringify(res.data))
                 }
             })

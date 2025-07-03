@@ -105,10 +105,8 @@
           })
       },
       getForumItemList() {
-          var param = {
-              forumId: this.id
-          }
-          getForumItemList().then(res => {
+
+          getForumItemList({forumId:this.id}).then(res => {
               if (res.code == 1000) {
                   this.forumList = res.data
               }

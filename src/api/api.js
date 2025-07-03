@@ -1,5 +1,5 @@
 import request, { post, get } from "@/utils/request";
-
+import axios from "@/utils/request";
 // export function products(params) {
 //     return request({
 //       url: "/api/v1/products",  //接口路径
@@ -89,83 +89,39 @@ export function getAllExperiments() {
         method: 'get'
     })
 }
-
-/**
- * 创建共享文档（基于模板）
- * @param {String} templateId 模板ID
- * @param {String} userId 用户ID
- */
 export function createDocument(templateId, userId) {
     return request({
         url: '/document/create',
         method: 'post',
-        params: {
+        data: {
             templateId,
             userId
         }
     })
 }
 
-/**
- * 初始化文档内容（拉取内容）
- * @param {String} documentId 文档ID
- * @param {String} userId 用户ID
- */
-export function initDocument(documentId, userId) {
-    return request({
-        url: `/document/${documentId}/init`,
-        method: 'post',
-        params: {
-            userId
-        }
+export const initDocument = (id, userId) =>
+    request.post(`/document/${id}/init`, { userId })
+
+export const getAllVersions = (documentId) =>
+    request.get(`/documentVersion/all?documentId=${documentId}`)
+
+export const rollbackVersion = (versionId) =>
+    request.get(`/documentVersion/rollback?id=${versionId}`)
+
+export const recordVersion = (documentId, content, changeNote) =>
+    request.post('/documentVersion/record', {
+        documentId,
+        content: new TextEncoder().encode(content),
+        changeNote
     })
-}
 
-/**
- * 获取文档所有历史版本
- * @param {String} documentId 文档ID
- */
-export function getAllVersions(documentId) {
-    return request({
-        url: '/documentVersion/all',
-        method: 'get',
-        params: {
-            documentId
-        }
-    })
-}
+export const getTemplateList = () =>
+    request.get('/template/show')
 
-/**
- * 回滚到某个版本
- * @param {String} versionId 版本ID
- */
-export function rollbackVersion(versionId) {
-    return request({
-        url: '/documentVersion/rollback',
-        method: 'get',
-        params: {
-            id: versionId
-        }
-    })
-}
-
-/**
- * 保存文档新版本
- * @param {Object} data
- *  - documentId: 文档ID
- *  - content: Uint8Array 或字符串
- *  - changeNote: 变更说明
- */
-export function recordVersion(data) {
-    const formData = new FormData()
-    formData.append('documentId', data.documentId)
-    formData.append('content', new Blob([data.content])) // Byte[] 序列化
-    formData.append('changeNote', data.changeNote)
-
-    return request({
-        url: '/documentVersion/record',
-        method: 'post',
-        data: formData
+export const getTemplateContent = (id) => {
+    return request.get('/template/content', {
+        params: { id }
     })
 }
 //-------------------------------登录---------------------------------------
