@@ -1,9 +1,10 @@
 <template>
   <div>
     <quill-editor
-        v-model="editorContent"
+        ref="editor"
+        v-model="localContent"
         :options="editorOptions"
-        @text-change="onTextChange"
+        @change="onEditorChange"
         style="height: 600px; background: #fff; border-radius: 6px;"
     />
   </div>
@@ -17,10 +18,15 @@ import 'quill/dist/quill.bubble.css'
 
 export default {
   components: { quillEditor },
-  props: ['content'],
+  props: {
+    content: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
-      editorContent: this.content,
+      localContent: this.content,
       editorOptions: {
         theme: 'snow',
         modules: {
@@ -43,17 +49,16 @@ export default {
   },
   watch: {
     content(newVal) {
-      if (newVal !== this.editorContent) {
-        this.editorContent = newVal
+      // 只有当外部传入的内容与当前内容不同时才更新
+      if (newVal !== this.localContent) {
+        this.localContent = newVal
       }
     }
   },
   methods: {
-    onTextChange(delta, oldDelta, source) {
-      if (source === 'user') {
-        this.$emit('update:content', this.editorContent)
-        this.$emit('text-change', this.editorContent)
-      }
+    onEditorChange() {
+      // 只发射text-change事件，携带当前内容
+      this.$emit('text-change', this.localContent)
     }
   }
 }

@@ -62,7 +62,9 @@ export default {
         this.$router.push({
           path: `/documentEdit/${shareToken}`,
           query: {
-            templateId: templateId
+            templateId: templateId,
+
+
           }
         })
       } catch (err) {

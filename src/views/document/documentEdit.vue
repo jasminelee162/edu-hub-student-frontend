@@ -26,6 +26,7 @@
       <div class="editor-content">
         <component
             :is="currentComponent"
+            :key="editorKey"
             :content="renderedContent"
             @text-change="onEditorContentChange"
         />
@@ -52,7 +53,7 @@
           <el-card>
             <div class="version-header">
               <span>版本 {{ versions.length - index }}</span>
-              <el-button size="mini" type="primary" @click="rollbackVersion(version.id)">
+              <el-button size="mini" type="primary" @click="rollbackVersion(version.documentId)">
                 恢复到此版本
               </el-button>
             </div>
@@ -102,6 +103,11 @@ function decodeDocxBase64(base64) {
   return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
 }
 
+function isBase64Html(base64) {
+  const decoded = atob(base64)
+  return decoded.trim().startsWith('<') && decoded.includes('</p>')
+}
+
 export default {
   components: {
     headerPage,
@@ -123,8 +129,10 @@ export default {
       versions: [],
       showHistory: false,
       showShareDialog: false,
-      shareLink: `${window.location.origin}/documentEdit/${this.$route.params.id}?templateId=${this.$route.query.templateId}`,
-      lastEditTime: 0
+      shareId: '', // 保存分享 ID
+      shareLink: this.$route.params.id || '', // 初始空
+      lastEditTime: 0,
+      editorKey: 0,
     }
   },
   created() {
@@ -163,6 +171,7 @@ export default {
     onEditorContentChange(content) {
       const now = Date.now()
       if (now - this.lastEditTime > 300) {
+        // 更新两个内容变量以确保一致性
         this.renderedContent = content
         this.content = content
         this.sendEditMessage()
@@ -191,25 +200,60 @@ export default {
       try {
         // 优先读取版本记录
         const versionRes = await getAllVersions(this.documentId)
-        const versions = versionRes.data || []
-        const latest = versions.length > 0 ? versions[versions.length - 1] : null
 
-        if (latest && latest.content) {
+        const versions = versionRes.data || []
+        console.log("版本：",versionRes)
+        const latest = versions.length > 1 ? versions[versions.length - 1] : null
+        const templateId = this.$route.query.templateId
+        if (!templateId) {
+          this.$message.error('缺少模板 ID')
+          return
+        }
+
+        const res = await getTemplateContent(templateId)
+        this.documentTitle = res.data.name || '未命名模板'
+        this.fileType = res.data.fileType || 'docx'
+
+        if (latest && latest.documentId) {
           // 使用最近一次保存的内容
-          this.content = latest.content
-          this.renderedContent = latest.content
-        } else {
-          // 如果没有版本记录，才从模板加载
-          const templateId = this.$route.query.templateId
-          if (!templateId) {
-            this.$message.error('缺少模板 ID')
-            return
+          const res = await rollbackVersion(latest.documentId)
+          console.log("使用最近一次保存的内容",res)
+
+
+          switch (this.fileType) {
+            case 'docx':
+              this.currentComponent = 'DocxViewer'
+              try {
+                // 尝试用 mammoth 解析
+                const html = await decodeDocxBase64(res.data)
+                this.renderedContent = html
+                this.content = html
+              } catch (e) {
+                // 如果不是 docx zip 格式，那就直接当 HTML Base64 解码
+                this.renderedContent = atob(res.data)
+                this.content = this.renderedContent
+              }
+
+              break
+            case 'pdf':
+              this.currentComponent = 'PdfViewer'
+              this.renderedContent = res.data
+              this.content = res.data
+              break
+            case 'txt':
+              this.currentComponent = 'TextViewer'
+              this.renderedContent = atob(res.data)
+              this.content = this.renderedContent
+              break
+            default:
+              this.$message.error('不支持的文档类型')
           }
 
+        } else {
+          // 如果没有版本记录，才从模板加载
+          console.log("从模板加载")
           const res = await getTemplateContent(templateId)
-          this.documentTitle = res.data.name || '未命名模板'
-          this.fileType = res.data.fileType || 'docx'
-
+          console.log("从模板加载",res)
           switch (this.fileType) {
             case 'docx':
               this.currentComponent = 'DocxViewer'
@@ -238,6 +282,7 @@ export default {
 
     async loadVersions() {
       const res = await getAllVersions(this.documentId)
+
       this.versions = res.data.map(v => ({
         ...v,
         preview: (v.content || '').substring(0, 100) + '...'
@@ -245,16 +290,33 @@ export default {
     },
 
     async saveDocument() {
-      const { value } = await this.$prompt('请输入变更说明', '保存文档', {
-        confirmButtonText: '保存',
-        cancelButtonText: '取消',
-        inputPattern: /.+/,
-        inputErrorMessage: '说明不能为空'
-      })
-      await recordVersion(this.documentId, this.content, value)
-      this.$message.success('保存成功')
-      this.loadVersions()
-      this.sendEditMessage() // 新增：广播最新保存内容
+      try {
+        const { value } = await this.$prompt('请输入变更说明', '保存文档', {
+          confirmButtonText: '保存',
+          cancelButtonText: '取消',
+          inputPattern: /.+/,
+          inputErrorMessage: '说明不能为空'
+        })
+
+        // 确保使用最新的content
+        const contentToSave = this.content
+
+        console.log('准备保存的内容:', contentToSave) // 调试日志
+
+        const res = await recordVersion(this.documentId, contentToSave, value)
+
+        if (res.code === 200) {
+          this.$message.success('保存成功')
+
+          this.loadVersions()
+          this.sendEditMessage()
+        } else {
+          this.$message.error('保存失败: ' + (res.message || '未知错误'))
+        }
+      } catch (error) {
+        console.error('保存出错:', error)
+        this.$message.error('保存过程中出错: ' + error.message)
+      }
     },
 
     async rollbackVersion(versionId) {
@@ -264,10 +326,41 @@ export default {
         type: 'warning'
       })
       const res = await rollbackVersion(versionId)
-      this.content = res.data
-      this.renderedContent = res.data
+      console.log("恢复到选择版本",res)
+      switch (this.fileType) {
+        case 'docx':
+          this.currentComponent = 'DocxViewer'
+          try {
+            // 尝试用 mammoth 解析
+            const html = await decodeDocxBase64(res.data)
+            this.renderedContent = html
+            this.content = html
+          } catch (e) {
+            // 如果不是 docx zip 格式，那就直接当 HTML Base64 解码
+            this.renderedContent = atob(res.data)
+            this.content = this.renderedContent
+          }
+
+          break
+        case 'pdf':
+          this.currentComponent = 'PdfViewer'
+          this.renderedContent = res.data
+          this.content = res.data
+          break
+        case 'txt':
+          this.currentComponent = 'TextViewer'
+          this.renderedContent = atob(res.data)
+          this.content = this.renderedContent
+          break
+        default:
+          this.$message.error('不支持的文档类型')
+      }
+
+
+      this.editorKey++
       this.sendEditMessage() // 新增：恢复版本后广播内容
       this.$message.success('恢复成功')
+
     },
 
     shareDocument() {

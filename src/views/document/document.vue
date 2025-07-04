@@ -99,10 +99,14 @@ export default {
     joinDocument() {
       const userId = this.$store.state.user?.id
       if (!userId) return this.$message.error('请先登录')
+
       initDocument(this.joinForm.documentId, userId).then(() => {
         this.$router.push(`/documentEdit/${this.joinForm.documentId}`)
         this.showJoinDialog = false
       })
+
+
+
     }
   }
 }
