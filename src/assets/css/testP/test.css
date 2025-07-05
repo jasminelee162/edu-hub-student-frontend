@@ -2,151 +2,141 @@
     width: 100%;
     height: 100%;
 }
+
 .test-page-content {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background: url('../../../assets/image/index/index_back.png');
-    color: #1F4E79; /* 深蓝，清晰可读 */
+    color: #1F4E79;
 }
+
 .test-page-title {
     width: 70%;
     margin-top: 30px;
     font-size: 25px;
     font-family: '黑体';
     letter-spacing: 3px;
+    color: #1F4E79;
 }
+
+/* 卡片列表整体布局 */
 .test-page-list {
     width: 70%;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     margin-top: 30px;
-    color: #1F4E79; /* 深蓝，清晰可读 */
 }
-.test-page-list div:nth-child(1) {
-    color: #1F4E79; /* 深蓝，清晰可读 */
-    background-size: 100% 
-}
-.test-page-list div:nth-child(2) {
 
-    background-size: 100% 
-}
-.test-page-list div:nth-child(3) {
-
-    background-size: 100% 
-}
-.test-page-list div:nth-child(4) {
-
-    background-size: 100% 
-}
-.test-page-list div:nth-child(5) {
-
-    background-size: 100% 
-}
-.test-page-list div:nth-child(6) {
-
-    background-size: 100% 
-}
-.test-page-list div:nth-child(7) {
-
-    background-size: 100% 
-}
-.test-page-list div:nth-child(8) {
-
-    background-size: 100%
-}
-.test-page-list div:nth-child(9) {
-
-    background-size: 100% 
-}
+/* 单个卡片样式 */
 .test-page-item {
-    margin-top: 20px;
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    width: 32%;
+    width: 28%;
     height: 300px;
-    border-radius: 10px;
+    margin-top: 20px;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: rgba(234, 232, 254, 0.6);
+    border: 1px solid #C2E4F5;
+    color: #1F4E79;
+    font-family: '黑体';
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
     display: flex;
     flex-direction: column;
-    color: #1F4E79; /* 深蓝，清晰可读 */
+    transition: all 0.3s ease;
 }
-.test-page-item span:nth-child(1) {
-    margin-top: 20px;
+
+.test-page-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
 }
-.test-page-item>span {
-    color: #ffffff;
+
+/* 卡片中的文字 */
+.test-page-item > span {
     letter-spacing: 2px;
-    margin-left: 20px;
-    font-size: 16px;
-    font-family: '黑体';
+    margin-left: 10px;
+    font-size: 15px;
+    color: #1F4E79 !important;
     margin-top: 5px;
 }
+
+/* 卡片首行文字额外间距 */
+.test-page-item span:nth-child(1) {
+    margin-top: 10px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* 描述区域整体布局 */
 .test-page-desc {
     margin-top: 30px;
     width: 70%;
     height: 250px;
-    background-color: #F2F2F2;
-    border-radius: 7px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
     display: flex;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
+
+/* 描述左侧图像区域 */
 .test-page-image {
-    background-color: #F2F2F2;
     width: 10%;
+    background-color: transparent;
 }
+
+/* 统计数字区域 */
 .test-page-num {
-    font-family: '黑体';
-    background-color: #EAEAEA;
     width: 15%;
+    background-color: #EAEAEA;
+    font-family: '黑体';
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-.test-page-num1 {
-    font-size: 20px;
-    letter-spacing: 2px;
-}
+
+.test-page-num1,
 .test-page-num2 {
-    margin-top: 20px;
     font-size: 20px;
     letter-spacing: 2px;
+    color: #1F4E79;
+    font-weight: bold;
+    margin: 5px 0;
 }
+
+/* 描述内容 */
 .test-page-font {
     display: flex;
     width: 75%;
     justify-content: space-between;
     font-family: '黑体';
     font-size: 14px;
+    color: #1F4E79;
 }
+
 .test-page-font1 {
     margin-left: 10px;
     margin-top: 15px;
     width: 49%;
+    line-height: 1.6;
 }
+
 .test-page-font2 {
     margin-top: 36px;
     width: 49%;
+    line-height: 1.6;
 }
+
+/* 分页组件样式 */
 .test-page-fenye {
-    margin-top: 10px;
+    margin-top: 20px;
     width: 70%;
 }
+
+/* 底部图像区域 */
 .test-bottom-image {
     width: 70%;
-    margin-top: 10px;
-}
-.test-page-item {
-    background-color: #B3AECF;
-    border: 1px solid #86C5E0;      /* 主色调浅蓝边框 */
-    border-radius: 10px;            /* 圆角美观 */
-    padding: 20px;
-    margin-bottom: 20px;
-    font-family: '黑体', sans-serif;
-    color: #1F4E79;                 /* 深蓝字体，清晰可读 */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); /* 可选微阴影 */
-
-}
-.test-page-item {
-    color: #1F4E79 !important;
+    margin-top: 20px;
 }
