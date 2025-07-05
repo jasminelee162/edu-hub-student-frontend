@@ -57,7 +57,8 @@
 import headerPage from '@/components/header/header.vue'
 import { createDocument, initDocument } from '@/api/api'
 import axios from 'axios'
-
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
 
 export default {
   components: {
@@ -114,6 +115,19 @@ export default {
           this.stompClient.publish({
             destination: `/app/${documentId}/init`,
             body: JSON.stringify({ userId })
+          })
+
+          // 2. 订阅 /user/queue/init，接收初始化返回内容
+          this.stompClient.subscribe('/user/queue/init', (message) => {
+            const content = message.body
+            console.log('✅ 收到初始化内容:', content)
+
+            // 可选：跳转并传内容
+            this.$router.push({
+              path: `/documentEdit/${documentId}`,
+              query: { fromInit: true }
+            })
+            this.showJoinDialog = false
           })
 
           this.$message.success('加入协作成功')
