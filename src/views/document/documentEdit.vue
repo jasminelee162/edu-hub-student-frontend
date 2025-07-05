@@ -135,15 +135,21 @@ export default {
   },
   methods: {
     initWebSocket() {
-      const userId = this.$store.state.user?.id
+      const userId = this.$store.state.user?.id;
+      if (!userId) {
+        console.error('无法建立WebSocket连接：未获取到用户ID');
+        return;
+      }
       const socket = new SockJS('http://localhost:8080/ws-doc')
       this.stompClient = new Client({
         webSocketFactory: () => socket,
         connectHeaders: {
-          login: this.$store.state.user?.id || 'anonymous'
+          userId: userId
         },
         debug: str => console.log('[STOMP]', str),
-        reconnectDelay: 3000
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000
       })
 
       this.stompClient.onConnect = () => {
@@ -168,11 +174,14 @@ export default {
           this.collaborators = users.map(name => ({ id: name, name, avatar: '' }))
         })
 
+        // 发送初始化消息时必须包含userId
         this.stompClient.publish({
           destination: `/app/${this.documentId}/init`,
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({ userId })
-        })
+          headers: {
+            userId: userId
+          },
+          body: null  // 明确传null
+        });
       }
 
       this.stompClient.activate()
@@ -190,12 +199,16 @@ export default {
 
     sendEditMessage() {
       if (this.stompClient?.connected) {
+        const userId = this.$store.state.user?.id
         const encoder = new TextEncoder()
         const binary = encoder.encode(this.content)
         // 发送编辑内容（binary 可以是 Uint8Array 或字符串）
         this.stompClient.publish({
           destination: `/app/${this.documentId}/edit`,
-          headers: { 'content-type': 'application/octet-stream' },
+          headers: {
+            'content-type': 'application/octet-stream',
+            userId: userId  // 必须包含
+          },
           body: binary
         })
       }
