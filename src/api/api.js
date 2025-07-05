@@ -91,7 +91,7 @@ export function getAllExperiments() {
 }
 export function createDocument(templateId, userId) {
     return request({
-        url: '/document/create',
+        url: '/create',
         method: 'post',
         data: {
             templateId,
@@ -101,13 +101,13 @@ export function createDocument(templateId, userId) {
 }
 
 export const initDocument = (id, userId) =>
-    request.post(`/document/${id}/init`, { userId })
+    request.post(`/${id}/init`, { userId })
 
 export const getAllVersions = (documentId) =>
     request.get(`/documentVersion/all?documentId=${documentId}`)
 
-export const rollbackVersion = (versionId) =>
-    request.get(`/documentVersion/rollback?id=${versionId}`)
+export const rollbackVersion = (versionId,userId) =>
+    request.get(`/documentVersion/rollback?versionId=${versionId}&&userId=${userId}`)
 
 export function recordVersion(documentId, content, changeNote) {
     return request({

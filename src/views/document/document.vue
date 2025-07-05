@@ -97,16 +97,32 @@ export default {
       this.$router.push('/templateList')
     },
     joinDocument() {
+      const documentId = this.joinForm.documentId.trim()
       const userId = this.$store.state.user?.id
-      if (!userId) return this.$message.error('请先登录')
+      if (!userId) {
+        this.$message.error('请先登录')
+        return
+      }
 
-      initDocument(this.joinForm.documentId, userId).then(() => {
-        this.$router.push(`/documentEdit/${this.joinForm.documentId}`)
-        this.showJoinDialog = false
+      const socket = new SockJS('http://localhost:8080/ws-doc')
+      this.stompClient = new Client({
+        webSocketFactory: () => socket,
+        reconnectDelay: 5000,
+        debug: str => console.log('[STOMP]', str),
+        onConnect: () => {
+          // 👇重点：这里使用 WebSocket 发送 init 消息
+          this.stompClient.publish({
+            destination: `/app/${documentId}/init`,
+            body: JSON.stringify({ userId })
+          })
+
+          this.$message.success('加入协作成功')
+          this.showJoinDialog = false
+          this.$router.push(`/documentEdit/${documentId}`)
+        }
       })
 
-
-
+      this.stompClient.activate()
     }
   }
 }

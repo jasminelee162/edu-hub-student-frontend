@@ -305,7 +305,7 @@ export default {
 
         const res = await recordVersion(this.documentId, contentToSave, value)
 
-        if (res.code === 200) {
+        if (res.code === 1000) {
           this.$message.success('保存成功')
 
           this.loadVersions()
@@ -320,47 +320,58 @@ export default {
     },
 
     async rollbackVersion(versionId) {
+      const userId = this.$store.state.user?.id;
+      if (!userId) {
+        this.$message.error('未登录，无法恢复版本');
+        return;
+      }
+
       await this.$confirm('确定要恢复到此版本吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
-      const res = await rollbackVersion(versionId)
-      console.log("恢复到选择版本",res)
-      switch (this.fileType) {
-        case 'docx':
-          this.currentComponent = 'DocxViewer'
-          try {
-            // 尝试用 mammoth 解析
-            const html = await decodeDocxBase64(res.data)
-            this.renderedContent = html
-            this.content = html
-          } catch (e) {
-            // 如果不是 docx zip 格式，那就直接当 HTML Base64 解码
-            this.renderedContent = atob(res.data)
-            this.content = this.renderedContent
-          }
 
-          break
-        case 'pdf':
-          this.currentComponent = 'PdfViewer'
-          this.renderedContent = res.data
-          this.content = res.data
-          break
-        case 'txt':
-          this.currentComponent = 'TextViewer'
-          this.renderedContent = atob(res.data)
-          this.content = this.renderedContent
-          break
-        default:
-          this.$message.error('不支持的文档类型')
+      // 传两个参数：versionId 和 userId
+      const res = await rollbackVersion(versionId, userId);
+      console.log("保存信息:"+ versionId +","+ userId)
+      if (res.code !== 1000) {
+        this.$message.error(res.message || '恢复失败');
+        return;
       }
 
+      console.log("恢复到选择版本", res)
 
-      this.editorKey++
-      this.sendEditMessage() // 新增：恢复版本后广播内容
-      this.$message.success('恢复成功')
+      const data = res.data;
+      switch (this.fileType) {
+        case 'docx':
+          this.currentComponent = 'DocxViewer';
+          try {
+            const html = await decodeDocxBase64(data);
+            this.renderedContent = html;
+            this.content = html;
+          } catch (e) {
+            this.renderedContent = atob(data);
+            this.content = this.renderedContent;
+          }
+          break;
+        case 'pdf':
+          this.currentComponent = 'PdfViewer';
+          this.renderedContent = data;
+          this.content = data;
+          break;
+        case 'txt':
+          this.currentComponent = 'TextViewer';
+          this.renderedContent = atob(data);
+          this.content = this.renderedContent;
+          break;
+        default:
+          this.$message.error('不支持的文档类型');
+      }
 
+      this.editorKey++;
+      this.sendEditMessage();
+      this.$message.success('恢复成功');
     },
 
     shareDocument() {
