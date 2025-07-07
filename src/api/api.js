@@ -133,6 +133,15 @@ export const getTemplateContent = (id) => {
         params: { id }
     })
 }
+// 发送邮箱验证码
+export function sendEmailCode(email) {
+    return axios.post('/email/sendCode', { email })
+}
+
+// 邮箱验证码登录
+export function loginWithEmail(email, code) {
+    return axios.post('/email/login', { email, code })
+}
 //-------------------------------登录---------------------------------------
 // 登录
 export const login = (params) => post("/login",params)
