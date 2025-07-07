@@ -199,6 +199,8 @@ export const getTaskByTeacher = (params) => get("/task/getTaskByTeacher",params)
 export const getUserById = (params) => get("/user/getUserById",params)
 //获取笔记详情
 export const getArticleById = (params) => get("/article/getArticleById",params)
+// 编辑笔记接口
+export const editArticle = (data) => post("/article/editArticle", data)
 //保存笔记评论
 export const saveArticleComment = (params) => post("/articleComment/saveArticleComment",params)
 //获取笔记评论

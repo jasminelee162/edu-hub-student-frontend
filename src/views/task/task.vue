@@ -2,7 +2,7 @@
   <div class="task">
     <headerPage></headerPage>
     <div class="task-page-content">
-      <div class="task-page-search">
+      <div class="task-page-search" >
         <div class="task-search-item">
           <div>课程名称：</div>
           <div>

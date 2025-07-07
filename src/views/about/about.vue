@@ -13,7 +13,7 @@
 				<div>Q Q：*********</div>
 				<div>微信：*********</div>
 				<div>电话：*********</div>
-				<div>没有什么烦恼是敲出一行代码解决不了的，不行，就两行</div>
+
 			  </div>
 			  <img style="width:59%" src="../../assets/image/about/about.jpeg">
 		  </div>
