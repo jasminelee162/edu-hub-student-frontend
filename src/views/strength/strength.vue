@@ -41,7 +41,7 @@
           <div class="section-title">
             <i class="el-icon-magic-stick icon"></i> AI 智能学习建议
           </div>
-          <div v-if="suggestion" class="ai-text-html">
+          <div v-if="formattedSuggestion" class="ai-text-html">
             <div v-html="formattedSuggestion"></div>
             <span v-if="isTyping" class="typing-cursor">|</span>
           </div>
@@ -166,6 +166,7 @@ export default {
         const res = await getAISuggestion(id)
         if (res.code === 1000) {
           await this.typeParsedSuggestion(res.message || "暂无建议内容");
+          this.suggestion = res.message || "暂无建议内容";
           console.log("建议：",res.message)
         }
       } catch (error) {
@@ -178,11 +179,13 @@ export default {
     async typeParsedSuggestion(text) {
       this.formattedSuggestion = ""
       this.isTyping = true
-      const parsedHtml = marked.parse(text)
 
-      for (let i = 0; i < parsedHtml.length; i++) {
-        this.formattedSuggestion += parsedHtml[i]
-        await new Promise(resolve => setTimeout(resolve, 10))
+      let raw = "" // 原始 Markdown
+      for (let i = 0; i < text.length; i++) {
+        raw += text[i]
+        this.formattedSuggestion = marked.parse(raw)
+        await new Promise(resolve => setTimeout(resolve, 15))
+
         this.$nextTick(() => {
           const container = this.$el.querySelector('.ai-text-html')
           if (container) container.scrollTop = container.scrollHeight
@@ -307,9 +310,8 @@ export default {
   line-height: 1.6;
 }
 
-/* 打字光标效果（可选） */
-.ai-text-html:after {
-  content: "|";
+.typing-cursor {
+  display: inline-block;
   animation: blink 1s infinite;
   color: #6427FF;
   font-weight: bold;
