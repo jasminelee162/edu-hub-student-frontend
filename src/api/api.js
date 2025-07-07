@@ -8,7 +8,7 @@ import axios from "@/utils/request";
 //       params  //接口参数
 //     });
 // }
-// ✅ 提交任务 ID，后端返回学习进度
+//  提交任务 ID，后端返回学习进度
 export function updateLearningProgress(data) {
     return request({
         url: '/student/updateLearningProgress',
@@ -82,6 +82,14 @@ export function executeQuery(data) {
         data // 包含 questionId、request、userStamp
     })
 }
+// 确认共享文档是否存在
+export function confirmDocument(documentId) {
+    return axios.get('/confirm', {
+        params: {
+            documentId: documentId
+        }
+    })
+}
 //实验
 export function getAllExperiments() {
     return request({
@@ -91,7 +99,7 @@ export function getAllExperiments() {
 }
 export function createDocument(templateId, userId) {
     return request({
-        url: '/document/create',
+        url: '/create',
         method: 'post',
         data: {
             templateId,

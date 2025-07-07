@@ -82,7 +82,7 @@
           if (schedule === '未开始') {
             // 还未开始的考试，校验是否过期
             canEnterTest({testId: id}).then(res => {
-              if (res.code === 200) {
+              if (res.code === 1000) {
                 this.$router.push("/testInfo?id=" + id);
               } else {
                 this.$message.error(res.message || "考试已结束，无法进入试卷");

@@ -9,60 +9,81 @@
             <i class="el-icon-edit-outline icon"></i> 我的错题集
           </div>
 
-              <div v-if="data.length">
-                <div
-                    class="question-card fade-in"
-                    v-for="(q, index) in data"
-                    :key="index"
-                >
-                  <div class="question-title">
-                    {{ index + 1 }}. {{ q.title }}
-                  </div>
-
-                  <div class="question-options">
-                    <!-- 单选题 -->
-                    <el-radio-group v-model="q.solution" v-if="q.type === 0">
-                      <el-radio
-                          v-for="(opt, i) in q.content"
-                          :key="i"
-                          :label="opt.value"
-                      >{{ opt.value }}.{{ opt.option }}</el-radio>
-                    </el-radio-group>
-
-                    <!-- 多选题 -->
-                    <el-checkbox-group v-model="q.solution" v-if="q.type === 1">
-                      <el-checkbox
-                          v-for="(opt, i) in q.content"
-                          :key="i"
-                          :label="opt.value"
-                      >{{ opt.value }}.{{ opt.option }}</el-checkbox>
-                    </el-checkbox-group>
-
-                    <!-- 简答题 -->
-                    <el-input
-                        v-model="q.solution"
-                        v-if="q.type === 2"
-                        size="mini"
-                        type="textarea"
-                        placeholder="请输入你的答案"
-                        rows="3"
-                    ></el-input>
-
-                    <!-- 判断题 -->
-                    <el-radio-group v-model="q.solution" v-if="q.type === 3">
-                      <el-radio label="正确">正确</el-radio>
-                      <el-radio label="错误">错误</el-radio>
-                    </el-radio-group>
-                  </div>
-
-                  <div class="answer-tip" v-if="q.point !== q.score">
-                    正确答案：<span class="highlight">{{ q.answer }}</span>
-                  </div>
-                </div>
+          <div v-if="data.length">
+            <div
+                class="question-card fade-in"
+                v-for="(q, index) in data"
+                :key="index"
+            >
+              <div class="question-title">
+                {{ index + 1 }}. {{ q.title }}
               </div>
 
-              <div v-else class="no-data">暂无错题记录 🎉</div>
+              <div class="question-options">
+                <!-- 单选题 -->
+                <el-radio-group v-model="q.solution" v-if="q.type === 0" :disabled="true">
+                  <el-radio
+                      v-for="(opt, i) in q.content"
+                      :key="i"
+                      :label="opt.value"
+                      class="option-item"
+                  >
+                    <span :class="{'correct-answer': opt.value === q.answer}">
+                      {{ opt.value }}.{{ opt.option }}
+                    </span>
+                  </el-radio>
+                </el-radio-group>
 
+
+                <!-- 多选题 -->
+                <el-checkbox-group v-model="q.solution" v-if="q.type === 1" :disabled="true">
+                  <el-checkbox
+                      v-for="(opt, i) in q.content"
+                      :key="i"
+                      :label="opt.value"
+                      class="option-item"
+                  >
+                    <span :class="{'correct-answer': q.answer.includes(opt.value)}">
+                      {{ opt.value }}.{{ opt.option }}
+                    </span>
+                  </el-checkbox>
+                </el-checkbox-group>
+
+                <!-- 简答题 -->
+                <div v-if="q.type === 2" class="text-answer-container">
+                  <div class="student-answer">
+                    <strong>你的答案：</strong>
+                    <span>{{ q.solution || '未作答' }}</span>
+                  </div>
+                  <div class="correct-answer">
+                    <strong>正确答案：</strong>
+                    <span>{{ q.answer }}</span>
+                  </div>
+                </div>
+
+                <!-- 判断题 -->
+                <el-radio-group v-model="q.solution" v-if="q.type === 3" :disabled="true">
+                  <el-radio label="正确" class="option-item">
+                    <span :class="{'correct-answer': q.answer === '正确'}">正确</span>
+                  </el-radio>
+                  <el-radio label="错误" class="option-item">
+                    <span :class="{'correct-answer': q.answer === '错误'}">错误</span>
+                  </el-radio>
+                </el-radio-group>
+              </div>
+
+              <div class="answer-tip" v-if="q.point !== q.score">
+                <div v-if="q.type !== 2"> <!-- Don't show this for text answers as we already show correct answer above -->
+                  正确答案：<span class="highlight">{{ q.answer }}</span>
+                </div>
+                <div>
+                  你的答案：<span class="student-answer">{{ formatStudentAnswer(q) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="no-data">暂无错题记录 </div>
         </div>
       </transition>
     </div>
