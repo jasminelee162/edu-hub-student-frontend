@@ -9,60 +9,66 @@
             <i class="el-icon-edit-outline icon"></i> 我的错题集
           </div>
 
-              <div v-if="data.length">
-                <div
-                    class="question-card fade-in"
-                    v-for="(q, index) in data"
-                    :key="index"
-                >
-                  <div class="question-title">
-                    {{ index + 1 }}. {{ q.title }}
-                  </div>
-
-                  <div class="question-options">
-                    <!-- 单选题 -->
-                    <el-radio-group v-model="q.solution" v-if="q.type === 0">
-                      <el-radio
-                          v-for="(opt, i) in q.content"
-                          :key="i"
-                          :label="opt.value"
-                      >{{ opt.value }}.{{ opt.option }}</el-radio>
-                    </el-radio-group>
-
-                    <!-- 多选题 -->
-                    <el-checkbox-group v-model="q.solution" v-if="q.type === 1">
-                      <el-checkbox
-                          v-for="(opt, i) in q.content"
-                          :key="i"
-                          :label="opt.value"
-                      >{{ opt.value }}.{{ opt.option }}</el-checkbox>
-                    </el-checkbox-group>
-
-                    <!-- 简答题 -->
-                    <el-input
-                        v-model="q.solution"
-                        v-if="q.type === 2"
-                        size="mini"
-                        type="textarea"
-                        placeholder="请输入你的答案"
-                        rows="3"
-                    ></el-input>
-
-                    <!-- 判断题 -->
-                    <el-radio-group v-model="q.solution" v-if="q.type === 3">
-                      <el-radio label="正确">正确</el-radio>
-                      <el-radio label="错误">错误</el-radio>
-                    </el-radio-group>
-                  </div>
-
-                  <div class="answer-tip" v-if="q.point !== q.score">
-                    正确答案：<span class="highlight">{{ q.answer }}</span>
-                  </div>
-                </div>
+          <div v-if="data.length">
+            <div
+                class="question-card fade-in"
+                v-for="(q, index) in data"
+                :key="index"
+            >
+              <div class="question-title">
+                {{ index + 1 }}. {{ q.title }}
               </div>
 
-              <div v-else class="no-data">暂无错题记录 🎉</div>
 
+
+              <div class="question-options">
+                <!-- 单选题 -->
+                <el-radio-group v-model="q.solution" v-if="q.type === 0" :disabled="true">
+                  <el-radio
+                      v-for="(opt, i) in q.content"
+                      :key="i"
+                      :label="opt.value"
+                      class="option-item"
+                  >
+        <span :class="{
+          'correct-answer': opt.value === q.answer,
+          'neutral-option': opt.value !== q.answer
+        }">
+          {{ opt.value }}.{{ opt.option }}
+        </span>
+                  </el-radio>
+                </el-radio-group>
+
+                <!-- 多选题 -->
+                <el-checkbox-group v-model="q.solution" v-if="q.type === 1" :disabled="true">
+                  <el-checkbox
+                      v-for="(opt, i) in q.content"
+                      :key="i"
+                      :label="opt.value"
+                      class="option-item"
+                  >
+        <span :class="{
+          'correct-answer': q.answer.includes(opt.value),
+          'neutral-option': !q.answer.includes(opt.value)
+        }">
+          {{ opt.value }}.{{ opt.option }}
+        </span>
+                  </el-checkbox>
+                </el-checkbox-group>
+              </div>
+
+              <div class="answer-tip" v-if="q.point !== q.score">
+                <div>
+                  正确答案：<span class="highlight">{{ q.answer }}</span>
+                </div>
+                <div>
+                  你的答案：<span class="student-answer">{{ formatStudentAnswer(q) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="no-data">暂无错题记录 🎉</div>
         </div>
       </transition>
     </div>
@@ -85,13 +91,17 @@ export default {
     }
   },
   methods: {
+    formatStudentAnswer(q) {
+      if (q.type === 1) { // Multiple choice
+        return Array.isArray(q.solution) ? q.solution.join(', ') : q.solution || '未作答'
+      }
+      return q.solution || '未作答'
+    },
     query() {
       getWrongAnswers()
           .then((res) => {
             if (res.code === 1000 && Array.isArray(res.data)) {
-              // 对每道题的 content 字段做 JSON.parse（如果它是字符串）
               this.data = res.data.map(q => {
-                // content 确保为数组
                 let parsedContent = []
                 try {
                   parsedContent = typeof q.content === 'string'
@@ -101,15 +111,12 @@ export default {
                   parsedContent = []
                 }
 
-                // solution 确保为数组（多选题才需要这样处理）
                 let parsedSolution = q.solution
                 if (q.type === 1) {
                   if (typeof parsedSolution === 'string') {
                     try {
-                      // 如果是字符串形式的数组，如 '["A","B"]'
                       parsedSolution = JSON.parse(parsedSolution)
                     } catch (e) {
-                      // 如果是逗号分隔的，如 "A,B"
                       parsedSolution = parsedSolution.split(',')
                     }
                   } else if (!Array.isArray(parsedSolution)) {
@@ -122,7 +129,7 @@ export default {
                   content: parsedContent,
                   solution: parsedSolution
                 }
-              })
+              }).filter(q => q.point !== q.score) // Only show wrong answers
             } else {
               this.$message.error("获取错题失败")
             }
@@ -139,6 +146,9 @@ export default {
 </script>
 
 <style scoped>
+.neutral-option {
+  color: #666; /* 深灰色 */
+}
 .assignInfo-page {
   width: 100%;
   min-height: 100vh;
@@ -193,6 +203,7 @@ export default {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 10px;
+  word-break: break-word;
 }
 
 /* 选项区域 */
@@ -200,14 +211,40 @@ export default {
   margin-bottom: 10px;
 }
 
+.option-item {
+  display: block;
+  margin: 8px 0;
+  word-break: break-word;
+}
+
+.text-answer-container {
+  margin-top: 10px;
+}
+
+.student-answer {
+  color: #ff4d4f;
+  margin-bottom: 8px;
+}
+
+.correct-answer {
+  color: #52c41a;
+  font-weight: bold;
+}
+
 /* 答案提示 */
 .answer-tip {
   font-size: 14px;
-  color: #ff4d4f;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.3);
 }
 .highlight {
   font-weight: bold;
-  color: #ff7875;
+  color: #52c41a;
+}
+
+.student-answer {
+  color: #ff4d4f;
 }
 
 /* scoped 版本 */
@@ -219,6 +256,14 @@ export default {
 ::v-deep .el-checkbox__input.is-checked .el-checkbox__inner {
   border-color: #C2E4F5;
   background-color: #C2E4F5;
+}
+
+::v-deep .el-radio.is-disabled .el-radio__inner,
+::v-deep .el-checkbox.is-disabled .el-checkbox__inner,
+::v-deep .el-textarea.is-disabled .el-textarea__inner {
+  cursor: not-allowed;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 /* 无数据 */
@@ -242,5 +287,28 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* 选项容器样式 */
+.question-options {
+  margin-bottom: 10px;
+  width: 100%; /* 确保宽度固定 */
+}
+
+/* 每个选项样式 */
+.option-item {
+  display: block;
+  margin: 8px 0;
+  word-break: break-all; /* 允许在任意字符间断行 */
+  white-space: normal; /* 允许文字换行 */
+  padding-right: 15px; /* 留出右边距 */
+}
+
+/* 单选/多选框标签样式 */
+::v-deep .el-radio__label,
+::v-deep .el-checkbox__label {
+  white-space: normal !important; /* 强制允许换行 */
+  display: inline-block; /* 保持与选框对齐 */
+  width: calc(100% - 20px); /* 扣除选框宽度 */
+  vertical-align: top; /* 顶部对齐 */
 }
 </style>

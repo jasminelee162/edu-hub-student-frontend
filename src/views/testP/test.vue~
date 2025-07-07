@@ -42,10 +42,8 @@
                 <span>考试进度：{{item.schedule}}</span>
                 <span>成绩：{{item.scoreTotal}}分</span>
                 <span>
-<!--                  <el-button v-if="item.schedule == '未开始'" @click="toTestInfo(item.id)" icon="el-icon-edit" size="mini" type="success">开始考试</el-button>-->
-<!--                  <el-button v-if="item.schedule == '已完成'" @click="toTestInfo(item.id)" icon="el-icon-edit" size="mini" type="success">查看详情</el-button>-->
                   <el-button v-if="item.schedule == '未开始'" @click="toTestInfo(item.id, item.schedule)" icon="el-icon-edit" size="mini" type="success">开始考试</el-button>
-<el-button v-if="item.schedule == '已完成'" @click="toTestInfo(item.id, item.schedule)" icon="el-icon-edit" size="mini" type="success">查看详情</el-button>
+                  <el-button v-if="item.schedule == '已完成'" @click="toTestInfo(item.id, item.schedule)" icon="el-icon-edit" size="mini" type="success">查看详情</el-button>
 
                 </span>
             </div>
@@ -81,24 +79,23 @@
         })
       },
       toTestInfo(id, schedule) {
-        if (schedule === '未开始') {
-          // 还未开始的考试，校验是否过期
-          canEnterTest({testId: id}).then(res => {
-            if (res.code === 200) {
-              this.$router.push("/testInfo?id=" + id);
-            } else {
-              this.$message.error(res.message || "考试已结束，无法进入试卷");
-            }
-          }).catch(() => {
-            this.$message.error("系统错误，无法进入试卷");
-          });
-        } else {
-          // 其他状态直接跳转
-          this.$router.push("/testInfo?id=" + id);
+          if (schedule === '未开始') {
+            // 还未开始的考试，校验是否过期
+            canEnterTest({testId: id}).then(res => {
+              if (res.code === 200) {
+                this.$router.push("/testInfo?id=" + id);
+              } else {
+                this.$message.error(res.message || "考试已结束，无法进入试卷");
+              }
+            }).catch(() => {
+              this.$message.error("系统错误，无法进入试卷");
+            });
+          } else {
+            // 其他状态直接跳转
+            this.$router.push("/testInfo?id=" + id);
+          }
         }
-      }
-    }
-        ,
+      },
     created() {
 
     },

@@ -8,7 +8,7 @@ import axios from "@/utils/request";
 //       params  //接口参数
 //     });
 // }
-// ✅ 提交任务 ID，后端返回学习进度
+//  提交任务 ID，后端返回学习进度
 export function updateLearningProgress(data) {
     return request({
         url: '/student/updateLearningProgress',
