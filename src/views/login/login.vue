@@ -58,7 +58,6 @@
         <div class="login-title">在线学习教育平台</div>
 
         <!-- 登录方式切换 -->
-        <!-- 登录方式切换 -->
         <div class="login-type-switch">
           <span
               :class="['login-type-option', loginType === 'account' ? 'active' : '']"
@@ -77,10 +76,10 @@
         <!-- 账号密码登录表单 -->
         <el-form v-if="loginType === 'account'" :model="userInfo" :rules="rules" ref="ruleForm" class="demo-ruleForm" style="width: 100%;">
           <el-form-item prop="username">
-            <el-input v-model="userInfo.username" placeholder="请输入用户账号"></el-input>
+            <el-input v-model="userInfo.username" placeholder="请输入用户账号" @keyup.enter.native="toLogin"></el-input>
           </el-form-item>
           <el-form-item prop="password">
-            <el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码"></el-input>
+            <el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码 " @keyup.enter.native="toLogin"></el-input>
           </el-form-item>
           <div class="login-btn" @click="toLogin()"><div>登 录</div></div>
         </el-form>
@@ -88,10 +87,10 @@
         <!-- 邮箱验证码登录表单 -->
         <el-form v-else :model="emailInfo" ref="emailForm" style="width: 100%;">
           <el-form-item>
-            <el-input v-model="emailInfo.email" placeholder="请输入邮箱"></el-input>
+            <el-input v-model="emailInfo.email" placeholder="请输入邮箱" @keyup.enter.native="toEmailLogin"></el-input>
           </el-form-item>
           <el-form-item>
-            <el-input v-model="emailInfo.code" placeholder="请输入验证码" style="width: 60%; margin-right: 8px;" />
+            <el-input v-model="emailInfo.code" placeholder="请输入验证码" @keyup.enter.native="toEmailLogin" style="width: 60%; margin-right: 8px;" />
             <el-button :disabled="isSending" @click="sendCode">
               {{ isSending ? countdown + 's 后重发' : '获取验证码' }}
             </el-button>
