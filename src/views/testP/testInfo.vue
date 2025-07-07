@@ -26,19 +26,27 @@
                     {{e.value}}.{{e.option}}
                   </el-radio>
                 </el-radio-group>
-                <div v-else class="option-group">
-                  <div v-for="(e, s) in item.content" :key="s" class="option-item">
-      <span :class="{
-        'correct-answer': e.value === item.answer,
-        'wrong-answer': item.solution && e.value === item.solution && e.value !== item.answer,
-        'neutral-option': (!item.solution || e.value !== item.solution) && e.value !== item.answer
-      }">
-        {{e.value}}.{{e.option}}
-      </span>
-                    <!-- 添加答案对比信息 -->
-                    <div v-if="flag" class="answer-comparison">
-                      <span v-if="e.value === item.answer" class="correct-mark">(正确答案)</span>
-                      <span v-if="item.solution && e.value === item.solution" class="your-mark">(你的选择)</span>
+                <div v-else class="question-options">
+                  <div
+                      v-for="(e, s) in item.content"
+                      :key="s"
+                      class="option-item"
+                      :class="{
+          'correct-answer': e.value === item.answer,
+          'student-correct': e.value === item.solution && e.value === item.answer,
+          'student-incorrect': e.value === item.solution && e.value !== item.answer
+        }"
+                  >
+                    {{e.value}}.{{e.option}}
+                  </div>
+                  <div class="answer-result">
+                    <div class="correct-answer-line">正确答案：<span class="highlight">{{ item.answer }}</span></div>
+                    <div class="student-answer-line">
+                      你的答案：<span :class="{
+          'student-answer': true,
+          'text-danger': item.point < item.score,
+          'text-success': item.point === item.score
+        }">{{ item.solution || '未作答' }}</span>
                     </div>
                   </div>
                 </div>
@@ -56,19 +64,27 @@
                     {{e.value}}.{{e.option}}
                   </el-checkbox>
                 </el-checkbox-group>
-                <div v-else class="option-group">
-                  <div v-for="(e, s) in item.content" :key="s" class="option-item">
-      <span :class="{
-        'correct-answer': item.answer.includes(e.value),
-        'wrong-answer': item.solution && item.solution.includes(e.value) && !item.answer.includes(e.value),
-        'neutral-option': (!item.solution || !item.solution.includes(e.value)) && !item.answer.includes(e.value)
-      }">
-        {{e.value}}.{{e.option}}
-      </span>
-                    <!-- 添加答案对比信息 -->
-                    <div v-if="flag" class="answer-comparison">
-                      <span v-if="item.answer.includes(e.value)" class="correct-mark">(正确答案)</span>
-                      <span v-if="item.solution && item.solution.includes(e.value)" class="your-mark">(你的选择)</span>
+                <div v-else class="question-options">
+                  <div
+                      v-for="(e, s) in item.content"
+                      :key="s"
+                      class="option-item"
+                      :class="{
+          'correct-answer': item.answer.includes(e.value),
+          'student-correct': item.solution.includes(e.value) && item.answer.includes(e.value),
+          'student-incorrect': item.solution.includes(e.value) && !item.answer.includes(e.value)
+        }"
+                  >
+                    {{e.value}}.{{e.option}}
+                  </div>
+                  <div class="answer-result">
+                    <div class="correct-answer-line">正确答案：<span class="highlight">{{ item.answer }}</span></div>
+                    <div class="student-answer-line">
+                      你的答案：<span :class="{
+          'student-answer': true,
+          'text-danger': item.point < item.score,
+          'text-success': item.point === item.score
+        }">{{ formatStudentAnswer(item) }}</span>
                     </div>
                   </div>
                 </div>
@@ -170,17 +186,11 @@ export default {
     bottomPage
   },
   methods: {
-    getFormattedSolution(solution) {
-      // 如果 solution 是数组，则直接调用 join 方法
-      if (Array.isArray(solution)) {
-        return solution.join(',');
+    formatStudentAnswer(item) {
+      if (item.type === 1) { // 多选题
+        return Array.isArray(item.solution) ? item.solution.join(', ') : item.solution || '未作答'
       }
-      // 如果 solution 是字符串，直接返回字符串
-      if (typeof solution === 'string') {
-        return solution;
-      }
-      // 如果 solution 是 undefined 或其他值，返回 '未作答'
-      return '未作答';
+      return item.solution || '未作答'
     },
     submit() {
       this.$confirm('确定要提交考试内容吗？','交卷提醒', {
