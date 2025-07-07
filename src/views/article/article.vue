@@ -2,17 +2,17 @@
   <div class="article">
     <headerPage></headerPage>
     <div class="article-page-content">
-        <div class="article-page-search">
+        <div class="article-page-search" >
             <div style="width:30%;font-family:'黑体';font-family:'黑体';display:flex;align-items:center;margin-top:15px;margin-left:10px;margin-bottom:10px">
                 <div>笔记名称：</div>
                 <div>
-                  <el-input size="mini" v-model="title" placeholder="请输入笔记名称："></el-input>
+                  <el-input size="mini" v-model="title" placeholder="请输入笔记名称：" @keyup.enter.native="searchPage"></el-input>
                 </div>
             </div>
             <div style="width:30%;font-family:'黑体';font-family:'黑体';display:flex;align-items:center;margin-top:15px;margin-left:10px;margin-bottom:10px">
                 <div>课程名称：</div>
                 <div>
-                  <el-input size="mini" v-model="taskName" placeholder="请输入课程名称："></el-input>
+                  <el-input size="mini" v-model="taskName" placeholder="请输入课程名称：" @keyup.enter.native="searchPage"></el-input>
                 </div>
             </div>
             <div class="article-page-btns">

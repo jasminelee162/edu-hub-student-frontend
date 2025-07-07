@@ -2,11 +2,11 @@
   <div class="teacher">
     <headerPage></headerPage>
     <div class="teacher-page-content">
-      <div class="teacher-page-search">
+      <div class="teacher-page-search" >
         <div style="width:40%;font-family:'黑体';display:flex;align-items:center;margin-top:15px;margin-left:10px;margin-bottom:10px">
           <div>教师名称：</div>
           <div>
-            <el-input size="mini" v-model="search.userName" placeholder="请输入教师名称"></el-input>
+            <el-input size="mini" v-model="search.userName" placeholder="请输入教师名称" @keyup.enter.native="searchPage"></el-input>
           </div>
         </div>
         <div class="teacher-page-btns">
