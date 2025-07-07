@@ -82,6 +82,14 @@ export function executeQuery(data) {
         data // 包含 questionId、request、userStamp
     })
 }
+// 确认共享文档是否存在
+export function confirmDocument(documentId) {
+    return axios.get('/confirm', {
+        params: {
+            documentId: documentId
+        }
+    })
+}
 //实验
 export function getAllExperiments() {
     return request({

@@ -55,7 +55,7 @@
 
 <script>
 import headerPage from '@/components/header/header.vue'
-import { createDocument, initDocument } from '@/api/api'
+import {confirmDocument, createDocument, initDocument} from '@/api/api'
 import axios from 'axios'
 import SockJS from 'sockjs-client'
 import { Client } from '@stomp/stompjs'
@@ -97,7 +97,7 @@ export default {
     goToTemplate() {
       this.$router.push('/templateList')
     },
-    joinDocument() {
+    async joinDocument() {
       const documentId = this.joinForm.documentId.trim()
       const userId = this.$store.state.user?.id
       if (!userId) {
@@ -105,36 +105,28 @@ export default {
         return
       }
 
-      const socket = new SockJS('http://localhost:8080/ws-doc')
-      this.stompClient = new Client({
-        webSocketFactory: () => socket,
-        reconnectDelay: 5000,
-        debug: str => console.log('[STOMP]', str),
-        onConnect: () => {
-          // 👇重点：这里使用 WebSocket 发送 init 消息
-          this.stompClient.publish({
-            destination: `/app/${documentId}/init`,
-            body: JSON.stringify({ userId })
-          })
 
-          // 2. 订阅 /user/queue/init，接收初始化返回内容
-          this.stompClient.subscribe('/user/queue/init', (message) => {
-            const content = message.body
-            console.log('✅ 收到初始化内容:', content)
-
-            // 可选：跳转并传内容
-            this.$router.push({
-              path: `/documentEdit/${documentId}`,
-              query: { fromInit: true }
-            })
-            this.showJoinDialog = false
-          })
-
+      try {
+        const res = await confirmDocument(documentId)
+        if (res.code === 1000) {
           this.$message.success('加入协作成功')
+          console.log('加入协作成功',res)
           this.showJoinDialog = false
-          this.$router.push(`/documentEdit/${documentId}`)
+          this.$router.push({
+            path: `/documentEdit/${documentId}`,
+            query: {fromInit: true}
+          })
+
+        } else {
+          this.$message.error(res.message || '文档号无效')
         }
-      })
+      } catch (e) {
+        this.$message.error('请求失败，请稍后再试')
+        console.error(e)
+      }
+
+
+
 
       this.stompClient.activate()
     }
