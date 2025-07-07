@@ -37,7 +37,8 @@
               class="chat-input"
               @keydown.native="handleKeyDown"
           />
-          <el-button type="primary" size="mini" @click="chatAI">发送</el-button>
+          <div>&nbsp</div>
+          <el-button type="primary" size="mini" @click="chatAI" >发送</el-button>
         </div>
       </div>
     </transition>
@@ -210,4 +211,5 @@ background: #c2e4f5;
 .chat-input {
 margin-top: 5px;
 }
+
 </style>

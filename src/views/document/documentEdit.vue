@@ -89,7 +89,6 @@ import PdfViewer from '@/views/document/PdfViewer.vue'
 import TextViewer from '@/views/document/TextViewer.vue'
 import mammoth from 'mammoth'
 import SockJS from 'sockjs-client'
-import axios from "@/utils/request";
 import { Client } from '@stomp/stompjs'
 import {
   getAllVersions,
@@ -103,18 +102,8 @@ function decodeDocxBase64(base64) {
   return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
 }
 
-function isBase64Html(base64) {
-  const decoded = atob(base64)
-  return decoded.trim().startsWith('<') && decoded.includes('</p>')
-}
-
 export default {
-  components: {
-    headerPage,
-    DocxViewer,
-    PdfViewer,
-    TextViewer
-  },
+  components: { headerPage, DocxViewer, PdfViewer, TextViewer },
   data() {
     return {
       stompClient: null,
@@ -129,40 +118,70 @@ export default {
       versions: [],
       showHistory: false,
       showShareDialog: false,
-      shareId: '', // 保存分享 ID
-      shareLink: this.$route.params.id || '', // 初始空
+      shareId: '',
+      shareLink: this.$route.params.id || '',
       lastEditTime: 0,
       editorKey: 0,
     }
   },
   created() {
-    this.initDocument()
     this.loadVersions()
+    const isCreator = !!this.$route.query.templateId
+    if (isCreator) this.initDocument()
     this.initWebSocket()
   },
   beforeDestroy() {
-    if (this.stompClient) {
-      this.stompClient.deactivate()
-    }
+    if (this.stompClient) this.stompClient.deactivate()
   },
   methods: {
     initWebSocket() {
+      const userId = this.$store.state.user?.id;
+      if (!userId) {
+        console.error('无法建立WebSocket连接：未获取到用户ID');
+        return;
+      }
       const socket = new SockJS('http://localhost:8080/ws-doc')
       this.stompClient = new Client({
         webSocketFactory: () => socket,
+        connectHeaders: {
+          userId: userId
+        },
         debug: str => console.log('[STOMP]', str),
-        reconnectDelay: 5000
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000
       })
 
       this.stompClient.onConnect = () => {
         this.stompClient.subscribe(`/topic/document/${this.documentId}`, message => {
-          const msg = JSON.parse(message.body)
-          if (msg.username !== this.username) {
-            this.renderedContent = msg.content
-            this.content = msg.content
-            this.loadVersions() // 新增：同步刷新版本列表
-          }
+          const binary = message.binaryBody || message.body
+          const text = new TextDecoder('utf-8').decode(binary)
+          this.renderedContent = text
+          this.content = text
         })
+
+        this.stompClient.subscribe(`/user/queue/init`, message => {
+          console.log('📥 收到初始化内容:', message)
+          const binary = message.binaryBody || message.body
+          const text = new TextDecoder('utf-8').decode(binary)
+          this.renderedContent = text
+          this.content = text
+          this.$message.success('文档初始化成功:');
+        })
+
+        this.stompClient.subscribe(`/topic/document/${this.documentId}/join`, message => {
+          const users = JSON.parse(message.body)
+          this.collaborators = users.map(name => ({ id: name, name, avatar: '' }))
+        })
+
+        // 发送初始化消息时必须包含userId
+        this.stompClient.publish({
+          destination: `/app/${this.documentId}/init`,
+          headers: {
+            userId: userId
+          },
+          body: null  // 明确传null
+        });
       }
 
       this.stompClient.activate()
@@ -171,7 +190,6 @@ export default {
     onEditorContentChange(content) {
       const now = Date.now()
       if (now - this.lastEditTime > 300) {
-        // 更新两个内容变量以确保一致性
         this.renderedContent = content
         this.content = content
         this.sendEditMessage()
@@ -180,109 +198,58 @@ export default {
     },
 
     sendEditMessage() {
-      if (this.stompClient && this.stompClient.connected) {
+      if (this.stompClient?.connected) {
+        const userId = this.$store.state.user?.id
+        const encoder = new TextEncoder()
+        const binary = encoder.encode(this.content)
+        // 发送编辑内容（binary 可以是 Uint8Array 或字符串）
         this.stompClient.publish({
           destination: `/app/${this.documentId}/edit`,
-          body: JSON.stringify({
-            documentId: this.documentId,
-            content: this.content,
-            username: this.username
-          })
+          headers: {
+            'content-type': 'application/octet-stream',
+            userId: userId  // 必须包含
+          },
+          body: binary
         })
       }
     },
 
     async initDocument() {
-      this.documentTitle = '未命名文档'
-      this.fileType = 'docx'
-      this.currentComponent = 'DocxViewer'
+      const templateId = this.$route.query.templateId
+      if (!templateId) return
 
       try {
-        // 优先读取版本记录
-        const versionRes = await getAllVersions(this.documentId)
-
-        const versions = versionRes.data || []
-        console.log("版本：",versionRes)
-        const latest = versions.length > 1 ? versions[versions.length - 1] : null
-        const templateId = this.$route.query.templateId
-        if (!templateId) {
-          this.$message.error('缺少模板 ID')
-          return
-        }
-
         const res = await getTemplateContent(templateId)
         this.documentTitle = res.data.name || '未命名模板'
         this.fileType = res.data.fileType || 'docx'
 
-        if (latest && latest.documentId) {
-          // 使用最近一次保存的内容
-          const res = await rollbackVersion(latest.documentId)
-          console.log("使用最近一次保存的内容",res)
-
-
-          switch (this.fileType) {
-            case 'docx':
-              this.currentComponent = 'DocxViewer'
-              try {
-                // 尝试用 mammoth 解析
-                const html = await decodeDocxBase64(res.data)
-                this.renderedContent = html
-                this.content = html
-              } catch (e) {
-                // 如果不是 docx zip 格式，那就直接当 HTML Base64 解码
-                this.renderedContent = atob(res.data)
-                this.content = this.renderedContent
-              }
-
-              break
-            case 'pdf':
-              this.currentComponent = 'PdfViewer'
-              this.renderedContent = res.data
-              this.content = res.data
-              break
-            case 'txt':
-              this.currentComponent = 'TextViewer'
-              this.renderedContent = atob(res.data)
-              this.content = this.renderedContent
-              break
-            default:
-              this.$message.error('不支持的文档类型')
-          }
-
-        } else {
-          // 如果没有版本记录，才从模板加载
-          console.log("从模板加载")
-          const res = await getTemplateContent(templateId)
-          console.log("从模板加载",res)
-          switch (this.fileType) {
-            case 'docx':
-              this.currentComponent = 'DocxViewer'
-              this.renderedContent = await decodeDocxBase64(res.data.fileContent)
-              this.content = this.renderedContent
-              break
-            case 'pdf':
-              this.currentComponent = 'PdfViewer'
-              this.renderedContent = res.data.fileContent
-              this.content = res.data.fileContent
-              break
-            case 'txt':
-              this.currentComponent = 'TextViewer'
-              this.renderedContent = atob(res.data.fileContent)
-              this.content = this.renderedContent
-              break
-            default:
-              this.$message.error('不支持的文档类型')
-          }
+        switch (this.fileType) {
+          case 'docx':
+            this.currentComponent = 'DocxViewer'
+            this.renderedContent = await decodeDocxBase64(res.data.fileContent)
+            this.content = this.renderedContent
+            break
+          case 'pdf':
+            this.currentComponent = 'PdfViewer'
+            this.renderedContent = res.data.fileContent
+            this.content = res.data.fileContent
+            break
+          case 'txt':
+            this.currentComponent = 'TextViewer'
+            this.renderedContent = atob(res.data.fileContent)
+            this.content = this.renderedContent
+            break
+          default:
+            this.$message.error('不支持的文档类型')
         }
       } catch (e) {
-        console.error('文档初始化失败', e)
-        this.$message.error('文档加载失败')
+        console.error('加载模板失败', e)
+        this.$message.error('模板加载失败')
       }
     },
 
     async loadVersions() {
       const res = await getAllVersions(this.documentId)
-
       this.versions = res.data.map(v => ({
         ...v,
         preview: (v.content || '').substring(0, 100) + '...'
@@ -292,22 +259,13 @@ export default {
     async saveDocument() {
       try {
         const { value } = await this.$prompt('请输入变更说明', '保存文档', {
-          confirmButtonText: '保存',
-          cancelButtonText: '取消',
-          inputPattern: /.+/,
-          inputErrorMessage: '说明不能为空'
+          confirmButtonText: '保存', cancelButtonText: '取消',
+          inputPattern: /.+/, inputErrorMessage: '说明不能为空'
         })
 
-        // 确保使用最新的content
-        const contentToSave = this.content
-
-        console.log('准备保存的内容:', contentToSave) // 调试日志
-
-        const res = await recordVersion(this.documentId, contentToSave, value)
-
-        if (res.code === 200) {
+        const res = await recordVersion(this.documentId, this.content, value)
+        if (res.code === 1000) {
           this.$message.success('保存成功')
-
           this.loadVersions()
           this.sendEditMessage()
         } else {
@@ -315,52 +273,47 @@ export default {
         }
       } catch (error) {
         console.error('保存出错:', error)
-        this.$message.error('保存过程中出错: ' + error.message)
+        this.$message.error('保存出错: ' + error.message)
       }
     },
 
     async rollbackVersion(versionId) {
-      await this.$confirm('确定要恢复到此版本吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+      const userId = this.$store.state.user?.id
+      if (!userId) return this.$message.error('未登录，无法恢复')
+      await this.$confirm('确定恢复到此版本吗?', '提示', {
+        confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning'
       })
-      const res = await rollbackVersion(versionId)
-      console.log("恢复到选择版本",res)
+      const res = await rollbackVersion(versionId, userId)
+      if (res.code !== 1000) return this.$message.error(res.message || '恢复失败')
+
+      const data = res.data
       switch (this.fileType) {
         case 'docx':
           this.currentComponent = 'DocxViewer'
           try {
-            // 尝试用 mammoth 解析
-            const html = await decodeDocxBase64(res.data)
-            this.renderedContent = html
-            this.content = html
-          } catch (e) {
-            // 如果不是 docx zip 格式，那就直接当 HTML Base64 解码
-            this.renderedContent = atob(res.data)
-            this.content = this.renderedContent
+            this.renderedContent = await decodeDocxBase64(data)
+          } catch {
+            this.renderedContent = atob(data)
           }
-
+          this.content = this.renderedContent
           break
         case 'pdf':
           this.currentComponent = 'PdfViewer'
-          this.renderedContent = res.data
-          this.content = res.data
+          this.renderedContent = data
+          this.content = data
           break
         case 'txt':
           this.currentComponent = 'TextViewer'
-          this.renderedContent = atob(res.data)
+          this.renderedContent = atob(data)
           this.content = this.renderedContent
           break
         default:
           this.$message.error('不支持的文档类型')
       }
 
-
       this.editorKey++
-      this.sendEditMessage() // 新增：恢复版本后广播内容
+      this.sendEditMessage()
       this.$message.success('恢复成功')
-
     },
 
     shareDocument() {
@@ -496,7 +449,6 @@ export default {
   color: #1F4E79;
 }
 
-
 .el-dialog__footer .el-button {
   min-width: 110px;
   font-weight: 700;
@@ -596,5 +548,4 @@ export default {
   background-color: #B29EFF !important;
   border-color: #B29EFF !important;
 }
-
 </style>

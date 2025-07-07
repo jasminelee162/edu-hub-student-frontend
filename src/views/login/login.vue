@@ -54,37 +54,76 @@
 			<div class="yuan">
 
 			</div>
-			<div class="form">
-				<div class="login-title">在线学习教育平台</div>
-				<div style="width:100%">
-					<el-form style="width:100%" :model="userInfo" :rules="rules" ref="ruleForm" class="demo-ruleForm">
-						<el-form-item  prop="username">
-							<el-input v-model="userInfo.username" placeholder="请输入用户账号"></el-input>
-						</el-form-item>
-						<el-form-item  prop="password">
-							<el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码"></el-input>
-						</el-form-item>
-					</el-form>
-				</div>
-				<div class="login-btn" @click="toLogin()">
-					<div>登 录</div>
-				</div>
-			</div>
+      <div class="form">
+        <div class="login-title">在线学习教育平台</div>
+
+        <!-- 登录方式切换 -->
+        <div class="login-type-switch">
+          <span
+              :class="['login-type-option', loginType === 'account' ? 'active' : '']"
+              @click="loginType = 'account'"
+          >
+            账号密码登录
+          </span>
+                  <span
+                      :class="['login-type-option', loginType === 'email' ? 'active' : '']"
+                      @click="loginType = 'email'"
+                  >
+            邮箱验证码登录
+          </span>
+        </div>
+
+        <!-- 账号密码登录表单 -->
+        <el-form v-if="loginType === 'account'" :model="userInfo" :rules="rules" ref="ruleForm" class="demo-ruleForm" style="width: 100%;">
+          <el-form-item prop="username">
+            <el-input v-model="userInfo.username" placeholder="请输入用户账号" @keyup.enter.native="toLogin"></el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码 " @keyup.enter.native="toLogin"></el-input>
+          </el-form-item>
+          <div class="login-btn" @click="toLogin()"><div>登 录</div></div>
+        </el-form>
+
+        <!-- 邮箱验证码登录表单 -->
+        <el-form v-else :model="emailInfo" ref="emailForm" style="width: 100%;">
+          <el-form-item>
+            <el-input v-model="emailInfo.email" placeholder="请输入邮箱" @keyup.enter.native="toEmailLogin"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="emailInfo.code" placeholder="请输入验证码" @keyup.enter.native="toEmailLogin" style="width: 60%; margin-right: 8px;" />
+            <el-button :disabled="isSending" @click="sendCode">
+              {{ isSending ? countdown + 's 后重发' : '获取验证码' }}
+            </el-button>
+          </el-form-item>
+          <div class="login-btn" @click="toEmailLogin"><div>登 录</div></div>
+        </el-form>
+      </div>
 		</div>
 	</div>
   </div>
 </template>
 
 <script>
-  import {login,getUser} from '../../api/api'
+  import {login,getUser,sendEmailCode, loginWithEmail} from '../../api/api'
   import bottomPage from "../../components/bottom/login-bottom"
+
   export default {
 	data() {
 	  return{
 		userInfo: {
 			username: "",
-			password: ""
+			password: "",
+
 		},
+      loginType: 'account', // 切换登录方式
+
+      emailInfo: {
+        email: '',
+        code: ''
+      },
+      isSending: false,
+      countdown: 60,
+      timer: null,
 		rules: {
           username: [
             { required: true, message: '请输入用户账号', trigger: 'blur' },
@@ -99,6 +138,56 @@
         bottomPage
 	},
 	methods: {
+    sendCode() {
+      if (!this.emailInfo.email) {
+        this.$message.warning('请输入邮箱')
+        return
+      }
+
+      sendEmailCode(this.emailInfo.email).then(() => {
+        this.$message.success('验证码发送成功')
+        this.isSending = true
+        this.countdown = 60
+        this.timer = setInterval(() => {
+          this.countdown--
+          if (this.countdown <= 0) {
+            clearInterval(this.timer)
+            this.isSending = false
+          }
+        }, 1000)
+      }).catch(() => {
+        this.$message.error('验证码发送失败')
+      })
+    },
+
+    toEmailLogin() {
+      const { email, code } = this.emailInfo
+      if (!email || !code) {
+        this.$message.warning('请填写邮箱和验证码')
+        return
+      }
+
+      loginWithEmail(email, code).then(res => {
+        if (res.code === 1000) {
+          this.$message.success('登录成功')
+          const token = res.data.token
+
+          // 1. 设置 token
+          localStorage.setItem('user_token', token)
+
+          // 2. 获取用户信息
+          this.getUserInfo().then(() => {
+            // 3. 跳转
+            this.$router.push('/')
+          })
+
+        } else {
+          this.$message.error(res.message)
+        }
+      }).catch(() => {
+        this.$message.error('登录失败')
+      })
+    },
 		toRegister() {
 			this.$router.push("/register")
 		},
@@ -135,15 +224,15 @@
 				}
 			});
 		},
-		getUserInfo() {
-            getUser().then(res => {
-                if(res.code == 1000) {
-                  const userData = res.data
-                  this.$store.commit('SET_USER', userData) // 更新 Vuex
-					window.localStorage.setItem("user_info",JSON.stringify(res.data))
-                }
-            })
-        },
+    getUserInfo() {
+      return getUser().then(res => {
+        if (res.code === 1000) {
+          const userData = res.data
+          this.$store.commit('SET_USER', userData)
+          localStorage.setItem("user_info", JSON.stringify(res.data))
+        }
+      })
+    }
 	},
 	created() {
 
@@ -152,9 +241,41 @@
 
 	}
  }
+
 </script>
 
 <style scoped>
+  .login-type-switch {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 16px;
+    font-family: '黑体', sans-serif;
+  }
+
+  .login-type-option {
+    padding: 8px 20px;
+    border: 1px solid #6427FF;
+    color: #1F4E79;
+    border-radius: 20px;
+    margin: 0 8px;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #F3EEFF;
+    transition: all 0.3s ease;
+  }
+
+  .login-type-option:hover {
+    background-color: #F3EEFF;
+    color: #123B5C;
+  }
+
+  .login-type-option.active {
+    background-color: #6427FF;
+    color: #fff;
+    border-color: #6427FF;
+    font-weight: bold;
+  }
   .login {
 	  width: 100%;
 	  height: 100%;
@@ -237,7 +358,6 @@
 
   }
   .title {
-	  //font-weight: '黑体';
 	  font-size: 55px;
 	  font-weight: bold;
     color: #1F4E79;
@@ -274,17 +394,20 @@
     color:#6427FF;
   }
   .login-btn {
-	  width: 130px;
-	  height: 40px;
-	  border:1px solid #6427FF;
-	  background-color: #6427FF;
-	  color: #ffffff;
-	  font-size: 18px;
-	  font-family: '黑体';
-	  cursor: pointer;
-	  display: flex;
-	  justify-content: center;
-	  align-items: center;
+    width: 130px;
+    height: 40px;
+    border: 1px solid #6427FF;
+    background-color: #6427FF;
+    color: #ffffff;
+    font-size: 18px;
+    font-family: '黑体';
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* 添加这行让按钮居中 */
+    margin: 0 auto;
   }
   .bottom-one {
 	  width: 34%;

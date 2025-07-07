@@ -2,6 +2,7 @@
     width: 100%;
     height: 100%;
 }
+
 .teacher-page-content {
     background: url('../../../assets/image/index/index_back.png');
     display: flex;
@@ -9,122 +10,34 @@
     align-items: center;
     width: 100%;
 }
+
 .teacher-page-title {
     width: 70%;
     margin-top: 40px;
-    font-size: 25px;
+    font-size: 26px;
     font-family: '黑体';
     letter-spacing: 3px;
+    color: #1F4E79;
 }
+
+/* 🎯 搜索区域整体 */
 .teacher-page-search {
-    background-color: rgba(234, 232, 254, 0.3);  /* 淡紫色半透明 */
-    margin-top: 40px;
     width: 70%;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    align-content: flex-start;
-
-    border: 1px solid #B5AFFF;        /* 紫色边框 */
-    border-radius: 10px;              /* 圆角 */
-    padding: 16px;                    /* 内边距 */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* 可选立体感 */
-}
-.teacher-page-btns {
-    display: flex;
-    align-self: center;
-}
-.teacher-page-list {
-    width: 70%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    margin-top: 30px;
-    flex-wrap: wrap;
-}
-.teacher-page-item {
-    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
-    border: 2px solid #EFF1F2;
-    margin-top: 15px;
-    margin-left: 20px;
-    width: 22%;
-    height: 200px;
-    border-radius: 10px;
-    overflow: hidden;
-}
-.teacher-page-name {
-    margin-top: -5px;
-    display: flex;
-    width: 100%;
-    height: 20%;
-    align-items: center;
-    justify-content: space-between;
-    font-family: '黑体';
-    font-size: 14px;
-}
-.teacher-page-fenye {
-    margin-top: 20px;
-    width: 70%;
-}
-.teacher-bottom-image {
-    margin-top: 20px;
-    width: 70%;
-}
-
-/* 搜索按钮（primary） */
-.el-button--primary.is-plain {
-    background-color: #C2E4F5 !important;
-    border-color: #86C5E0 !important;
-    color: #1F4E79 !important;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 14px;
-}
-
-/* 重置按钮（warning） */
-.el-button--warning.is-plain {
-    background-color: #C2E4F5 !important;
-    border-color: #86C5E0 !important;
-    color: #1F4E79 !important;
-    border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 14px;
-}
-
-/* 图标统一样式（可选） */
-.el-button--primary.is-plain .el-icon-search,
-.el-button--warning.is-plain .el-icon-refresh {
-    color: #1F4E79 !important;
-    font-size: 16px;
-}
-.el-button--primary.is-plain:hover,
-.el-button--warning.is-plain:hover {
-    background-color: #B3D9EE !important;
-    border-color: #5FB0D4 !important;
-    color: #123B5C !important;
-}
-.number.active {
-    background-color: #C2E4F5 !important;
-    color: #fff; /* 文字颜色建议配合背景调整 */
-}
-.teacher-page-search {
-
-    width: 70%;
-    margin: 40px auto 0;  /* 居中，顶部40px */
+    margin: 40px auto 0;
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
     font-family: '黑体', sans-serif;
-    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
-    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
-    border-radius: 12px;
-    padding: 30px 40px;
-    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
-    color: #1F4E79;                                 /* 深色字体更清晰 */
+    background-color: rgba(255, 255, 255, 0.25);        /* 毛玻璃背景 */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 14px;
+    padding: 28px 36px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #1F4E79;
 }
 
-/* 教师名称输入框容器 */
+/* 每个输入项 */
 .teacher-page-search > div[style*="width: 40%"] {
     display: flex;
     align-items: center;
@@ -134,7 +47,7 @@
     color: #1F4E79;
 }
 
-/* 输入框样式覆盖 */
+/* 输入框样式 */
 .el-input__inner {
     background-color: #FFFFFF !important;
     border: 1px solid #86C5E0 !important;
@@ -144,7 +57,43 @@
     font-size: 14px;
 }
 
-/* 按钮容器 */
+/* 分类区域容器 */
+.teacher-page-search > div[style*="flex-wrap: wrap"] {
+    margin-left: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    color: #1F4E79;
+    font-weight: 500;
+}
+
+/* "学校：" 文字 */
+.teacher-page-search > div[style*="flex-wrap: wrap"] > span:first-child {
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+/* 分类标签 */
+.task-search-type {
+    background-color: #F2FBFE;
+    color: #1F4E79;
+    border-radius: 12px;
+    padding: 6px 14px;
+    margin: 6px 8px 6px 0;
+    border: 1px solid #86C5E0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.task-search-type:hover {
+    background-color: #B0DAF0;
+    border-color: #5FB0D4;
+    color: #123B5C;
+}
+
+/* ✅ 按钮区 */
 .teacher-page-btns {
     display: flex;
     gap: 12px;
@@ -163,15 +112,15 @@
 
 /* 重置按钮 */
 .el-button--warning.is-plain {
-    background-color: #C2E4F5 !important;
-    border-color: #86C5E0 !important;
-    color: #1F4E79 !important;
+    background-color: #B3D9EE !important;
+    border-color: #5FB0D4 !important;
+    color: #123B5C !important;
     border-radius: 6px !important;
     padding: 6px 18px !important;
     font-weight: 600;
 }
 
-/* 按钮 Hover */
+/* Hover 效果统一 */
 .el-button--primary.is-plain:hover,
 .el-button--warning.is-plain:hover {
     background-color: #B3D9EE !important;
@@ -180,39 +129,70 @@
     cursor: pointer;
 }
 
-/* 学校分类标签容器 */
-.teacher-page-search > div[style*="flex-wrap: wrap"] {
-    margin-left: 10px;
-    margin-bottom: 20px;
-    width: 100%;
+/* 图标样式 */
+.el-button--primary.is-plain .el-icon-search,
+.el-button--warning.is-plain .el-icon-refresh {
+    color: inherit !important;
+    font-size: 16px;
+}
+
+/* 列表容器 */
+.teacher-page-list {
+    width: 70%;
     display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 30px;
     flex-wrap: wrap;
-    color: #1F4E79;
-    font-weight: 500;
 }
 
-/* “学校:” 文字 */
-.teacher-page-search > div[style*="flex-wrap: wrap"] > span:first-child {
-    margin-right: 10px;
-    font-weight: 600;
-}
-
-/* 分类标签 */
-.task-search-type {
-    background-color: #C2E4F5;
-    color: #1F4E79;
+/* 教师卡片样式 */
+.teacher-page-item {
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    border: 2px solid #EFF1F2;
+    margin-top: 15px;
+    margin-left: 20px;
+    width: 20%;
+    height: 200px;
     border-radius: 12px;
-    padding: 6px 14px;
-    margin: 6px 8px 6px 0;
-    border: 1px solid #86C5E0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    user-select: none;
+    overflow: hidden;
+    transition: all 0.2s;
+    padding: 10px;
 }
 
-/* 分类标签 Hover */
-.task-search-type:hover {
-    background-color: #B0DAF0;
-    border-color: #5FB0D4;
-    color: #123B5C;
+.teacher-page-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* 名称栏 */
+.teacher-page-name {
+    margin-top: -5px;
+    display: flex;
+    width: 100%;
+    height: 20%;
+    align-items: center;
+    justify-content: space-between;
+    font-family: '黑体';
+    font-size: 14px;
+    color: #1F4E79;
+    padding: 0 10px;
+}
+
+/* 分页 */
+.teacher-page-fenye {
+    margin-top: 20px;
+    width: 70%;
+}
+
+/* 底部背景图 */
+.teacher-bottom-image {
+    margin-top: 20px;
+    width: 70%;
+}
+
+/* 分页页码选中高亮 */
+.number.active {
+    background-color: #C2E4F5 !important;
+    color: #fff;
 }

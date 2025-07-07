@@ -54,16 +54,19 @@
 				<div style="width:100%">
 					<el-form style="width:100%" :model="userInfo" :rules="rules" ref="ruleForm" class="demo-ruleForm">
 						<el-form-item  prop="userName">
-							<el-input v-model="userInfo.userName" placeholder="请输入用户名"></el-input>
+							<el-input v-model="userInfo.userName" placeholder="请输入用户名" @keyup.enter.native="toRegister"></el-input>
 						</el-form-item>
 						<el-form-item  prop="userName">
-							<el-input v-model="userInfo.loginAccount" placeholder="请输入用户账号"></el-input>
+							<el-input v-model="userInfo.loginAccount" placeholder="请输入用户账号" @keyup.enter.native="toRegister"></el-input>
 						</el-form-item>
+            <el-form-item prop="email">
+              <el-input v-model="userInfo.email" placeholder="请输入邮箱" @keyup.enter.native="toRegister"></el-input>
+            </el-form-item>
 						<el-form-item  prop="password">
-							<el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码"></el-input>
+							<el-input type="password" v-model="userInfo.password" placeholder="请输入用户密码" @keyup.enter.native="toRegister"></el-input>
 						</el-form-item>
                         <el-form-item  prop="passwordNew">
-							<el-input type="password" v-model="userInfo.passwordNew" placeholder="请输入确认密码"></el-input>
+							<el-input type="password" v-model="userInfo.passwordNew" placeholder="请输入确认密码" @keyup.enter.native="toRegister"></el-input>
 						</el-form-item>
 					</el-form>
 				</div>
@@ -86,7 +89,8 @@
 		userInfo: {
 			userName: "",
 			password: "",
-			passwordNew: "",
+      email: "",
+      passwordNew: "",
 			loginAccount: "",
 			userType: 2
 		},
@@ -97,6 +101,10 @@
           password: [
             { required: true, message: '请输入用户密码', trigger: 'blur' }
 		  ],
+      email: [
+        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { type: 'email', message: '请输入有效的邮箱地址', trigger: 'blur' }
+      ],
 		  passwordNew: [
             { required: true, message: '请输入确认密码', trigger: 'blur' }
 		  ],

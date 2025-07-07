@@ -109,13 +109,13 @@ export function createDocument(templateId, userId) {
 }
 
 export const initDocument = (id, userId) =>
-    request.post(`/document/${id}/init`, { userId })
+    request.post(`/${id}/init`, { userId })
 
 export const getAllVersions = (documentId) =>
     request.get(`/documentVersion/all?documentId=${documentId}`)
 
-export const rollbackVersion = (versionId) =>
-    request.get(`/documentVersion/rollback?id=${versionId}`)
+export const rollbackVersion = (versionId,userId) =>
+    request.get(`/documentVersion/rollback?versionId=${versionId}&&userId=${userId}`)
 
 export function recordVersion(documentId, content, changeNote) {
     return request({
@@ -132,6 +132,15 @@ export const getTemplateContent = (id) => {
     return request.get('/template/content', {
         params: { id }
     })
+}
+// 发送邮箱验证码
+export function sendEmailCode(email) {
+    return axios.post('/email/sendCode', { email })
+}
+
+// 邮箱验证码登录
+export function loginWithEmail(email, code) {
+    return axios.post('/email/login', { email, code })
 }
 //-------------------------------登录---------------------------------------
 // 登录
@@ -190,6 +199,8 @@ export const getTaskByTeacher = (params) => get("/task/getTaskByTeacher",params)
 export const getUserById = (params) => get("/user/getUserById",params)
 //获取笔记详情
 export const getArticleById = (params) => get("/article/getArticleById",params)
+// 编辑笔记接口
+export const editArticle = (data) => post("/article/editArticle", data)
 //保存笔记评论
 export const saveArticleComment = (params) => post("/articleComment/saveArticleComment",params)
 //获取笔记评论

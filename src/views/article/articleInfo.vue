@@ -118,8 +118,9 @@
           }
         })
       },
-      editArticle() {
-        this.$router.push("/editArticle")
+      editArticle(noteId) {
+
+        this.$router.push(`/editArticle?id=${noteId}`)
       },
       saveArticleComment() {
         var param = {
@@ -146,11 +147,18 @@
       },
       getArticleById() {
         getArticleById({id: this.articleId}).then(res => {
+          console.log("文章内容：",res.data)
           if(res.code == 1000) {
             this.article = res.data
+            this.article.title = res.data.title
+            this.article.desc = res.data.articleDesc
+            this.article.content = res.data.content
+          }else {
+            this.$message.error(res.message)
           }
         }) 
-      }
+      },
+
     },
     created() {
      
@@ -167,6 +175,7 @@
       this.getArticleById()
       this.getArticleCommentByArticleId()
       this.user = JSON.parse(window.localStorage.getItem("user_info"))
+
     }
  }
 </script>

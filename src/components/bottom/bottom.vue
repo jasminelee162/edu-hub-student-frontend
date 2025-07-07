@@ -7,8 +7,8 @@
                 </div>
                 <div style="margin-top:10px;font-weight:bold">关于我们</div>
                 <div style="font-weight:bold">Contact Us</div>
-                <div style="color:#6D737A;margin-top:10px">Praesent nulla massa, hendrerit vestibulum gravida in, feugiat auctor felis.</div>
-                <div style="color:#6D737A;margin-top:10px">Email: example@mail.com</div>
+                <div style="color:#6D737A;margin-top:10px">Track Progress in Real-Time with AI-Powered Recommendations</div>
+                <div style="color:#6D737A;margin-top:10px">Email:csu@csu.edu.cn</div>
 
               </div>
           </div>
@@ -38,10 +38,10 @@
                 <div style="font-size:15px;font-weight:bold">
                   contact information
                 </div>
-                <div style="color:#6D737A;margin-top:10px">邮箱: example@mail.com</div>
-                <div style="color:#6D737A;margin-top:10px">QQ: 1008611</div>
-                <div style="color:#6D737A;margin-top:10px">微信: 1008611</div>
-                <div style="color:#6D737A;margin-top:10px">微博: example@mail.com</div>
+                <div style="color:#6D737A;margin-top:10px">邮箱: csu@csu.edu.cn</div>
+                <div style="color:#6D737A;margin-top:10px">QQ: csu</div>
+                <div style="color:#6D737A;margin-top:10px">微信: csu</div>
+                <div style="color:#6D737A;margin-top:10px">微博: csu@csu.edu.cn</div>
                 <div style="color:#6D737A;margin-top:10px">电话: 12345678998</div>
               </div>
           </div>

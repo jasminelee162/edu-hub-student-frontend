@@ -15,7 +15,16 @@
             placeholder="请输入 SQL 语句，如：SELECT * FROM users;"
         />
 
-        <el-button type="primary" style="margin-top: 10px" @click="runSQL">
+        <el-button type="primary" style="margin-top: 10px;
+    height: 50px;
+    width: 130px;
+    background-color: #D6EFFB !important;
+    border-color: #86C5E0 !important;
+    color: #1F4E79 !important;
+    border-radius: 6px !important;
+    padding: 5px 12px;
+    font-weight: bold;
+    transition: 0.2s ease;" @click="runSQL">
           执行查询
         </el-button>
 

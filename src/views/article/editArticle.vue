@@ -43,6 +43,9 @@
   import { mixin } from '../../minix/index';
   import headerPage from "../../components/header/header"
   import bottomPage from "../../components/bottom/bottom"
+  import axios from "axios";
+  import { post } from "@/utils/request";
+  import {editArticle, getArticleById} from "@/api/api";
   export default {
     mixins: [mixin],
     data() {
@@ -96,8 +99,36 @@
     },
     methods: {
         submit() {
+          const noteId = this.$route.query.id
+          const data = {
+            id: noteId,
+            ...this.form
+          }
+          editArticle(this.form).then(res => {
+            if (res.code === 1000) {
+              this.$message.success("修改成功")
 
+            } else {
+              this.$message.error(res.message)
+            }
+          }).catch(() => {
+            this.$message.error("笔记提交失败")
+          })
         },
+      getArticleById(noteId) {
+        getArticleById({id: noteId}).then(res => {
+          console.log("文章内容：",res.data)
+          console.log("编辑id:",noteId)
+          if(res.code == 1000) {
+            this.form = res.data
+            this.form.title = res.data.title
+            this.form.desc = res.data.articleDesc
+            this.form.content = res.data.content
+          }else {
+            this.$message.error(res.message)
+          }
+        })
+      },
         handleQillSuccess(res){
             let _this = this;
             if(res.code == 1000){
@@ -122,7 +153,12 @@
      
     },
     mounted() {
-      
+      const noteId = this.$route.query.id
+      console.log("id:",noteId)
+      if (noteId) {
+        this.getArticleById(noteId)
+      }
+
     }
  }
 </script>

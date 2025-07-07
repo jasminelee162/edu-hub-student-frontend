@@ -2,6 +2,7 @@
     width: 100%;
     height: 100%;
 }
+
 .task-page-content {
     width: 100%;
     min-height: 88%;
@@ -9,8 +10,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-
 }
+
 .task-page-search {
     margin-top: 30px;
     width: 70%;
@@ -18,17 +19,23 @@
     justify-content: space-between;
     align-content: flex-start;
     flex-wrap: wrap;
-
-
-
-    background-color: rgba(255, 255, 255, 0.2);      /* 半透明背景 */
-    border: 1px solid rgba(255, 255, 255, 0.4);      /* 半透明白色边框 */
+    background-color: rgba(255, 255, 255, 0.2);        /* 半透明背景 */
+    border: 1px solid rgba(255, 255, 255, 0.4);        /* 边框 */
     border-radius: 12px;
     padding: 30px 40px;
-    backdrop-filter: blur(6px);                     /* 毛玻璃模糊效果 */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);      /* 阴影更立体 */
-    color: #1F4E79;                                 /* 深色字体更清晰 */
+    backdrop-filter: blur(6px);                       /* 毛玻璃效果 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    color: #1F4E79;
 }
+
+.task-font {
+    width: 70%;
+    margin-top: 40px;
+    font-size: 25px;
+    font-family: '黑体';
+    letter-spacing: 3px;
+}
+
 .task-page-list {
     width: 70%;
     margin-top: 20px;
@@ -37,36 +44,7 @@
     justify-content: flex-start;
     flex-wrap: wrap;
 }
-.task-font {
-    width: 70%;
-    margin-top: 40px;
-    font-size: 25px;
-    font-family: '黑体';
-    letter-spacing: 3px;
-}
-.task-search-item {
-    margin-top: 10px;
-    margin-left: 20px;
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    font-family: '黑体';
-    width: 30%;
-}
-.task-search-type {
-    margin-right: 15px;
-    cursor: pointer;
-}
-.task-search-type:hover {
-    color: #C2E4F5;
-}
-.task-page-btns {
-    width: 70%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    margin-top: 15px;
-}
+
 .task-page-item {
     width: 30%;
     margin-left: 10px;
@@ -77,7 +55,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    transition: all 0.3s;
 }
+
+.task-page-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
 .task-page-image {
     margin-top: 2%;
     width: 96%;
@@ -85,12 +70,14 @@
     border-radius: 10px;
     overflow: hidden;
 }
+
 .task-page-name {
     width: 96%;
     height: 35%;
     overflow: hidden;
     font-family: '黑体';
 }
+
 .task-page-name-one {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -98,12 +85,14 @@
     margin-top: 5px;
     font-size: 20px;
 }
+
 .task-page-name-two {
     height: 130px;
     margin-top: 5px;
     font-size: 14px;
     color: #5C5C5C;
 }
+
 .task-page-user {
     width: 96%;
     height: 15%;
@@ -113,10 +102,12 @@
     font-family: '黑体';
     justify-content: space-between;
 }
+
 .task-page-fenye {
     margin-top: 20px;
     width: 70%;
 }
+
 .task-page-bottom {
     margin-top: 20px;
     width: 100%;
@@ -125,24 +116,45 @@
     background: url('../../../assets/image/index/index_back.png');
 }
 
-/* 搜索框输入框样式 */
+.task-search-item {
+    margin-top: 10px;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    font-family: '黑体';
+    width: 30%;
+}
+
+.task-search-item > div:first-child {
+    font-weight: bold;
+    margin-right: 6px;
+    color: #1F4E79;
+}
+
+/* 输入框美化 */
 .task-page-search .el-input__inner {
     background-color: #FFFFFF !important;
     border: 1px solid #86C5E0 !important;
     color: #1F4E79 !important;
     border-radius: 6px !important;
+    font-size: 13px;
+    height: 30px;
 }
 
-/* 搜索 / 重置 按钮 */
+/* 搜索 / 重置按钮样式 */
 .task-page-search .el-button--primary,
 .task-page-search .el-button--warning {
     background-color: #D6EFFB !important;
     border-color: #86C5E0 !important;
     color: #1F4E79 !important;
     border-radius: 6px !important;
+    padding: 5px 12px;
+    font-weight: bold;
+    transition: 0.2s ease;
 }
 
-/* Hover 效果 */
+/* Hover 按钮高亮 */
 .task-page-search .el-button--primary:hover,
 .task-page-search .el-button--warning:hover {
     background-color: #B3D9EE !important;
@@ -150,7 +162,7 @@
     color: #123B5C !important;
 }
 
-/* 分类标签 */
+/* 分类标签样式 */
 .task-search-type {
     background-color: #F2FBFE;
     color: #1F4E79;
@@ -160,6 +172,7 @@
     border: 1px solid #86C5E0;
     cursor: pointer;
     transition: all 0.2s;
+    font-size: 13px;
 }
 
 /* 分类标签 Hover 效果 */
@@ -167,4 +180,13 @@
     background-color: #B0DAF0;
     color: #123B5C;
     border-color: #5FB0D4;
+}
+
+/* 页脚空白 */
+.task-page-btns {
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 15px;
 }

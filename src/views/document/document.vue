@@ -55,9 +55,10 @@
 
 <script>
 import headerPage from '@/components/header/header.vue'
-import { createDocument, initDocument } from '@/api/api'
+import {confirmDocument, createDocument, initDocument} from '@/api/api'
 import axios from 'axios'
-
+import SockJS from 'sockjs-client'
+import { Client } from '@stomp/stompjs'
 
 export default {
   components: {
@@ -96,17 +97,38 @@ export default {
     goToTemplate() {
       this.$router.push('/templateList')
     },
-    joinDocument() {
+    async joinDocument() {
+      const documentId = this.joinForm.documentId.trim()
       const userId = this.$store.state.user?.id
-      if (!userId) return this.$message.error('请先登录')
-
-      initDocument(this.joinForm.documentId, userId).then(() => {
-        this.$router.push(`/documentEdit/${this.joinForm.documentId}`)
-        this.showJoinDialog = false
-      })
+      if (!userId) {
+        this.$message.error('请先登录')
+        return
+      }
 
 
+      try {
+        const res = await confirmDocument(documentId)
+        if (res.code === 1000) {
+          this.$message.success('加入协作成功')
+          console.log('加入协作成功',res)
+          this.showJoinDialog = false
+          this.$router.push({
+            path: `/documentEdit/${documentId}`,
+            query: {fromInit: true}
+          })
 
+        } else {
+          this.$message.error(res.message || '文档号无效')
+        }
+      } catch (e) {
+        this.$message.error('请求失败，请稍后再试')
+        console.error(e)
+      }
+
+
+
+
+      this.stompClient.activate()
     }
   }
 }
