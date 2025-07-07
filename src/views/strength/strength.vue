@@ -13,16 +13,16 @@
               <div class="weak-card fade-in">
                 <div class="subject">{{ item.subject }}</div>
 
-                  <div class="score">我的得分：
-                    <span v-if="typeof item.studentScore === 'string'">
+                <div class="score">我的得分：
+                  <span v-if="typeof item.studentScore === 'string'">
     <span v-for="(score, i) in item.studentScore.split('，')" :key="i">
       {{ parseFloat(score).toFixed(1) }}<span v-if="i < item.studentScore.split('，').length - 1">，</span>
     </span>
   </span>
-                    <span v-else>
+                  <span v-else>
     {{ Number.isFinite(item.studentScore) ? item.studentScore.toFixed(1) : '暂无数据' }}
   </span>
-                  </div>
+                </div>
 
                 <div class="score">平均得分：
                   <span>{{ Number.isFinite(item.avgScore) ? item.avgScore.toFixed(1) : '暂无数据' }}</span>
@@ -41,7 +41,10 @@
           <div class="section-title">
             <i class="el-icon-magic-stick icon"></i> AI 智能学习建议
           </div>
-          <div v-if="suggestion" class="ai-text-html" v-html="formattedSuggestion"></div>
+          <div v-if="suggestion" class="ai-text-html">
+            <div v-html="formattedSuggestion"></div>
+            <span v-if="isTyping" class="typing-cursor">|</span>
+          </div>
           <div v-else class="no-data">
             <div class="loading-spinner">
               <div class="spinner-dot"></div>
@@ -127,7 +130,8 @@ export default {
       chatKey: '',
       chatHistory: [],
       isAIThinking: false,
-      isSuggestionLoading: true
+      isSuggestionLoading: true,
+      isTyping: false
     }
   },
   methods: {
@@ -158,12 +162,11 @@ export default {
         this.isSuggestionLoading = false
         return
       }
-
       try {
         const res = await getAISuggestion(id)
         if (res.code === 1000) {
-          this.suggestion = res.message || "暂无建议内容"
-          this.formattedSuggestion = marked.parse(this.suggestion)
+          await this.typeParsedSuggestion(res.message || "暂无建议内容");
+          console.log("建议：",res.message)
         }
       } catch (error) {
         this.suggestion = "服务繁忙，请稍后刷新页面"
@@ -171,6 +174,22 @@ export default {
       } finally {
         this.isSuggestionLoading = false
       }
+    },
+    async typeParsedSuggestion(text) {
+      this.formattedSuggestion = ""
+      this.isTyping = true
+      const parsedHtml = marked.parse(text)
+
+      for (let i = 0; i < parsedHtml.length; i++) {
+        this.formattedSuggestion += parsedHtml[i]
+        await new Promise(resolve => setTimeout(resolve, 10))
+        this.$nextTick(() => {
+          const container = this.$el.querySelector('.ai-text-html')
+          if (container) container.scrollTop = container.scrollHeight
+        })
+      }
+
+      this.isTyping = false
     },
     async chatAI() {
       if (!this.chatKey.trim()) return
@@ -205,6 +224,12 @@ export default {
 
 <style scoped>
 /* 页面背景 */
+.typing-cursor {
+  display: inline-block;
+  animation: blink 1s infinite;
+  color: #6427FF;
+  font-weight: bold;
+}
 .strength-page {
   width: 100%;
   min-height: 100vh;
@@ -271,9 +296,28 @@ export default {
 }
 
 /* AI 建议文字样式 */
+/* 确保容器有良好的显示效果 */
 .ai-text-html {
-  color: #1F4E79;
-  line-height: 1.8;
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+/* 打字光标效果（可选） */
+.ai-text-html:after {
+  content: "|";
+  animation: blink 1s infinite;
+  color: #6427FF;
+  font-weight: bold;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 .ai-text-html >>> h1,
 .ai-text-html >>> h2,

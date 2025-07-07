@@ -159,6 +159,7 @@ export default {
 
 .main-container {
   width: 75%;
+
   margin: 40px auto;
 }
 

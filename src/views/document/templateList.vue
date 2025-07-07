@@ -36,7 +36,7 @@ export default {
     async loadTemplates() {
       const res = await getTemplateList()
       if (res.code === 1000) {
-        this.templates = res.data
+        this.templates = res.data.records
       } else {
         this.$message.error('模板加载失败')
       }
