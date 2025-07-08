@@ -130,6 +130,7 @@ export async function decodeDocxBase64(base64) {
 export default {
   components: {headerPage, DocxViewer, PdfViewer, TextViewer},
   data() {
+
     return {
       // 新增：记录自身发送的内容（用于过滤）
       lastSentContent: '',
@@ -416,7 +417,7 @@ export default {
         const res = await getTemplateContent(templateId)
         this.documentTitle = res.data.name || '未命名模板'
         this.fileType = res.data.fileType || 'docx'
-
+        console.log("初始化：",res.data)
         switch (this.fileType) {
           case 'docx':
             this.currentComponent = 'DocxViewer'
@@ -481,7 +482,7 @@ export default {
         if (res.code === 1000) {
           this.$message.success('保存成功')
           this.loadVersions()
-          this.sendEditMessage()
+          this.sendEditMessage(this.content)
         } else {
           this.$message.error('保存失败: ' + (res.message || '未知错误'))
         }
@@ -534,7 +535,7 @@ export default {
       }
 
       this.editorKey++
-      this.sendEditMessage()
+      this.sendEditMessage(this.content)
       this.$message.success('恢复成功')
     }
 
@@ -567,7 +568,8 @@ export default {
         this.renderedContent = base64 // pdf base64
       }
       this.content = this.renderedContent
-      console.log("不是创建者：",base64)
+      this.documentTitle = resFromInit.title
+      console.log("不是创建者：",resFromInit)
       console.log("fileTypeInit:",fileTypeInit)
     }
 
