@@ -34,9 +34,9 @@
       <div class="collaborator-sidebar">
         <h3>协作成员</h3>
         <div class="user-list">
-          <div v-for="user in collaborators" :key="user.id" class="user-item">
-            <el-avatar :size="36" :src="user.avatar"></el-avatar>
-            <span class="user-name">{{ user.name }}</span>
+          <div v-for="(user, index) in collaborators" :key="index" class="user-item">
+            <el-avatar :size="36" icon="el-icon-user" />
+            <span class="user-name">{{ user }}</span>
           </div>
         </div>
       </div>
@@ -96,10 +96,16 @@ import {
   recordVersion,
   getTemplateContent
 } from '@/api/api'
+import axios from "axios";
 
 function decodeDocxBase64(base64) {
-  const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
-  return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+  try {
+    const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
+    return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+  } catch (e) {
+    console.error('docx解码失败，尝试直接解码为HTML', e)
+    return Promise.resolve(atob(base64))
+  }
 }
 export default {
   components: {headerPage, DocxViewer, PdfViewer, TextViewer},
@@ -141,7 +147,12 @@ export default {
   },
   created() {
     const isCreator = !!this.$route.query.templateId
-    if (isCreator) this.initDocument()
+    if (isCreator) {
+      this.initDocument()
+    } else {
+      // 非模板创建者，通过 WS 接收初始内容前，显示“加载中”
+      this.renderedContent = '<p>加载协作文档中...</p>'
+    }
     this.initWebSocket()
   },
   beforeDestroy() {
@@ -171,6 +182,7 @@ export default {
         try {
           // 1. 解析JSON数据（后端返回的WebSocketResult对象）
           const result = event.data;
+
           const number= result.charAt(0);
           const data = result.slice(1);
           // 2. 根据number字段区分消息类型
@@ -419,7 +431,7 @@ export default {
       }
     },
 
-    // 其他已有方法保持不变...
+
     shareDocument() {
       this.showShareDialog = true
     },
@@ -494,6 +506,37 @@ export default {
     }
 
 
+  },
+  async mounted() {
+    if (!this.$route.query.templateId) {
+      // 如果不是创建者，尝试初始化内容
+      const token = localStorage.getItem('user_token')
+
+      const res = await axios.get('http://localhost:8080/documentInit', {
+        params: { documentId: this.documentId },
+        headers: {
+          'x_access_token': token
+        }
+      })
+      const resFromInit = res.data.data.data
+      const base64 = resFromInit.content
+      const fileTypeInit = resFromInit.fileType
+      // 判断文档类型进行初始化
+      if (fileTypeInit === 'docx') {
+        this.currentComponent = 'DocxViewer'
+        this.renderedContent = await decodeDocxBase64(base64)
+        console.log("docx处理")
+      } else if (fileTypeInit === 'txt') {
+        this.currentComponent = 'TextViewer'
+        this.renderedContent = atob(base64)
+      } else if (fileTypeInit === 'pdf') {
+        this.currentComponent = 'PdfViewer'
+        this.renderedContent = base64 // pdf base64
+      }
+      this.content = this.renderedContent
+      console.log("不是创建者：",base64)
+      console.log("fileTypeInit:",fileTypeInit)
+    }
   }
 }
 

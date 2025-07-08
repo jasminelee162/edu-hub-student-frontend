@@ -1,6 +1,7 @@
 <template>
   <div class="sandbox-entry">
     <headerPage></headerPage>
+    <div class="article-page-content">
     <div class="main-container">
 
       <!-- 数据库实验题目列表 -->
@@ -75,6 +76,7 @@
 
     <bottomPage />
   </div>
+  </div>
 </template>
 
 <script>
@@ -134,14 +136,22 @@ export default {
 .sandbox-entry {
   width: 100%;
   height: 100%;
-  background: url('@/assets/image/index/index_back.png') no-repeat center center;
+
   background-size: cover;
   padding-bottom: 30px;
 }
-
+.article-page-content {
+  width: 100%;
+  display: flex;
+  font-family: '黑体';
+  flex-direction: column;
+  align-items: center;
+  background: url('@/assets/image/index/index_back.png');
+}
 .main-container {
   width: 75%;
   margin: 40px auto;
+
 }
 
 .glass-card {
