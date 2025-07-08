@@ -5,6 +5,10 @@
       <div class="glass-card">
         <!-- 标题和时间显示部分保持不变 -->
 
+        <div class="test-page-num" v-if="!flag">
+          <div class="test-page-num1">剩余时间</div>
+          <div class="test-page-num2">{{hr+'小时'+min+'分'+sec+'秒'}}</div>
+        </div>
         <!-- 题目列表 -->
         <div class="question-list">
           <div v-for="(item, index) in assign" :key="index" class="question-card fade-in">
@@ -178,7 +182,8 @@ export default {
       five: false,
       ten: false,
       flag: false,
-      defen: 0
+      defen: 0,
+      totalTime:0
     }
   },
   components: {
@@ -274,6 +279,16 @@ export default {
         if (res.code == 1000) {
           this.assign = res.data.testItem
           this.test = res.data.test
+          this.totalTime = res.data.totalTime || 120 // 使用后端返回的totalTime，如果没有则默认120分钟
+
+          // 设置考试结束时间（当前时间 + totalTime分钟）
+          this.end = Date.parse(new Date()) + this.totalTime * 60 * 1000
+
+          // 如果考试未完成，开始倒计时
+          if (!this.flag) {
+            this.countdown()
+          }
+
           for (let i = 0; i < this.assign.length; i++) {
             var item = this.assign[i]
             this.total += item.score
@@ -284,7 +299,6 @@ export default {
               }
               if (item.type == 1) {
                 if (item.solution) {
-                  // 处理多选题答案，从字符串转换为数组
                   item.solution = JSON.parse(item.solution.replace(/\\\"/g, '"'))
                 } else {
                   item.solution = []

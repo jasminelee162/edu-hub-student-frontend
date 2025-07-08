@@ -262,7 +262,8 @@ export const saveTestStudent = (params) => post("/student/saveTestStudent",param
 //获取考试状态
 export const getTestUserState = (params) => get("/student/getTestUserState",params)
 export const getTaskChapterStudy = (params) => get("/chapter/getTaskChapterStudy",params)
-
+// api/api.js
+export const getTestById = (params) =>get("/test/getTestById",params)
 //-------------------------------论坛---------------------------------------
 //查询论坛
 export const getForumPage = (params) => post("/forum/getForumPage",params)
