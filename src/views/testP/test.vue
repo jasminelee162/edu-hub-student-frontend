@@ -1,6 +1,7 @@
 <template>
   <div class="test-page">
     <headerPage></headerPage>
+    <div class="article-page-content">
     <div class="main-container">
       <div class="glass-card">
         <div class="section-title">
@@ -64,6 +65,7 @@
       </div>
     </div>
     <bottomPage></bottomPage>
+  </div>
   </div>
 </template>
 
@@ -136,7 +138,14 @@ export default {
   background-size: cover;
   padding-bottom: 30px;
 }
-
+.article-page-content {
+  width: 100%;
+  display: flex;
+  font-family: '黑体';
+  flex-direction: column;
+  align-items: center;
+  background: url('../../assets/image/index/index_back.png');
+}
 .main-container {
   width: 75%;
   margin: 40px auto;

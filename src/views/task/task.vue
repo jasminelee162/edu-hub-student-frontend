@@ -86,9 +86,7 @@
         </el-pagination>
       </div>
     </div>
-    <div class="task-page-bottom">
 
-    </div>
     <bottomPage></bottomPage>
   </div>
 </template>
