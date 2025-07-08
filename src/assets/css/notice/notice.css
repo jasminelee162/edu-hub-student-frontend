@@ -36,6 +36,7 @@
     width: 70%;
 }
 .notice-page-item {
+    cursor: pointer;
     margin-top: 15px;
     font-size: 15px;
     font-family: '黑体';

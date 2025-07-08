@@ -166,7 +166,7 @@ export default {
     },
     formatStudentAnswer(item) {
       if (item.type === 1) { // 多选题
-        return Array.isArray(item.solution) ? item.solution.join(', ') : item.solution || '未作答'
+        return Array.isArray(item.solution) ? item.solution.join(',') : item.solution || '未作答'
       }
       return item.solution || '未作答'
     },

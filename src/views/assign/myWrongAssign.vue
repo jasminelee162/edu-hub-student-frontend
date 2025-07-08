@@ -23,39 +23,39 @@
 
               <div class="question-options">
                 <!-- 单选题 -->
-                <el-radio-group v-model="q.solution" v-if="q.type === 0" :disabled="true">
-                  <el-radio
+                <div v-if="q.type === 0">
+                  <div
                       v-for="(opt, i) in q.content"
                       :key="i"
-                      :label="opt.value"
                       class="option-item"
                   >
-        <span :class="{
-          'correct-answer': opt.value === q.answer,
-          'neutral-option': opt.value !== q.answer
-        }">
-          {{ opt.value }}.{{ opt.option }}
-        </span>
-                  </el-radio>
-                </el-radio-group>
+                    <span :class="{
+                      'correct-answer': opt.value === q.answer,
+                      'neutral-option': opt.value !== q.answer
+                    }">
+                      {{ opt.value }}.{{ opt.option }}
+                    </span>
+                  </div>
+                </div>
 
                 <!-- 多选题 -->
-                <el-checkbox-group v-model="q.solution" v-if="q.type === 1" :disabled="true">
-                  <el-checkbox
+                <div v-if="q.type === 1">
+                  <div
                       v-for="(opt, i) in q.content"
                       :key="i"
-                      :label="opt.value"
                       class="option-item"
                   >
-        <span :class="{
-          'correct-answer': q.answer.includes(opt.value),
-          'neutral-option': !q.answer.includes(opt.value)
-        }">
-          {{ opt.value }}.{{ opt.option }}
-        </span>
-                  </el-checkbox>
-                </el-checkbox-group>
+                    <span :class="{
+                      'correct-answer': q.answer.includes(opt.value),
+                      'neutral-option': !q.answer.includes(opt.value)
+                    }">
+                      {{ opt.value }}.{{ opt.option }}
+                    </span>
+                  </div>
+                </div>
               </div>
+
+
 
               <div class="answer-tip" v-if="q.point !== q.score">
                 <div>
@@ -92,10 +92,29 @@ export default {
   },
   methods: {
     formatStudentAnswer(q) {
-      if (q.type === 1) { // Multiple choice
-        return Array.isArray(q.solution) ? q.solution.join(', ') : q.solution || '未作答'
+      if (!q.solution) return '未作答';
+
+      try {
+        // 第一步：解析最外层的JSON数组
+        const outerArray = JSON.parse(q.solution);
+
+        // 第二步：处理数组中的每个元素（可能是字符串形式的JSON）
+        const result = outerArray.map(item => {
+          try {
+            // 尝试解析内部可能存在的JSON字符串
+            const parsed = JSON.parse(item.replace(/\\"/g, '"'));
+            return Array.isArray(parsed) ? parsed.join('') : parsed;
+          } catch {
+            // 如果不是JSON，直接返回原始值
+            return item.replace(/[\\"\[\]]/g, '');
+          }
+        }).filter(Boolean).join(',');
+
+        return result || '未作答';
+      } catch (e) {
+        // 如果解析失败，尝试直接清理字符串
+        return q.solution.replace(/[\\"\[\]]/g, '') || '未作答';
       }
-      return q.solution || '未作答'
     },
     query() {
       getWrongAnswers()
