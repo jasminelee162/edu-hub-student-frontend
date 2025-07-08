@@ -9,8 +9,8 @@
 
         <div class="exam-stats">
           <div class="stats-card">
-            <div class="stats-title">我的考试</div>
-            <div class="stats-value"><span>0</span> 场</div>
+            <div class="stats-title">待参加考试</div>
+            <div class="stats-value"><span>{{ pendingExamCount }}</span> 场</div>
           </div>
 
           <div class="exam-notice">
@@ -78,6 +78,11 @@ export default {
   components: {
     headerPage,
     bottomPage
+  },
+  computed: {
+    pendingExamCount() {
+      return this.test.filter(item => item.schedule === '未开始').length;
+    }
   },
   methods: {
     getTestListByUser() {
@@ -171,9 +176,11 @@ export default {
 }
 
 .stats-title {
-  font-size: 16px;
+  font-size: 20px;
   color: #1F4E79;
   margin-bottom: 10px;
+  font-weight: bold;
+  margin-top: 80px;
 }
 
 .stats-value span {
