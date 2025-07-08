@@ -87,7 +87,8 @@ export default {
   font-family: '黑体';
   background: url('@/assets/image/index/index_back.png') no-repeat center center fixed;
   background-size: cover;
-  min-height: 100vh;
+  height: 100%;
+  width: 100%;
   color: #1F4E79;
 }
 

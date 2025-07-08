@@ -26,7 +26,12 @@
                 :key="index"
                 :class="['chat-bubble', msg.role]"
             >
-              <div class="bubble-content">{{ msg.content }}</div>
+              <div class="bubble-content">
+  <span v-if="msg.role === 'ai' && index === chatHistory.length - 1 && isTyping">
+    {{ typedText }}<span class="typing-cursor">|</span>
+  </span>
+                <span v-else>{{ msg.content }}</span>
+              </div>
             </div>
           </div>
           <el-input
@@ -55,7 +60,9 @@ export default {
       chatKey: '',
       chatHistory: [],
       popupLeft: 100,
-      popupTop: 420
+      popupTop: 420,
+      typedText: '',
+      isTyping: false
     }
   },
   methods: {
@@ -75,20 +82,38 @@ export default {
         this.chatAI()
       }
     },
-    chatAI() {
+    async chatAI() {
       const msg = this.chatKey.trim()
       if (!msg) return
       this.chatHistory.push({ role: 'user', content: msg })
       this.chatKey = ''
       this.scrollToBottom()
-      getAIChat({ key: msg }).then(res => {
+
+      try {
+        const res = await getAIChat({ key: msg })
         const content = res.code === 1000 ? res.message : 'AI 无法响应'
-        this.chatHistory.push({ role: 'ai', content })
-        this.scrollToBottom()
-      }).catch(() => {
+
+        // 插入空内容，用于打字机渲染
+        this.chatHistory.push({ role: 'ai', content: '' })
+        this.typedText = ''
+        this.isTyping = true
+        await this.typeText(content)
+        // 替换最后一条为完整内容（防止切换页面内容丢失）
+        this.chatHistory[this.chatHistory.length - 1].content = content
+        this.isTyping = false
+      } catch (e) {
         this.chatHistory.push({ role: 'ai', content: 'AI 服务异常' })
+      } finally {
         this.scrollToBottom()
-      })
+      }
+    },
+    async typeText(text) {
+      this.typedText = ''
+      for (let i = 0; i <= text.length; i++) {
+        this.typedText = text.slice(0, i)
+        await new Promise(resolve => setTimeout(resolve, 25))
+        this.scrollToBottom()
+      }
     },
     startDrag(e) {
       const ball = this.$refs.chatBall
@@ -101,8 +126,8 @@ export default {
         y = Math.max(0, Math.min(window.innerHeight - 50, y))
         ball.style.left = x + 'px'
         ball.style.top = y + 'px'
-        this.popupLeft = x + 10 // 稍右偏一点（因为球是圆的）
-        this.popupTop = y + 80  // 正上方偏离一点距离
+        this.popupLeft = x + 10
+        this.popupTop = y + 80
       }
       const up = () => {
         document.removeEventListener('mousemove', move)
