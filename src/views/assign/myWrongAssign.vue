@@ -94,27 +94,45 @@ export default {
     formatStudentAnswer(q) {
       if (!q.solution) return '未作答';
 
-      try {
-        // 第一步：解析最外层的JSON数组
-        const outerArray = JSON.parse(q.solution);
-
-        // 第二步：处理数组中的每个元素（可能是字符串形式的JSON）
-        const result = outerArray.map(item => {
-          try {
-            // 尝试解析内部可能存在的JSON字符串
-            const parsed = JSON.parse(item.replace(/\\"/g, '"'));
-            return Array.isArray(parsed) ? parsed.join('') : parsed;
-          } catch {
-            // 如果不是JSON，直接返回原始值
+      // 如果是数组，直接处理
+      if (Array.isArray(q.solution)) {
+        return q.solution.map(item => {
+          // 处理数组中的每个元素
+          if (typeof item === 'string') {
             return item.replace(/[\\"\[\]]/g, '');
           }
+          return item;
         }).filter(Boolean).join(',');
-
-        return result || '未作答';
-      } catch (e) {
-        // 如果解析失败，尝试直接清理字符串
-        return q.solution.replace(/[\\"\[\]]/g, '') || '未作答';
       }
+
+      // 如果是字符串，按原逻辑处理
+      if (typeof q.solution === 'string') {
+        try {
+          // 第一步：解析最外层的JSON数组
+          const outerArray = JSON.parse(q.solution);
+
+          // 第二步：处理数组中的每个元素
+          const result = outerArray.map(item => {
+            if (typeof item === 'string') {
+              try {
+                const parsed = JSON.parse(item.replace(/\\"/g, '"'));
+                return Array.isArray(parsed) ? parsed.join('') : parsed;
+              } catch {
+                return item.replace(/[\\"\[\]]/g, '');
+              }
+            }
+            return item;
+          }).filter(Boolean).join(',');
+
+          return result || '未作答';
+        } catch (e) {
+          // 如果解析失败，尝试直接清理字符串
+          return q.solution.replace(/[\\"\[\]]/g, '') || '未作答';
+        }
+      }
+
+      // 其他情况
+      return '未作答';
     },
     query() {
       getWrongAnswers()
