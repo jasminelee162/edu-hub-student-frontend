@@ -52,7 +52,7 @@
         >
           <el-card>
             <div class="version-header">
-              <span>版本 {{ versions.length - index }}</span>
+              <span>版本 {{ index + 1 }}</span>
               <el-button size="mini" type="primary" @click="rollbackVersion(version.documentId)">
                 恢复到此版本
               </el-button>
@@ -98,13 +98,33 @@ import {
 } from '@/api/api'
 import axios from "axios";
 
-function decodeDocxBase64(base64) {
+function decodeBase64ToUtf8(base64) {
+  const byteCharacters = atob(base64)
+  const byteNumbers = new Array(byteCharacters.length)
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i)
+  }
+  const byteArray = new Uint8Array(byteNumbers)
+  const decoder = new TextDecoder('utf-8')
+  return decoder.decode(byteArray)
+}
+
+export async function decodeDocxBase64(base64) {
   try {
-    const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
-    return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+    const binary = atob(base64)
+    const isZipFile = binary.startsWith('PK')
+
+    if (isZipFile) {
+      const arrayBuffer = Uint8Array.from(binary, c => c.charCodeAt(0)).buffer
+      const result = await mammoth.convertToHtml({ arrayBuffer })
+      return result.value
+    } else {
+      // 非docx：按UTF-8解码为HTML
+      return decodeBase64ToUtf8(base64)
+    }
   } catch (e) {
-    console.error('docx解码失败，尝试直接解码为HTML', e)
-    return Promise.resolve(atob(base64))
+    console.error('解码失败', e)
+    return '<p>文档解析失败</p>'
   }
 }
 export default {
@@ -442,13 +462,22 @@ export default {
     },
     async saveDocument() {
       try {
-        const {value} = await this.$prompt('请输入变更说明', '保存文档', {
-          confirmButtonText: '保存', cancelButtonText: '取消',
-          inputPattern: /.+/, inputErrorMessage: '说明不能为空'
+        const { value } = await this.$prompt('请输入变更说明', '保存文档', {
+          confirmButtonText: '保存',
+          cancelButtonText: '取消',
+          inputPattern: /.+/,
+          inputErrorMessage: '说明不能为空'
         })
 
         const res = await recordVersion(this.documentId, this.content, value)
-        console.log("保存的内容111111111111111111111："+this.content);
+
+        if (!res || typeof res.code === 'undefined') {
+          this.$message.error('保存失败：服务器无响应')
+          return
+        }
+
+        console.log("保存的内容："+this.content)
+
         if (res.code === 1000) {
           this.$message.success('保存成功')
           this.loadVersions()
@@ -457,8 +486,12 @@ export default {
           this.$message.error('保存失败: ' + (res.message || '未知错误'))
         }
       } catch (error) {
+        if (error === 'cancel') {
+          console.log('用户取消了保存')
+          return
+        }
         console.error('保存出错:', error)
-        this.$message.error('保存出错: ' + error.message)
+        this.$message.error('保存出错: ' + (error.message || '未知错误'))
       }
     }, async loadVersions() {
       const res = await getAllVersions(this.documentId)
@@ -537,6 +570,8 @@ export default {
       console.log("不是创建者：",base64)
       console.log("fileTypeInit:",fileTypeInit)
     }
+
+    await this.loadVersions()
   }
 }
 
