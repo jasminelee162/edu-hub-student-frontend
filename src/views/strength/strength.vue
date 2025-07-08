@@ -63,6 +63,8 @@
             <i class="el-icon-chat-dot-round icon"></i> 与 AI 对话
           </div>
           <div class="chat-history" ref="chatContainer">
+
+
             <div
                 v-for="(msg, index) in chatHistory"
                 :key="index"
@@ -70,20 +72,11 @@
             >
               <div class="bubble-content">
                 <span class="chat-text">{{ msg.content }}</span>
-              </div>
-            </div>
-
-            <!-- AI思考中的加载状态 -->
-            <div v-if="isAIThinking" class="chat-bubble ai">
-              <div class="bubble-content">
-                <div class="ai-thinking">
-                  <div class="typing-indicator">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-                  <span class="thinking-text">AI正在思考中...</span>
-                </div>
+                <!-- 让 AI 最后一条显示闪动光标 -->
+                <span
+                    v-if="isTyping && index === chatHistory.length - 1 && msg.role === 'ai'"
+                    class="typing-cursor"
+                >|</span>
               </div>
             </div>
           </div>
@@ -96,6 +89,7 @@
                 rows="2"
                 class="chat-input"
                 :disabled="isAIThinking"
+                @keyup.enter.native="chatAI"
             />
             <el-button
                 type="primary"
@@ -131,7 +125,8 @@ export default {
       chatHistory: [],
       isAIThinking: false,
       isSuggestionLoading: true,
-      isTyping: false
+      isTyping: false,
+      typingResponse: '', // 添加此字段用于打字显示
     }
   },
   methods: {
@@ -203,19 +198,35 @@ export default {
       this.isAIThinking = true
       this.scrollToBottom()
 
+      // 先插入一条空的 AI 消息占位
+      const aiMsg = { role: 'ai', content: '' }
+      this.chatHistory.push(aiMsg)
+
       try {
         const res = await getAIChat({ key: userMsg })
         if (res.code === 1000) {
-          this.chatHistory.push({ role: 'ai', content: res.message })
+          await this.typeAIResponse(res.message || 'AI 暂时没有回答', aiMsg)
         } else {
-          this.chatHistory.push({ role: 'ai', content: 'AI 暂时无法回答，请稍后再试。' })
+          aiMsg.content = 'AI 暂时无法回答，请稍后再试。'
         }
       } catch (error) {
-        this.chatHistory.push({ role: 'ai', content: 'AI 服务出错，请稍后再试。' })
+        aiMsg.content = 'AI 服务出错，请稍后再试。'
       } finally {
         this.isAIThinking = false
         this.scrollToBottom()
       }
+    },
+    async typeAIResponse(text, aiMsg) {
+      aiMsg.content = ''
+      this.isTyping = true
+
+      for (let i = 0; i < text.length; i++) {
+        aiMsg.content += text[i]
+        await new Promise(resolve => setTimeout(resolve, 20))
+        this.scrollToBottom()
+      }
+
+      this.isTyping = false
     }
   },
   mounted() {
