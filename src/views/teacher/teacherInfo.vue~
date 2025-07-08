@@ -5,11 +5,17 @@
         <div class="teacherInfo-name">
             <div class="teacherInfo-desc">
                 <div class="teacherInfo-title">{{teacher.userName}}</div>
-                <div class="teacherInfo-title1">
-                    <el-tooltip class="item" effect="dark" :content="teacher.remark" placement="bottom">
-                        <i class="el-icon-info"></i>
-                    </el-tooltip>
-                    {{teacher.remark}}
+                  <div class="teacherInfo-title1">
+                  <el-tooltip
+                    class="item"
+                    effect="light"
+                    :content="teacher.remark"
+                    placement="bottom"
+                    popper-class="custom-tooltip"
+                  >
+                    <i class="el-icon-info info-icon"></i>
+                  </el-tooltip>
+                  <span class="remark-text">{{teacher.remark}}</span>
                 </div>
             </div>
             <div class="teacherInfo-list">
@@ -78,7 +84,7 @@
 
 <style scoped>
   @import url("../../assets/css/teacher/teacherInfo.css");
-    /* 新增样式 */
+
   .teacherInfo-title1 {
     display: flex;
     align-items: center;
@@ -92,13 +98,37 @@
     line-height: 1.5;
   }
 
-  .el-icon-info {
+  .info-icon {
     cursor: pointer;
     color: #909399;
     margin-right: 5px;
+    transition: color 0.3s;
   }
 
-  .el-icon-info:hover {
+  .info-icon:hover {
     color: #409EFF;
+  }
+</style>
+
+<style>
+  /* 全局样式，因为popper-class生成的元素不在当前组件作用域内 */
+  .custom-tooltip {
+    max-width: 300px;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    line-height: 1.5;
+    color: #606266;
+    background-color: #fff;
+    border: none;
+  }
+
+  .custom-tooltip[x-placement^=bottom] .popper__arrow {
+    border-bottom-color: #fff;
+  }
+
+  .custom-tooltip[x-placement^=bottom] .popper__arrow:after {
+    border-bottom-color: #fff;
   }
 </style>

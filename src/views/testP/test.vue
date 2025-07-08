@@ -194,7 +194,7 @@ export default {
   color: #1F4E79;
   margin-bottom: 10px;
   font-weight: bold;
-  margin-top: 80px;
+  margin-top: 25px;
 }
 
 .stats-value span {

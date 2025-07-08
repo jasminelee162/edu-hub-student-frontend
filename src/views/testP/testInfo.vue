@@ -5,6 +5,23 @@
       <div class="glass-card">
         <!-- 标题和时间显示部分保持不变 -->
 
+        <div class="test-header">
+          <div class="test-title">
+            {{test.taskName}} - {{test.name}}
+          </div>
+
+          <div class="timer-container" v-if="!flag">
+            <div class="timer-label">剩余时间</div>
+            <div class="timer-display">{{hr}}<span class="timer-unit">小时</span>{{min}}<span class="timer-unit">分</span>{{sec}}<span class="timer-unit">秒</span></div>
+          </div>
+
+          <div class="score-display" v-if="flag">
+            <span class="total-score">总分：{{total}}分</span>
+            <span class="divider">|</span>
+            <span class="user-score">得分：{{defen}}分</span>
+          </div>
+        </div>
+
         <!-- 题目列表 -->
         <div class="question-list">
           <div v-for="(item, index) in assign" :key="index" class="question-card fade-in">
@@ -158,7 +175,6 @@
   </div>
 </template>
 
-
 <script>
 import {getTestItemByTestId,saveTestStudent,getTestUserState} from '../../api/api'
 import headerPage from "../../components/header/header"
@@ -178,7 +194,8 @@ export default {
       five: false,
       ten: false,
       flag: false,
-      defen: 0
+      defen: 0,
+      totalTime:0
     }
   },
   components: {
@@ -274,6 +291,16 @@ export default {
         if (res.code == 1000) {
           this.assign = res.data.testItem
           this.test = res.data.test
+          this.totalTime = res.data.totalTime || 120 // 使用后端返回的totalTime，如果没有则默认120分钟
+
+          // 设置考试结束时间（当前时间 + totalTime分钟）
+          this.end = Date.parse(new Date()) + this.totalTime * 60 * 1000
+
+          // 如果考试未完成，开始倒计时
+          if (!this.flag) {
+            this.countdown()
+          }
+
           for (let i = 0; i < this.assign.length; i++) {
             var item = this.assign[i]
             this.total += item.score
@@ -284,7 +311,6 @@ export default {
               }
               if (item.type == 1) {
                 if (item.solution) {
-                  // 处理多选题答案，从字符串转换为数组
                   item.solution = JSON.parse(item.solution.replace(/\\\"/g, '"'))
                 } else {
                   item.solution = []
@@ -649,4 +675,89 @@ export default {
   color: #ff4d4f;
   text-decoration: line-through;
 }
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.test-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #1F4E79;
+  flex: 1;
+  min-width: 200px;
+}
+
+.timer-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 59, 48, 0.15);
+  padding: 8px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.2);
+}
+
+.timer-label {
+  font-size: 14px;
+  color: #ff3b30;
+  font-weight: bold;
+}
+
+.timer-display {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff3b30;
+  font-family: 'Courier New', monospace;
+}
+
+.timer-unit {
+  font-size: 12px;
+  margin: 0 2px;
+  opacity: 0.8;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(76, 217, 100, 0.15);
+  padding: 8px 15px;
+  border-radius: 8px;
+}
+
+.total-score {
+  font-size: 14px;
+  color: #4cd964;
+  font-weight: bold;
+}
+
+.user-score {
+  font-size: 14px;
+  color: #4cd964;
+  font-weight: bold;
+}
+
+.divider {
+  color: rgba(76, 217, 100, 0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .test-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .timer-container, .score-display {
+    align-self: flex-end;
+  }
+}
+
 </style>
