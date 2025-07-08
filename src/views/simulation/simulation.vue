@@ -1,6 +1,6 @@
 <template>
   <div class="sandbox-entry">
-    <headerPage />
+    <headerPage></headerPage>
     <div class="main-container">
 
       <!-- 数据库实验题目列表 -->
@@ -133,7 +133,7 @@ export default {
 <style scoped>
 .sandbox-entry {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   background: url('@/assets/image/index/index_back.png') no-repeat center center;
   background-size: cover;
   padding-bottom: 30px;

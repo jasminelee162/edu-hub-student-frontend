@@ -10,7 +10,7 @@
         <div class="exam-stats">
           <div class="stats-card">
             <div class="stats-title">我的考试</div>
-            <div class="stats-value"><span>0</span> 场</div>
+            <div class="stats-value"><span>{{examCount}}</span> 场</div>
           </div>
 
           <div class="exam-notice">
@@ -73,6 +73,8 @@ export default {
   data() {
     return{
       test: [],
+      examCount: 0,  // 考试次数
+      examCompeteCount:0 //已完成考试次数
     }
   },
   components: {
@@ -84,6 +86,7 @@ export default {
       getTestListByUser().then(res => {
         if (res.code == 1000) {
           this.test = res.data
+          this.examCount = this.test.length
         }
       })
     },
@@ -121,7 +124,7 @@ export default {
 <style scoped>
 .test-page {
   width: 100%;
-  min-height: 100vh;
+  height: 100%;
   background: url('../../assets/image/index/index_back.png') no-repeat center center;
   background-size: cover;
   padding-bottom: 30px;

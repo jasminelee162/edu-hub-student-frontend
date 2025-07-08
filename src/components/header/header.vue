@@ -14,7 +14,7 @@
       <div @click="toPage('forum')" :class="$route.path == '/forum'?'menu_item':''">讨论</div>
       <div @click="toPage('notice')" :class="$route.path == '/notice'?'menu_item':''">公告</div>
       <div @click="toPage('message')" :class="$route.path == '/message'?'menu_item':''">留言</div>
-      <div @click="toPage('about')" :class="$route.path == '/about'?'menu_item':''">关于</div>
+
     </div>
     <div class="center">
       <el-dropdown @command="handleCommand">
@@ -86,9 +86,7 @@ export default {
 
     },
     toPage(name) {
-      if(name == 'about') {
-        this.$router.push("/about")
-      } else if (name == 'index') {
+      if (name == 'index') {
         this.$router.push("/")
       } else if (name == "task") {
         this.$router.push("/task")

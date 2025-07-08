@@ -23,7 +23,7 @@
       </div>
     </div>
     <div class="editor-main">
-      <div class="editor-content">
+      <div class="editor-content" >
         <component
             :is="currentComponent"
             :key="editorKey"
@@ -101,12 +101,18 @@ function decodeDocxBase64(base64) {
   const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
   return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
 }
-
 export default {
-  components: { headerPage, DocxViewer, PdfViewer, TextViewer },
+  components: {headerPage, DocxViewer, PdfViewer, TextViewer},
   data() {
     return {
-      stompClient: null,
+      // 新增：记录自身发送的内容（用于过滤）
+      lastSentContent: '',
+      // 新增：客户端唯一标识（区分自己和他人消息）
+      clientId: Math.random().toString(36).slice(2, 10),
+      // 新增：标记是否正在处理远程消息（防止触发本地发送）
+      isProcessingRemote: false,
+
+      websocket: null, // 保存WebSocket实例
       username: '用户' + Math.floor(Math.random() * 1000),
       fileType: '',
       renderedContent: '',
@@ -122,102 +128,258 @@ export default {
       shareLink: this.$route.params.id || '',
       lastEditTime: 0,
       editorKey: 0,
+      previousMessage: '',
+      debounceTimer: null,
+      lastContentLength: 0,
+      lastSendTime: 0,
+      minSendInterval: 300, // 最小发送间隔(ms)
+      maxSendBuffer: 1000,  // 最大发送缓冲区大小(字符)
+      isSending: false,
+      pendingContent: null,
+      sendQueue: []
     }
   },
   created() {
-    this.loadVersions()
     const isCreator = !!this.$route.query.templateId
     if (isCreator) this.initDocument()
     this.initWebSocket()
   },
   beforeDestroy() {
-    if (this.stompClient) this.stompClient.deactivate()
+    this.closeWebSocket()
   },
   methods: {
     initWebSocket() {
+      const sid = this.documentId
       const userId = this.$store.state.user?.id;
-      if (!userId) {
-        console.error('无法建立WebSocket连接：未获取到用户ID');
+
+      // 判断浏览器是否支持 WebSocket
+      if ('WebSocket' in window) {
+        this.websocket = new WebSocket(`ws://localhost:8080/api/websocket/sharedText/${sid}?userId=${userId}`)
+      } else if ('SockJS' in window) {
+        this.websocket = new SockJS(`http://localhost:8080/api/websocket/sharedText/${sid}?userId=${userId}`)
+      } else {
+        this.$message.error('当前浏览器不支持WebSocket和SockJS')
+        return
+      }
+
+      // 使用箭头函数保持this指向组件实例
+      this.websocket.onopen = () => {
+        console.log('WebSocket连接成功')
+      }
+
+      this.websocket.onmessage = (event) => {
+        try {
+          // 1. 解析JSON数据（后端返回的WebSocketResult对象）
+          const result = event.data;
+          const number= result.charAt(0);
+          const data = result.slice(1);
+          // 2. 根据number字段区分消息类型
+          switch (number) {
+            case '1':
+              // 处理成员加入信息（number=1）
+              this.handleMemberJoin(data);
+              break;
+            case '2':
+              // 处理普通信息（number=2）
+
+              // 拆分clientId和内容（按|||分割）
+              const separatorIndex = data.indexOf('|||');
+              if (separatorIndex === -1) {
+                // 无效格式，直接视为他人消息（兼容旧消息）
+                this.processRemoteContent(data);
+                return;
+              }
+
+              // 提取clientId和内容
+              const senderClientId = data.substring(0, separatorIndex);
+              const content = data.substring(separatorIndex + 3);
+
+              // 过滤自身发送的消息
+              if (senderClientId === this.clientId) {
+                console.log("忽略自身发送的消息");
+                return;
+              }
+              // 处理他人消息
+              this.processRemoteContent(content);
+              this.updateTextBox(content)
+              break;
+            default:
+              console.warn("未知消息类型", result.number);
+          }
+        } catch (error) {
+          console.error("解析WebSocket消息失败", error);
+        }
+      }
+
+
+      this.websocket.onerror = (error) => {
+        console.error('WebSocket连接错误:', error)
+      }
+
+      this.websocket.onclose = (event) => {
+        console.log('WebSocket连接关闭')
+        console.log('WebSocket连接关闭，状态码：', event.code);
+        console.log('关闭原因：', event.reason);
+      }
+
+      // 窗口关闭时确保关闭 WebSocket 连接
+      window.addEventListener('beforeunload', this.closeWebSocket)
+
+      // 使用Vue的nextTick确保DOM已渲染
+      this.$nextTick(() => {
+        if (this.$refs.editorContent) {
+          // 使用箭头函数和组件方法
+          this.$refs.editorContent.$el.addEventListener('input', this.handleInput)
+          console.log('editorContent ref:', this.$refs.editorContent); // 检查ref类型
+
+        }
+      })
+    },
+    onEditorContentChange(content) {
+      // 1. 远程消息导致的更新，直接忽略（防止循环）
+      if (this.isProcessingRemote) {
+        console.log("忽略远程更新触发的发送");
         return;
       }
-      const socket = new SockJS('http://localhost:8080/ws-doc')
-      this.stompClient = new Client({
-        webSocketFactory: () => socket,
-        connectHeaders: {
-          userId: userId
-        },
-        debug: str => console.log('[STOMP]', str),
-        reconnectDelay: 5000,
-        heartbeatIncoming: 4000,
-        heartbeatOutgoing: 4000
-      })
 
-      this.stompClient.onConnect = () => {
-        this.stompClient.subscribe(`/topic/document/${this.documentId}`, message => {
-          const binary = message.binaryBody || message.body
-          const text = new TextDecoder('utf-8').decode(binary)
-          this.renderedContent = text
-          this.content = text
-        })
-
-        this.stompClient.subscribe(`/user/queue/init`, message => {
-          console.log('📥 收到初始化内容:', message)
-          const binary = message.binaryBody || message.body
-          const text = new TextDecoder('utf-8').decode(binary)
-          this.renderedContent = text
-          this.content = text
-          this.$message.success('文档初始化成功:');
-        })
-
-        this.stompClient.subscribe(`/topic/document/${this.documentId}/join`, message => {
-          const users = JSON.parse(message.body)
-          this.collaborators = users.map(name => ({ id: name, name, avatar: '' }))
-        })
-
-        // 发送初始化消息时必须包含userId
-        this.stompClient.publish({
-          destination: `/app/${this.documentId}/init`,
-          headers: {
-            userId: userId
-          },
-          body: null  // 明确传null
-        });
+      // 2. 内容和上次发送的完全一致，不发送
+      if (content === this.lastSentContent) {
+        console.log("内容未变化，不发送");
+        return;
       }
 
-      this.stompClient.activate()
+      const currentLength = content.length;
+      const lengthDiff = Math.abs(currentLength - this.lastContentLength);
+      this.lastContentLength = currentLength;
+      const timeSinceLastSend = Date.now() - this.lastSendTime;
+
+      // 策略1：大段变更立即发送（保留）
+      if (lengthDiff > 50) {
+        console.log("大变更立即发送", lengthDiff);
+        this.sendEditMessage(content);
+        return;
+      }
+
+      // 策略2：频繁小幅变更合并（优化：队列延迟更长）
+      if (timeSinceLastSend < this.minSendInterval) {
+        console.log("频繁变更加入队列");
+        this.queueMessage(content);
+        return;
+      }
+
+      // 策略3：动态防抖（优化：长按/快速输入时防抖更强）
+      const debounceTime = this.calculateDebounceTime(content, lengthDiff);
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = setTimeout(() => {
+        this.sendEditMessage(content);
+      }, debounceTime);
     },
 
-    onEditorContentChange(content) {
-      const now = Date.now()
-      if (now - this.lastEditTime > 300) {
-        this.renderedContent = content
-        this.content = content
-        this.sendEditMessage()
-        this.lastEditTime = now
+    // 计算防抖时间（针对性优化长按场景）
+    calculateDebounceTime(content, lengthDiff) {
+      // 基础时间：内容越长，防抖越短（确保大内容及时发送）
+      let baseTime = Math.min(content.length / 15, 500);
+      // 长按/微小变更（长度变化<5）时，延长防抖
+      if (lengthDiff < 5) {
+        baseTime *= 2; // 微小变更防抖加倍
+      }
+      // 快速输入时再延长
+      const typingSpeed = this.calculateTypingSpeed();
+      const speedFactor = typingSpeed > 8 ? 1.5 : 1; // 降低触发阈值，更容易进入强防抖
+      // 最终防抖时间：最短400ms（比之前更长，减少高频发送）
+      return Math.max(400, baseTime * speedFactor);
+    },
+
+    // 计算输入速度（长按判定优化）
+    calculateTypingSpeed() {
+      // 记录最近5次输入时间
+      if (!this.typingHistory) this.typingHistory = [];
+      this.typingHistory.push(Date.now());
+      if (this.typingHistory.length > 5) this.typingHistory.shift();
+
+      // 长按/连续输入时，时间间隔短→判定为快速输入
+      if (this.typingHistory.length >= 4) {
+        const totalInterval = this.typingHistory[4] - this.typingHistory[0];
+        const avgInterval = totalInterval / 4; // 平均间隔
+        // 平均间隔<200ms→判定为长按/快速输入，返回高值触发强防抖
+        return avgInterval < 200 ? 15 : 5;
+      }
+      return 5; // 正常输入
+    },
+
+    // 队列消息（只保留最新内容）
+    queueMessage(content) {
+      // 过滤和上一条相同的内容
+      if (this.sendQueue.length > 0 && this.sendQueue[this.sendQueue.length - 1] === content) {
+        return;
+      }
+      this.sendQueue.push(content);
+      // 只保留最后1条（彻底避免队列堆积）
+      if (this.sendQueue.length > 1) {
+        this.sendQueue = [this.sendQueue[this.sendQueue.length - 1]];
+      }
+      if (!this.isSending) {
+        this.processSendQueue();
       }
     },
 
-    sendEditMessage() {
-      if (this.stompClient?.connected) {
-        const userId = this.$store.state.user?.id
-        const encoder = new TextEncoder()
-        const binary = encoder.encode(this.content)
-        // 发送编辑内容（binary 可以是 Uint8Array 或字符串）
-        this.stompClient.publish({
-          destination: `/app/${this.documentId}/edit`,
-          headers: {
-            'content-type': 'application/octet-stream',
-            userId: userId  // 必须包含
-          },
-          body: binary
-        })
+    // 处理队列（延迟更长，合并长按输入）
+    processSendQueue() {
+      if (this.sendQueue.length === 0) {
+        this.isSending = false;
+        return;
+      }
+      this.isSending = true;
+      // 延迟500ms发送（给长按输入足够的合并时间）
+      setTimeout(() => {
+        const content = this.sendQueue.pop();
+        this.sendQueue = [];
+        this.sendEditMessage(content);
+      }, 500);
+    },
+
+    // 发送消息（用分隔符标记clientId，不使用JSON）
+    sendEditMessage(content) {
+      this.lastSendTime = Date.now();
+      this.lastSentContent = content; // 记录自身发送的内容
+      this.pendingContent = content;
+
+      if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
+        // 格式：clientId|||实际内容（用|||作为分隔符，避免和内容冲突）
+        const message = `${this.clientId}|||${content}`;
+        this.websocket.send(message);
+        console.log("发送消息:", message.substring(0, 50) + "...");
+      }
+
+      this.isSending = false;
+      if (this.sendQueue.length > 0) {
+        this.processSendQueue();
       }
     },
 
+
+
+    // 处理远程内容（标记远程更新，避免触发本地发送）
+    processRemoteContent(content) {
+      this.isProcessingRemote = true; // 标记为远程更新
+      this.updateTextBox(content);
+      this.isProcessingRemote = false; // 处理完重置
+    },
+
+    // 更新本地内容（保持原有逻辑）
+    updateTextBox(content) {
+      if (content !== this.previousMessage) {
+        this.content = content;
+        this.previousMessage = content;
+        this.renderedContent = content;
+      }
+    },
+    handleMemberJoin(content){
+      this.collaborators = content.split('#');
+    },
     async initDocument() {
       const templateId = this.$route.query.templateId
       if (!templateId) return
-
       try {
         const res = await getTemplateContent(templateId)
         this.documentTitle = res.data.name || '未命名模板'
@@ -246,24 +408,35 @@ export default {
         console.error('加载模板失败', e)
         this.$message.error('模板加载失败')
       }
+    }
+
+    ,
+
+    closeWebSocket() {
+      if (this.websocket) {
+        this.websocket.close()
+        window.removeEventListener('beforeunload', this.closeWebSocket)
+      }
     },
 
-    async loadVersions() {
-      const res = await getAllVersions(this.documentId)
-      this.versions = res.data.map(v => ({
-        ...v,
-        preview: (v.content || '').substring(0, 100) + '...'
-      }))
+    // 其他已有方法保持不变...
+    shareDocument() {
+      this.showShareDialog = true
     },
-
+    copyLink() {
+      this.$refs.shareInput.select()
+      document.execCommand('copy')
+      this.$message.success('链接已复制')
+    },
     async saveDocument() {
       try {
-        const { value } = await this.$prompt('请输入变更说明', '保存文档', {
+        const {value} = await this.$prompt('请输入变更说明', '保存文档', {
           confirmButtonText: '保存', cancelButtonText: '取消',
           inputPattern: /.+/, inputErrorMessage: '说明不能为空'
         })
 
         const res = await recordVersion(this.documentId, this.content, value)
+        console.log("保存的内容111111111111111111111："+this.content);
         if (res.code === 1000) {
           this.$message.success('保存成功')
           this.loadVersions()
@@ -275,9 +448,13 @@ export default {
         console.error('保存出错:', error)
         this.$message.error('保存出错: ' + error.message)
       }
-    },
-
-    async rollbackVersion(versionId) {
+    }, async loadVersions() {
+      const res = await getAllVersions(this.documentId)
+      this.versions = res.data.map(v => ({
+        ...v,
+        preview: (v.content || '').substring(0, 100) + '...'
+      }))
+    }, async rollbackVersion(versionId) {
       const userId = this.$store.state.user?.id
       if (!userId) return this.$message.error('未登录，无法恢复')
       await this.$confirm('确定恢复到此版本吗?', '提示', {
@@ -314,19 +491,12 @@ export default {
       this.editorKey++
       this.sendEditMessage()
       this.$message.success('恢复成功')
-    },
-
-    shareDocument() {
-      this.showShareDialog = true
-    },
-
-    copyLink() {
-      this.$refs.shareInput.select()
-      document.execCommand('copy')
-      this.$message.success('链接已复制')
     }
+
+
   }
 }
+
 </script>
 
 <style>

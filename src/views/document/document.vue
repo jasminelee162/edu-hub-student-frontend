@@ -104,8 +104,6 @@ export default {
         this.$message.error('请先登录')
         return
       }
-
-
       try {
         const res = await confirmDocument(documentId)
         if (res.code === 1000) {
@@ -116,7 +114,6 @@ export default {
             path: `/documentEdit/${documentId}`,
             query: {fromInit: true}
           })
-
         } else {
           this.$message.error(res.message || '文档号无效')
         }
@@ -125,10 +122,6 @@ export default {
         console.error(e)
       }
 
-
-
-
-      this.stompClient.activate()
     }
   }
 }
@@ -145,8 +138,9 @@ export default {
 
 .document-page {
   width: 100%;
+  height: 100%;
   background: url('../../assets/image/index/index_back.png');
-  min-height: 100vh;
+
   display: flex;
   flex-direction: column;
   align-items: center;
