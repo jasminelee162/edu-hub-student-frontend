@@ -99,8 +99,13 @@ import {
 import axios from "axios";
 
 function decodeDocxBase64(base64) {
-  const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
-  return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+  try {
+    const arrayBuffer = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer
+    return mammoth.convertToHtml({ arrayBuffer }).then(result => result.value)
+  } catch (e) {
+    console.error('docx解码失败，尝试直接解码为HTML', e)
+    return Promise.resolve(atob(base64))
+  }
 }
 export default {
   components: {headerPage, DocxViewer, PdfViewer, TextViewer},
@@ -513,22 +518,24 @@ export default {
           'x_access_token': token
         }
       })
-      const resFromInit = res.data.data
+      const resFromInit = res.data.data.data
       const base64 = resFromInit.content
-      //const fileTypeInit = resFromInit.
+      const fileTypeInit = resFromInit.fileType
       // 判断文档类型进行初始化
-      if (this.fileType === 'docx') {
+      if (fileTypeInit === 'docx') {
         this.currentComponent = 'DocxViewer'
         this.renderedContent = await decodeDocxBase64(base64)
-      } else if (this.fileType === 'txt') {
+        console.log("docx处理")
+      } else if (fileTypeInit === 'txt') {
         this.currentComponent = 'TextViewer'
         this.renderedContent = atob(base64)
-      } else if (this.fileType === 'pdf') {
+      } else if (fileTypeInit === 'pdf') {
         this.currentComponent = 'PdfViewer'
         this.renderedContent = base64 // pdf base64
       }
       this.content = this.renderedContent
-      console.log("不是创建者：",resFromInit)
+      console.log("不是创建者：",base64)
+      console.log("fileTypeInit:",fileTypeInit)
     }
   }
 }
