@@ -71,7 +71,15 @@
                 :class="['chat-bubble', msg.role]"
             >
               <div class="bubble-content">
-                <span class="chat-text">{{ msg.content }}</span>
+                <div
+                    v-if="msg.role === 'ai'"
+                    class="chat-text markdown-html"
+                    v-html="msg.content"
+                />
+                <span
+                    v-else
+                    class="chat-text"
+                >{{ msg.content }}</span>
                 <!-- 让 AI 最后一条显示闪动光标 -->
                 <span
                     v-if="isTyping && index === chatHistory.length - 1 && msg.role === 'ai'"
@@ -217,11 +225,13 @@ export default {
       }
     },
     async typeAIResponse(text, aiMsg) {
-      aiMsg.content = ''
       this.isTyping = true
+      let raw = ''
+      aiMsg.content = ''
 
       for (let i = 0; i < text.length; i++) {
-        aiMsg.content += text[i]
+        raw += text[i]
+        aiMsg.content = marked.parse(raw)
         await new Promise(resolve => setTimeout(resolve, 20))
         this.scrollToBottom()
       }
