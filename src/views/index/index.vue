@@ -5,13 +5,21 @@
           <div class="index-search-content">
               <div class="search-content">
                 <div class="content1">开启智慧学习新时代</div>
-                <div class="content2">START YOUR SMART LEARNING JOURNEY</div>
+
                 <div class="content3">超过<span style="color:#6427FF">5000</span>虚拟仿真实验与课程资源，
                   <span style="color:#6427FF">AI驱动</span>个性化学习体验</div>
-                <div class="content4">Explore 5000+ <span style="color:#6427FF">5000+</span> Virtual Labs & Courses, Powered by  <span style="color:#6427FF">AI</span> </div>
-                <div class="content5">实时追踪学习进度，智能推荐提升效率</div>
-                <div class="content6">Track Progress in Real-Time with AI-Powered Recommendations</div>
-                <el-input class="searchKey" v-model="searchKey" suffix-icon="el-icon-search" placeholder="请输入想要搜索的课程名称并按回车键搜索" @change="searchTask()"></el-input>
+                <div class="content5">实时追踪学习进度，智能推荐提升效率，<br>
+                  自动诊断薄弱环节，精准推送专属提升方案</div>
+                <div class="content6" style="margin-top: 14px; font-size: 16px; color: #444;">
+                  超<span style="color: #6427FF;">100万</span>名学生与教师正在使用，<br>
+                  高校、职校、培训机构共同选择的数字化学习平台
+                </div>
+
+                <div class="content6" style="margin-top: 14px; font-size: 16px; color: #444;">
+                  支持文理工农医多学科全覆盖，结合真实教学场景与学习数据，<br>
+                  打造集“学、练、测、评、管”一体的智能学习新范式
+                </div>
+                 <el-input class="searchKey" v-model="searchKey" suffix-icon="el-icon-search" placeholder="请输入想要搜索的课程名称并按回车键搜索" @change="searchTask()"></el-input>
               </div>
             </div>
           <div class="index-image">
@@ -22,7 +30,7 @@
           <div class="most-content"> 
               <div class="page-title">
                 <div style="letter-spacing: 2px;">最受欢迎的专业</div>
-                <div style="margin-top:10px;color:#92969B">Most <span style="color:#6427FF">Popular Major</span></div>
+
               </div>
               <div class="major-list">
                 <div class="major-item" v-for="(item,index) in major" :key="index">
@@ -54,7 +62,7 @@
           <div class="most-content">
               <div class="page-title">
                 <div style="letter-spacing: 2px;">平台数据</div>
-                <div style="margin-top:10px;color:#92969B">Our <span style="color:#6427FF"> Achievement</span></div>
+
               </div>
               <div class="shuju-total">
                   <div class="shuju-content">
@@ -97,7 +105,7 @@
           <div class="most-content">
               <div class="page-title">
                 <div style="letter-spacing: 2px;">推荐笔记</div>
-                <div style="margin-top:10px;color:#92969B">Recommended <span style="color:#6427FF"> Notes</span></div>
+
               </div>
               <div class="note-list">
                   <div v-for="(item,index) in article" :key="index" class="note-item">
@@ -128,7 +136,7 @@
                 <div class="liuyan-content">
                     <div>
                         <div>你的任何疑问都可以留言咨询</div>
-                        <div style="margin-top:20px">You can leave a message for consultation if you have any questions</div>
+
                         <el-button @click="toMessage" style="margin-top:20px" size="mini" icon="el-icon-question" type="success">留言咨询</el-button>
                     </div>
                 </div>

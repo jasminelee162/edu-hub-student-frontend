@@ -6,8 +6,7 @@
                   <span style="color:#6427FF">在线学习教育平台</span>
                 </div>
                 <div style="margin-top:10px;font-weight:bold">关于我们</div>
-                <div style="font-weight:bold">Contact Us</div>
-                <div style="color:#6D737A;margin-top:10px">Track Progress in Real-Time with AI-Powered Recommendations</div>
+
                 <div style="color:#6D737A;margin-top:10px">Email:csu@csu.edu.cn</div>
 
               </div>
