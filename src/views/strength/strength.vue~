@@ -6,7 +6,7 @@
       <transition name="fade">
         <div class="glass-card">
           <div class="section-title">
-            <i class="el-icon-data-analysis icon"></i> 学科分析
+            <i class="el-icon-data-analysis icon"></i> 薄弱学科分析
           </div>
           <el-row :gutter="20" v-if="weakList.length">
             <el-col :span="8" v-for="(item, index) in weakList" :key="index">

@@ -30,7 +30,7 @@
           <el-dropdown-item command="i"><div class="drop-item"><i class="el-icon-s-management"></i>收藏课程</div></el-dropdown-item>
           <el-dropdown-item command="c"><div class="drop-item"><i class="el-icon-edit"></i>记笔记</div></el-dropdown-item>
           <el-dropdown-item command="d"><div class="drop-item"><i class="el-icon-reading"></i>我的作业</div></el-dropdown-item>
-<!--          <el-dropdown-item command="e"><div class="drop-item"><i class="el-icon-notebook-1"></i>我的笔记</div></el-dropdown-item>-->
+          <el-dropdown-item command="e"><div class="drop-item"><i class="el-icon-notebook-1"></i>我的笔记</div></el-dropdown-item>
           <el-dropdown-item command="f"><div class="drop-item"><i class="el-icon-star-off"></i>收藏笔记</div></el-dropdown-item>
           <el-dropdown-item command="g"><div class="drop-item"><i class="el-icon-circle-close"></i>错题集</div></el-dropdown-item>
           <el-dropdown-item command="h" divided><div class="drop-item"><i class="el-icon-back"></i>退出登录</div></el-dropdown-item>
