@@ -35,8 +35,8 @@
         <h3>协作成员</h3>
         <div class="user-list">
           <div v-for="(user, index) in collaborators" :key="index" class="user-item">
-            <el-avatar :size="36" icon="el-icon-user" />
-            <span class="user-name">{{ user }}</span>
+            <el-avatar :size="36" :src="user.avatar || ''" icon="el-icon-user" />
+            <span class="user-name">{{ user.userName }}</span>
           </div>
         </div>
       </div>
@@ -96,7 +96,9 @@ import {
   recordVersion,
   getTemplateContent
 } from '@/api/api'
-import axios from "axios";
+import axios  from "axios";
+import {Container} from "element-ui";
+import {log} from "video.js";
 
 function decodeBase64ToUtf8(base64) {
   const byteCharacters = atob(base64)
@@ -127,10 +129,10 @@ export async function decodeDocxBase64(base64) {
     return '<p>文档解析失败</p>'
   }
 }
+
 export default {
   components: {headerPage, DocxViewer, PdfViewer, TextViewer},
   data() {
-
     return {
       // 新增：记录自身发送的内容（用于过滤）
       lastSentContent: '',
@@ -163,23 +165,134 @@ export default {
       maxSendBuffer: 1000,  // 最大发送缓冲区大小(字符)
       isSending: false,
       pendingContent: null,
-      sendQueue: []
+      sendQueue: [],
+      //6
+      saveContent: '',
+      //6
+      flag: false,
+      //
+      rollBackContent: '',
+      //
+      flag1: false
     }
   },
+  //6
+  async mounted() {
+    this.versionInterval = setInterval(() => {
+      this.loadVersions();
+      this.initMembers();
+    }, 1000); // 每5秒拉一次
+    //await this.loadVersions();
+  },
+  //6
   created() {
+    const userId = this.$store.state.user?.id;
     const isCreator = !!this.$route.query.templateId
-    if (isCreator) {
-      this.initDocument()
+    const exitTimeStr = localStorage.getItem(userId);
+    if (!exitTimeStr) {
+      console.log("没有存储退出时间");
+      if (isCreator) {
+        this.initDocument()
+        this.initWebSocket()
+        this.initMembers()
+      }else {
+        this.initContent()
+        this.initWebSocket()
+        this.initMembers()
+      }
+
+
+
     } else {
-      // 非模板创建者，通过 WS 接收初始内容前，显示“加载中”
-      this.renderedContent = '<p>加载协作文档中...</p>'
+      const exitTime = new Date(exitTimeStr);
+      const nowTime = new Date();
+      if (isNaN(exitTime.getTime())) {
+        console.log("存储的时间格式无效");
+        return;
+      }
+      const timeDiffMs = Math.abs(nowTime.getTime() - exitTime.getTime());
+      const isWithin10s = timeDiffMs <= 10000;
+      if (isWithin10s) {
+        this.initWebSocket()
+        this.initMembers()
+        this.initContent()
+      } else {
+        localStorage.removeItem(userId);
+        if (isCreator) {
+          this.initDocument()
+          this.initWebSocket()
+          this.initMembers()
+        }else {
+          this.initContent()
+          this.initWebSocket()
+          this.initMembers()
+        }
+      }
     }
-    this.initWebSocket()
+
+
   },
   beforeDestroy() {
+    clearInterval(this.versionInterval);
     this.closeWebSocket()
   },
   methods: {
+    async initMembers() {
+      const token = localStorage.getItem('user_token')
+      const mamRes = await axios.get('http://localhost:8080/members', {
+        params: {documentId: this.documentId},
+        headers: {
+          'x_access_token': token
+        }
+      })
+      try {
+        // 后端发送的应该是 JSON 字符串，需要先解析
+        const members = mamRes.data.data.data
+        if (Array.isArray(members)) {
+          this.collaborators = members
+          console.log('当前成员：', this.collaborators)
+        } else {
+          console.warn('成员数据格式异常', members)
+        }
+      } catch (e) {
+        console.error('解析协作成员失败：', e, mamRes.data.data.data)
+      }
+    },
+    async initContent() {
+      const token = localStorage.getItem('user_token')
+      const res = await axios.get('http://localhost:8080/documentInit', {
+        params: {documentId: this.documentId},
+        headers: {
+          'x_access_token': token
+        }
+      })
+      const resFromInit = res.data.data.data
+      const base64 = resFromInit.content
+      const fileTypeInit = resFromInit.fileType
+      // 判断文档类型进行初始化
+      if (fileTypeInit === 'docx') {
+        this.currentComponent = 'DocxViewer'
+        const contentInit=await decodeDocxBase64(base64)
+        const separatorIndex = contentInit.indexOf('|||');
+        const content = contentInit.substring(separatorIndex + 4);
+        this.renderedContent =content
+        console.log("docx处理",contentInit)
+      } else if (fileTypeInit === 'txt') {
+        this.currentComponent = 'TextViewer'
+        const contentInit=atob(base64)
+        const separatorIndex = contentInit.indexOf('|||');
+        const content = contentInit.substring(separatorIndex + 3);
+        this.renderedContent =content
+
+      } else if (fileTypeInit === 'pdf') {
+        this.currentComponent = 'PdfViewer'
+        this.renderedContent = base64 // pdf base64
+      }
+      this.content = this.renderedContent
+      this.documentTitle = resFromInit.title
+      console.log("不是创建者：", resFromInit)
+      console.log("fileTypeInit:", fileTypeInit)
+    },
     initWebSocket() {
       const sid = this.documentId
       const userId = this.$store.state.user?.id;
@@ -201,20 +314,21 @@ export default {
 
       this.websocket.onmessage = (event) => {
         try {
+          console.log("poooooooooooooooo")
           // 1. 解析JSON数据（后端返回的WebSocketResult对象）
           const result = event.data;
-
-          const number= result.charAt(0);
+          const number = result.charAt(0);
           const data = result.slice(1);
           // 2. 根据number字段区分消息类型
           switch (number) {
             case '1':
+              this.initMembers()
               // 处理成员加入信息（number=1）
-              this.handleMemberJoin(data);
+              //this.handleMemberJoin(data);
               break;
             case '2':
               // 处理普通信息（number=2）
-
+              console.log("nananananannanaanna")
               // 拆分clientId和内容（按|||分割）
               const separatorIndex = data.indexOf('|||');
               if (separatorIndex === -1) {
@@ -226,6 +340,9 @@ export default {
               // 提取clientId和内容
               const senderClientId = data.substring(0, separatorIndex);
               const content = data.substring(separatorIndex + 3);
+              //6
+              this.saveContent = result.slice(1).substring(separatorIndex + 3);
+              console.log("aaaaaaaaaaaaaaa" + this.saveContent);
 
               // 过滤自身发送的消息
               if (senderClientId === this.clientId) {
@@ -253,6 +370,9 @@ export default {
         console.log('WebSocket连接关闭')
         console.log('WebSocket连接关闭，状态码：', event.code);
         console.log('关闭原因：', event.reason);
+        //6
+        localStorage.setItem(userId, new Date().toString());
+
       }
 
       // 窗口关闭时确保关闭 WebSocket 连接
@@ -376,10 +496,24 @@ export default {
       this.lastSendTime = Date.now();
       this.lastSentContent = content; // 记录自身发送的内容
       this.pendingContent = content;
+      //6
+      if (this.flag === true) {
+        console.log("行不行啊：" + this.saveContent)
+        content = this.saveContent;
+        console.log("真实够了：" + this.content)
+        this.flag = false;
+      }
+      //6
+      if (this.flag1 === true) {
+        content = this.rollBackContent;
+        this.flag1 = false;
+      }
 
       if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
         // 格式：clientId|||实际内容（用|||作为分隔符，避免和内容冲突）
         const message = `${this.clientId}|||${content}`;
+        console.log("mmmmmmmmmmmmmmmmm:" + message)
+        console.log("nnnnnnnnnnnnnnnnn:" + this.saveContent);
         this.websocket.send(message);
         console.log("发送消息:", message.substring(0, 50) + "...");
       }
@@ -389,7 +523,6 @@ export default {
         this.processSendQueue();
       }
     },
-
 
 
     // 处理远程内容（标记远程更新，避免触发本地发送）
@@ -407,7 +540,7 @@ export default {
         this.renderedContent = content;
       }
     },
-    handleMemberJoin(content){
+    handleMemberJoin(content) {
       this.collaborators = content.split('#');
     },
     async initDocument() {
@@ -417,12 +550,13 @@ export default {
         const res = await getTemplateContent(templateId)
         this.documentTitle = res.data.name || '未命名模板'
         this.fileType = res.data.fileType || 'docx'
-        console.log("初始化：",res.data)
+
         switch (this.fileType) {
           case 'docx':
             this.currentComponent = 'DocxViewer'
             this.renderedContent = await decodeDocxBase64(res.data.fileContent)
             this.content = this.renderedContent
+            this.saveContent = this.content
             break
           case 'pdf':
             this.currentComponent = 'PdfViewer'
@@ -433,6 +567,7 @@ export default {
             this.currentComponent = 'TextViewer'
             this.renderedContent = atob(res.data.fileContent)
             this.content = this.renderedContent
+            this.saveContent = this.content
             break
           default:
             this.$message.error('不支持的文档类型')
@@ -452,7 +587,7 @@ export default {
       }
     },
 
-
+    // 其他已有方法保持不变...
     shareDocument() {
       this.showShareDialog = true
     },
@@ -463,36 +598,31 @@ export default {
     },
     async saveDocument() {
       try {
-        const { value } = await this.$prompt('请输入变更说明', '保存文档', {
-          confirmButtonText: '保存',
-          cancelButtonText: '取消',
-          inputPattern: /.+/,
-          inputErrorMessage: '说明不能为空'
+        const {value} = await this.$prompt('请输入变更说明', '保存文档', {
+          confirmButtonText: '保存', cancelButtonText: '取消',
+          inputPattern: /.+/, inputErrorMessage: '说明不能为空'
         })
 
-        const res = await recordVersion(this.documentId, this.content, value)
-
-        if (!res || typeof res.code === 'undefined') {
-          this.$message.error('保存失败：服务器无响应')
-          return
-        }
-
-        console.log("保存的内容："+this.content)
-
+        //6
+        const res = await recordVersion(this.documentId, this.saveContent, value)
+        console.log("保存的内容111111111111111111111：" + this.saveContent);
+        //6
+        this.content = this.saveContent;
         if (res.code === 1000) {
           this.$message.success('保存成功')
+          console.log("ppppppppppppppppppppppppppppp")
+          console.log("这时候的saveContent" + this.saveContent);
+          console.log("这时候的content" + this.content);
+          //6
+          this.flag = true
           this.loadVersions()
-          this.sendEditMessage(this.content)
+          this.sendEditMessage()
         } else {
           this.$message.error('保存失败: ' + (res.message || '未知错误'))
         }
       } catch (error) {
-        if (error === 'cancel') {
-          console.log('用户取消了保存')
-          return
-        }
         console.error('保存出错:', error)
-        this.$message.error('保存出错: ' + (error.message || '未知错误'))
+        this.$message.error('保存出错: ' + error.message)
       }
     }, async loadVersions() {
       const res = await getAllVersions(this.documentId)
@@ -508,8 +638,10 @@ export default {
       })
       const res = await rollbackVersion(versionId, userId)
       if (res.code !== 1000) return this.$message.error(res.message || '恢复失败')
-
+      //6
+      this.flag1 = true;
       const data = res.data
+      this.fileType='docx'
       switch (this.fileType) {
         case 'docx':
           this.currentComponent = 'DocxViewer'
@@ -519,6 +651,7 @@ export default {
             this.renderedContent = atob(data)
           }
           this.content = this.renderedContent
+          this.rollBackContent = this.renderedContent
           break
         case 'pdf':
           this.currentComponent = 'PdfViewer'
@@ -529,54 +662,21 @@ export default {
           this.currentComponent = 'TextViewer'
           this.renderedContent = atob(data)
           this.content = this.renderedContent
+          this.rollBackContent = this.renderedContent
           break
         default:
           this.$message.error('不支持的文档类型')
       }
 
       this.editorKey++
-      this.sendEditMessage(this.content)
+      this.sendEditMessage()
       this.$message.success('恢复成功')
     }
 
 
-  },
-  async mounted() {
-    if (!this.$route.query.templateId) {
-      // 如果不是创建者，尝试初始化内容
-      const token = localStorage.getItem('user_token')
-
-      const res = await axios.get('http://localhost:8080/documentInit', {
-        params: { documentId: this.documentId },
-        headers: {
-          'x_access_token': token
-        }
-      })
-      const resFromInit = res.data.data.data
-      const base64 = resFromInit.content
-      const fileTypeInit = resFromInit.fileType
-      // 判断文档类型进行初始化
-      if (fileTypeInit === 'docx') {
-        this.currentComponent = 'DocxViewer'
-        this.renderedContent = await decodeDocxBase64(base64)
-        console.log("docx处理")
-      } else if (fileTypeInit === 'txt') {
-        this.currentComponent = 'TextViewer'
-        this.renderedContent = atob(base64)
-      } else if (fileTypeInit === 'pdf') {
-        this.currentComponent = 'PdfViewer'
-        this.renderedContent = base64 // pdf base64
-      }
-      this.content = this.renderedContent
-      this.documentTitle = resFromInit.title
-      console.log("不是创建者：",resFromInit)
-      console.log("fileTypeInit:",fileTypeInit)
-    }
-
-    await this.loadVersions()
   }
-}
 
+}
 </script>
 
 <style>
