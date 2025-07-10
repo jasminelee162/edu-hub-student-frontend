@@ -143,10 +143,10 @@
         this.$message.warning('请输入邮箱')
         return
       }
-
+      this.isSending = true
       sendEmailCode(this.emailInfo.email).then(() => {
         this.$message.success('验证码发送成功')
-        this.isSending = true
+
         this.countdown = 60
         this.timer = setInterval(() => {
           this.countdown--
