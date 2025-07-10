@@ -103,17 +103,23 @@
 							<el-option label="院士" value="院士"></el-option>
 						</el-select>
 					</el-form-item>
-					<el-form-item prop="age">
-						<div class="item-title">年龄：</div>
-						<el-input type="number" v-model="form.age"></el-input>
-					</el-form-item>
-					<el-form-item prop="birth">
-						<div class="item-title">生日：</div>
-						<el-date-picker
-							v-model="form.birth"
-							type="date">
-						</el-date-picker>
-					</el-form-item>
+          <el-form-item prop="age">
+            <div class="item-title">年龄：</div>
+            <el-input
+                v-model="form.age"
+                :readonly="true">
+            </el-input>
+          </el-form-item>
+
+          <el-form-item prop="birth">
+            <div class="item-title">生日：</div>
+            <el-date-picker
+                v-model="form.birth"
+                type="date"
+                placeholder="选择日期"
+                value-format="yyyy-MM-dd">
+            </el-date-picker>
+          </el-form-item>
 					<el-form-item prop="workDate">
 						<div class="item-title">教龄：</div>
 						<el-input type="number" v-model="form.workDate"></el-input>
@@ -161,201 +167,239 @@
 </template>
 
 <script>
-  import {getSchoolList,getMajorList,register} from '../../api/api'
-  import bottomPage from "../../components/bottom/login-bottom"
-  import { mixin } from '../../minix/index';
-  export default {
-	mixins: [mixin],
-	data() {
-	  return{
-		userInfo: {
-			username: "",
-			password: ""
-		},
-		school: [],
-		major: [],
-		dialogImageUrl: '',
-        dialogVisible: false,
-		form: {
-			userName: "",
-			password: "",
-			passwordNew: "",
-			loginAccount: "",
-			email: "",
-			tel: "",
-			sex: "0",
-			country: "",
-			school: "",
-			major: "",
-			agree: "",
-			age: "",
-			birth: "",
-			flair: "",
-			address: "",
-			workDate: "",
-			remark: "",
-			userType: 1,
-			status: 1,
-		},
-		fileList: [],
-		rules: {
-          userName: [
-            { required: true, message: '请输入用户名', trigger: 'blur' },
-          ],
-          password: [
-            { required: true, message: '请输入用户密码', trigger: 'blur' }
-		  ],
-		  passwordNew: [
-            { required: true, message: '请输入确认密码', trigger: 'blur' }
-		  ],
-		  loginAccount: [
-            { required: true, message: '请输入登录账号', trigger: 'blur' }
-		  ],
-		  email: [
-            { required: true, message: '请输入邮箱', trigger: 'blur' }
-		  ],
-		  tel: [
-            { required: true, message: '请输入联系方式', trigger: 'blur' }
-		  ],
-		  sex: [
-            { required: true, message: '请选择性别', trigger: 'blur' }
-		  ],
-		  country: [
-            { required: true, message: '请选择国家', trigger: 'blur' }
-		  ],
-		  school: [
-            { required: true, message: '请选择院校', trigger: 'blur' }
-		  ],
-		  major: [
-            { required: true, message: '请选择专业', trigger: 'blur' }
-		  ],
-		  agree: [
-            { required: true, message: '请选择职称', trigger: 'blur' }
-		  ],
-		  age: [
-            { required: true, message: '请输入年龄', trigger: 'blur' }
-		  ],
-		  birth: [
-            { required: true, message: '请输入出生日期', trigger: 'blur' }
-		  ],
-		  address: [
-            { required: true, message: '请输入地址', trigger: 'blur' }
-		  ],
-		  workDate: [
-            { required: true, message: '请输入教龄', trigger: 'blur' }
-		  ],
-		  flair: [
-            { required: true, message: '请上传教学资质', trigger: 'blur' },
-          ],
-		  remark: [
-            { required: true, message: '请输入自我介绍', trigger: 'blur' }
-          ],
+import { getSchoolList, getMajorList, register } from '../../api/api'
+import bottomPage from "../../components/bottom/login-bottom"
+import { mixin } from '../../minix/index';
+
+export default {
+  mixins: [mixin],
+  data() {
+    return {
+      userInfo: {
+        username: "",
+        password: ""
+      },
+      school: [],
+      major: [],
+      dialogImageUrl: '',
+      dialogVisible: false,
+      form: {
+        userName: "",
+        password: "",
+        passwordNew: "",
+        loginAccount: "",
+        email: "",
+        tel: "",
+        sex: "0",
+        country: "",
+        school: "",
+        major: "",
+        agree: "",
+        age: "",
+        birth: "",
+        flair: "",
+        address: "",
+        workDate: "",
+        remark: "",
+        userType: 1,
+        status: 1,
+      },
+      fileList: [],
+      rules: {
+        userName: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+        ],
+        password: [
+          { required: true, message: '请输入用户密码', trigger: 'blur' }
+        ],
+        passwordNew: [
+          { required: true, message: '请输入确认密码', trigger: 'blur' }
+        ],
+        loginAccount: [
+          { required: true, message: '请输入登录账号', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' }
+        ],
+        tel: [
+          { required: true, message: '请输入联系方式', trigger: 'blur' }
+        ],
+        sex: [
+          { required: true, message: '请选择性别', trigger: 'blur' }
+        ],
+        country: [
+          { required: true, message: '请选择国家', trigger: 'blur' }
+        ],
+        school: [
+          { required: true, message: '请选择院校', trigger: 'blur' }
+        ],
+        major: [
+          { required: true, message: '请选择专业', trigger: 'blur' }
+        ],
+        agree: [
+          { required: true, message: '请选择职称', trigger: 'blur' }
+        ],
+        age: [
+          { required: true, message: '年龄不能为空', trigger: 'blur' }
+        ],
+        birth: [
+          { required: true, message: '请输入出生日期', trigger: 'blur' }
+        ],
+        address: [
+          { required: true, message: '请输入地址', trigger: 'blur' }
+        ],
+        workDate: [
+          { required: true, message: '请输入教龄', trigger: 'blur' }
+        ],
+        flair: [
+          { required: true, message: '请上传教学资质', trigger: 'blur' },
+        ],
+        remark: [
+          { required: true, message: '请输入自我介绍', trigger: 'blur' }
+        ],
+      }
+    }
+  },
+  components: {
+    bottomPage
+  },
+  methods: {
+    // 计算年龄方法
+    calculateAge(birthDate) {
+      if (!birthDate) {
+        this.form.age = "";
+        return;
+      }
+
+      const today = new Date();
+      const birth = new Date(birthDate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+
+      // 如果生日还没过，年龄减1
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+        age--;
+      }
+
+      this.form.age = age;
+    },
+
+    handleAvatorSuccess(res) {
+      let _this = this;
+      if(res.code == 1000){
+        _this.$message({
+          type: 'success',
+          message: '上传成功!'
+        });
+        this.fileList.push({url:this.$store.state.HOST + res.message})
+        this.form.flair = res.message
+      }else{
+        _this.$notify.error({
+          title: '错误',
+          message: res.message
+        });
+      }
+    },
+
+    handleRemove(file, fileList) {
+      this.form.flair = ""
+      this.fileList = []
+    },
+
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url;
+      this.dialogVisible = true;
+    },
+
+    getSchoolList() {
+      getSchoolList().then(res=> {
+        if(res.code == 1000) {
+          this.school = res.data
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
         }
-	  }
-	},
-	components: {
-        bottomPage
-	},
-	methods: {
-		handleAvatorSuccess(res) {
-			let _this = this;
-			if(res.code == 1000){
-				_this.$message({
-				type: 'success',
-				message: '上传成功!'
-				});
-				this.fileList.push({url:this.$store.state.HOST + res.message})
-				this.form.flair = res.message
-			}else{
-			_this.$notify.error({
-				title: '错误',
-				message: res.message
-			});
-			}
-		},
-		handleRemove(file, fileList) {
-			this.form.flair = ""
-			this.fileList = []
-		},
-		handlePictureCardPreview(file) {
-			this.dialogImageUrl = file.url;
-			this.dialogVisible = true;
-		},
-		getSchoolList() {
-			getSchoolList().then(res=> {
-			if(res.code == 1000) {
-				this.school = res.data
-			} else {
-				this.$notify.error({
-				title: '错误',
-				message: res.message
-				});
-			}
-			})
-		},
-		getMajorList() {
-			getMajorList().then(res => {
-			if(res.code == 1000) {
-				this.major = res.data
-			} else {
-				this.$notify.error({
-				title: '错误',
-				message: res.message
-				});
-			}
-			})
-		},
-		toRegister() {
-			this.$router.push("/register")
-		},
-		toLogin() {
-			this.$router.push("/login")
-		},
-		toRuZhu() {
-			this.$refs["ruleForm"].validate((valid) => {
-				if (valid) {
-					if (this.form.passwordNew != this.form.password) {
-						this.$message({
-							message: '两次输入的密码不一致！',
-							type: 'warning'
-						});
-						return;
-					}
-					if (this.fileList.length <= 0) {
-						this.$message({
-							message: '请上传教学资质！',
-							type: 'warning'
-						});
-						return;
-					}
-					register(this.form).then(res => {
-						if(res.code == 1000) {
-							this.$message({
-								message: '入驻成功,请等待平台审核',
-								type: 'success'
-							});
-							var that = this
-							setTimeout(function() {
-								that.$router.push("/login")
-							},500)
-						} else {
-							this.$message.error(res.message);
-						}
-					})
-				} else {
-					return false;
-				}
-			});
-		}
-	},
-	created() {
-	 
-	},
-	mounted() {
-	  this.getSchoolList()
-	  this.getMajorList()
-	}
- }
+      })
+    },
+
+    getMajorList() {
+      getMajorList().then(res => {
+        if(res.code == 1000) {
+          this.major = res.data
+        } else {
+          this.$notify.error({
+            title: '错误',
+            message: res.message
+          });
+        }
+      })
+    },
+
+    toRegister() {
+      this.$router.push("/register")
+    },
+
+    toLogin() {
+      this.$router.push("/login")
+    },
+
+    toRuZhu() {
+      this.$refs["ruleForm"].validate((valid) => {
+        if (valid) {
+          if (this.form.passwordNew != this.form.password) {
+            this.$message({
+              message: '两次输入的密码不一致！',
+              type: 'warning'
+            });
+            return;
+          }
+          if (this.fileList.length <= 0) {
+            this.$message({
+              message: '请上传教学资质！',
+              type: 'warning'
+            });
+            return;
+          }
+          register(this.form).then(res => {
+            if(res.code == 1000) {
+              this.$message({
+                message: '入驻成功,请等待平台审核',
+                type: 'success'
+              });
+              var that = this
+              setTimeout(function() {
+                that.$router.push("/login")
+              },500)
+            } else {
+              this.$message.error(res.message);
+            }
+          })
+        } else {
+          return false;
+        }
+      });
+    }
+  },
+  watch: {
+    // 监听生日字段变化
+    'form.birth': {
+      handler(newVal) {
+        this.calculateAge(newVal);
+      },
+      immediate: true,
+      deep: true
+    }
+  },
+  created() {
+    // 初始化代码
+  },
+  mounted() {
+    this.getSchoolList()
+    this.getMajorList()
+  }
+}
 </script>
 
 <style scoped>
