@@ -182,16 +182,17 @@ export default {
       this.loadVersions();
       this.initMembers();
     }, 1000); // 每5秒拉一次
-    //await this.loadVersions();
   },
   //6
   created() {
     const userId = this.$store.state.user?.id;
-    const isCreator = !!this.$route.query.templateId
+    const isCreator = this.$route.query.templateId
     const exitTimeStr = localStorage.getItem(userId);
+    console.log("iiiiiiiiiiiiii"+isCreator)
+    console.log("yyyyyyyyyyyyyy"+exitTimeStr)
     if (!exitTimeStr) {
       console.log("没有存储退出时间");
-      if (isCreator) {
+      if (isCreator!==undefined) {
         this.initDocument()
         this.initWebSocket()
         this.initMembers()
@@ -200,9 +201,6 @@ export default {
         this.initWebSocket()
         this.initMembers()
       }
-
-
-
     } else {
       const exitTime = new Date(exitTimeStr);
       const nowTime = new Date();
@@ -211,18 +209,21 @@ export default {
         return;
       }
       const timeDiffMs = Math.abs(nowTime.getTime() - exitTime.getTime());
-      const isWithin10s = timeDiffMs <= 10000;
-      if (isWithin10s) {
+      const isWithin1s = timeDiffMs <= 1000;
+      if (isWithin1s) {
         this.initWebSocket()
         this.initMembers()
         this.initContent()
       } else {
+        console.log("woshidyx")
         localStorage.removeItem(userId);
-        if (isCreator) {
+        if (isCreator!==undefined) {
+          console.log("ababababab")
           this.initDocument()
           this.initWebSocket()
           this.initMembers()
         }else {
+          console.log("mimimimii")
           this.initContent()
           this.initWebSocket()
           this.initMembers()
@@ -274,7 +275,7 @@ export default {
         this.currentComponent = 'DocxViewer'
         const contentInit=await decodeDocxBase64(base64)
         const separatorIndex = contentInit.indexOf('|||');
-        const content = contentInit.substring(separatorIndex + 4);
+        const content = contentInit.substring(separatorIndex + 3);
         this.renderedContent =content
         console.log("docx处理",contentInit)
       } else if (fileTypeInit === 'txt') {
@@ -317,6 +318,7 @@ export default {
           console.log("poooooooooooooooo")
           // 1. 解析JSON数据（后端返回的WebSocketResult对象）
           const result = event.data;
+          console.log("result:"+result)
           const number = result.charAt(0);
           const data = result.slice(1);
           // 2. 根据number字段区分消息类型
@@ -496,26 +498,28 @@ export default {
       this.lastSendTime = Date.now();
       this.lastSentContent = content; // 记录自身发送的内容
       this.pendingContent = content;
+      this.saveContent=content;
       //6
       if (this.flag === true) {
         console.log("行不行啊：" + this.saveContent)
-        content = this.saveContent;
+        content = this.content;
+        this.saveContent=this.content
         console.log("真实够了：" + this.content)
         this.flag = false;
       }
       //6
       if (this.flag1 === true) {
         content = this.rollBackContent;
+        console.log("rorororororororororoback"+content)
         this.flag1 = false;
       }
-
       if (this.websocket && this.websocket.readyState === WebSocket.OPEN) {
         // 格式：clientId|||实际内容（用|||作为分隔符，避免和内容冲突）
         const message = `${this.clientId}|||${content}`;
         console.log("mmmmmmmmmmmmmmmmm:" + message)
         console.log("nnnnnnnnnnnnnnnnn:" + this.saveContent);
         this.websocket.send(message);
-        console.log("发送消息:", message.substring(0, 50) + "...");
+        console.log("发送消息:", message);
       }
 
       this.isSending = false;
@@ -523,7 +527,6 @@ export default {
         this.processSendQueue();
       }
     },
-
 
     // 处理远程内容（标记远程更新，避免触发本地发送）
     processRemoteContent(content) {
@@ -538,6 +541,7 @@ export default {
         this.content = content;
         this.previousMessage = content;
         this.renderedContent = content;
+        this.saveContent=content;
       }
     },
     handleMemberJoin(content) {
@@ -621,9 +625,15 @@ export default {
           this.$message.error('保存失败: ' + (res.message || '未知错误'))
         }
       } catch (error) {
+        if (error === 'cancel') {
+          // 用户点击了“取消”，不提示错误
+          console.log('用户取消了保存')
+          return
+        }
         console.error('保存出错:', error)
-        this.$message.error('保存出错: ' + error.message)
+        this.$message.error('保存出错: ' + (error.message || '未知错误'))
       }
+
     }, async loadVersions() {
       const res = await getAllVersions(this.documentId)
       this.versions = res.data.map(v => ({
