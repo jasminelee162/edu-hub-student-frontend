@@ -103,13 +103,7 @@
 							<el-option label="院士" value="院士"></el-option>
 						</el-select>
 					</el-form-item>
-          <el-form-item prop="age">
-            <div class="item-title">年龄：</div>
-            <el-input
-                v-model="form.age"
-                :readonly="true">
-            </el-input>
-          </el-form-item>
+
 
           <el-form-item prop="birth">
             <div class="item-title">生日：</div>
@@ -119,6 +113,13 @@
                 placeholder="选择日期"
                 value-format="yyyy-MM-dd">
             </el-date-picker>
+          </el-form-item>
+          <el-form-item prop="age">
+            <div class="item-title">年龄：</div>
+            <el-input
+                v-model="form.age"
+                :readonly="true">
+            </el-input>
           </el-form-item>
 					<el-form-item prop="workDate">
 						<div class="item-title">教龄：</div>
