@@ -23,11 +23,9 @@ Edu Hub 是一个面向教育场景的一站式学习与管理平台，覆盖学
 
 ## 技术栈
 
-- 框架：React / Vue（请根据实际情况补充）
-- 状态管理：Redux / Pinia / Vuex 等
-- UI 组件库：Ant Design / Element Plus 等
+- 框架：Vue
+- UI 组件库：Element Plus
 - 网络请求：Axios / Fetch API
-- 代码规范：ESLint、Prettier
 
 ## 快速开始
 
