@@ -9,7 +9,7 @@
 Edu Hub 是一个面向教育场景的一站式学习与管理平台，覆盖学生、教师、管理员三类角色。  
 本仓库为**学生端前端**，主要实现学生相关的各类功能。
 
-- 管理端前端仓库：[edu-hub-admin-frontend](https://github.com/jasminelee162/edu-hub-admin-frontend)
+- 教师/管理端前端仓库：[edu-hub-admin-frontend](https://github.com/jasminelee162/edu-hub-admin-frontend)
 - 后端仓库：[edu-hub-backend](https://github.com/jasminelee162/edu-hub-backend)
 
 ---
@@ -85,7 +85,7 @@ Edu Hub 是一个面向教育场景的一站式学习与管理平台，覆盖学
 ## 项目相关仓库
 
 - 学生端前端（本仓库）：https://github.com/jasminelee162/edu-hub-student-frontend
-- 管理端前端：[edu-hub-admin-frontend](https://github.com/jasminelee162/edu-hub-admin-frontend)
+- 教师/管理端前端：[edu-hub-admin-frontend](https://github.com/jasminelee162/edu-hub-admin-frontend)
 - 后端接口：[edu-hub-backend](https://github.com/jasminelee162/edu-hub-backend)
 
 ---
