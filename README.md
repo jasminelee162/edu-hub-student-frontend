@@ -107,5 +107,5 @@ Edu Hub 是一个面向教育场景的一站式学习与管理平台，覆盖学
 
 ## License
 
-本项目采用 MIT License，详情请参见 [LICENSE](./LICENSE) 文件。
+本项目采用 MIT License
 ````
